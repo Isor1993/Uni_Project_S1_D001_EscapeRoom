@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -29,6 +30,10 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         private char[,] _gameBoardArray;
         private int _arraySizeX;
         private int _arraySizeY;
+        // ArrayOffset 
+        private int _arrayOffset = 2;
+        //
+        public int ArrayOffset{get=>_arrayOffset;}
 
         /// <summary>
         /// List for wall positions to spawn rnd door later
@@ -93,30 +98,30 @@ namespace Semester1_D001_Escape_Room_Rosenberg
                     // Top and bottom row
                     if (y == 0 || y == _arraySizeY - 1)
                     {
-                        _gameBoardArray[y, x] = _symbols.WallTopSymbol;
+                        _gameBoardArray[y+_arrayOffset, x] = _symbols.WallTopSymbol;
                         // Save wall position in list
-                        _listWallPositions.Add((y, x));
+                        _listWallPositions.Add((y+_arrayOffset, x));
                     }
                     // Left and right column
                     else if (x == 0 || x == _arraySizeX - 1)
                     {
-                        _gameBoardArray[y, x] = _symbols.WallSideSymbol;
-                        _listWallPositions.Add((y, x));
+                        _gameBoardArray[y+_arrayOffset, x] = _symbols.WallSideSymbol;
+                        _listWallPositions.Add((y+_arrayOffset, x));
                     }
                     // Everything else is empty space
                     else
                     {
-                        _gameBoardArray[y, x] = _symbols.EmptySymbol;
+                        _gameBoardArray[y+_arrayOffset, x] = _symbols.EmptySymbol;
                         // Add empty positions to list
-                        _listEmptyPositions.Add((y, x));
+                        _listEmptyPositions.Add((y+_arrayOffset, x));
                     }
                 }
             }
             // Corners of the game board
-            _gameBoardArray[0, 0] = _symbols.WallLeftTopCornerSymbol;
-            _gameBoardArray[_arraySizeY - 1, _arraySizeX - 1] = _symbols.WallRightBottomCornerSymbol;
-            _gameBoardArray[0, _arraySizeX - 1] = _symbols.WallRightTopCornerSymbol;
-            _gameBoardArray[_arraySizeY - 1, 0] = _symbols.WallLeftBottomCornerSymbol;
+            _gameBoardArray[0+_arrayOffset, 0] = _symbols.WallLeftTopCornerSymbol;
+            _gameBoardArray[_arraySizeY - 1+_arrayOffset, _arraySizeX - 1] = _symbols.WallRightBottomCornerSymbol;
+            _gameBoardArray[0+_arrayOffset, _arraySizeX - 1] = _symbols.WallRightTopCornerSymbol;
+            _gameBoardArray[_arraySizeY - 1+_arrayOffset, 0] = _symbols.WallLeftBottomCornerSymbol;
         }
     }
 }
