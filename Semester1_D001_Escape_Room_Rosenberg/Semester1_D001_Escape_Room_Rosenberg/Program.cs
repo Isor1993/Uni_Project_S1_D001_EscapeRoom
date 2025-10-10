@@ -34,13 +34,13 @@ namespace Semester1_D001_Escape_Room_Rosenberg
             // set cursor invisible
             Console.CursorVisible = false;
             // Print game board 
-            printer.PrintArray(boardBuilder.GameBoardArray);
-            // get start porsition
-            move.SetStartPosition(spawn.PlayerStartposition);
             // Start Timer
             uIBuilder.StartTimer();
             //build Hud
             uIBuilder.BuildHud();
+            printer.PrintArray(boardBuilder.GameBoardArray);
+            // get start porsition
+            move.SetStartPosition(spawn.PlayerStartposition);
             // Move funktion
             while (true)
             {

@@ -9,6 +9,9 @@ namespace Semester1_D001_Escape_Room_Rosenberg
 {
     internal class PrinterManager
     {
+        // 2 HUD-Zeilen + 1 Trennlinie
+        public const int BoardTopOffset = 3; 
+
         /// <summary>
         /// Read-only list for error messages
         /// </summary>
@@ -93,9 +96,11 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         /// <param name="Array"></param>
         public void PrintArray(char[,] Array)
         {
+
             // Iterate through the first dimension (rows)
             for (int y = 0; y < Array.GetLength(0); y++)
             {
+                Console.SetCursorPosition(0, y + BoardTopOffset);
                 // Iterate through the second dimension (columns)
                 for (int x = 0; x < Array.GetLength(1); x++)
                 {
