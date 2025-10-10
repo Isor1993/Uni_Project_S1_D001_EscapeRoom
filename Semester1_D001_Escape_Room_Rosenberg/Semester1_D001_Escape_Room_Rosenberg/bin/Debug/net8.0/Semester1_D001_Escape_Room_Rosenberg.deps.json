@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "Semester1_D001_Escape_Room_Rosenberg/1.0.0": {
+        "runtime": {
+          "Semester1_D001_Escape_Room_Rosenberg.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Semester1_D001_Escape_Room_Rosenberg/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
