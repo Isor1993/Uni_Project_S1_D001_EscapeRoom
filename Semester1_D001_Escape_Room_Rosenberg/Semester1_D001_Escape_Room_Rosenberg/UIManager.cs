@@ -23,7 +23,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         }
 
         private DateTime _startTime;
-       
+
         public void StartTimer()
         {
             _startTime = DateTime.Now;
@@ -31,7 +31,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         /// <summary>
         /// build UI Hud over Gameboard with Stats
         /// </summary>
-        public void BuildHud()
+        public void BuildTopHud()
         {
             // getting max boardWidth
             int boardWidth = _boardBuilder.GameBoardArray.GetLength(1);
@@ -40,24 +40,22 @@ namespace Semester1_D001_Escape_Room_Rosenberg
             // Output string for Time with Symbol
             string timeString = $"{_symbols.TimeWatchSymbol} {elapsed.Minutes:D2}:{elapsed.Seconds:D2}";
             // creating zones so that it gets always the same balanced layout size
-            int zone_1 = (int)(boardWidth * 0.33);
-            int zone_2 = (int)(boardWidth * 0.34);
-            int zone_3 = boardWidth - zone_1 - zone_2;
             // First row with _playerName with Symbol and Time with Symbole
             string namePart = $"{_symbols.PlayerSymbol} {_playerName}";
-            string timePart = timeString.PadLeft(zone_3);
-            string line_1 = namePart.PadRight(zone_1 + zone_2) + timePart;
+            string lvlPart = $"Lvl = {Program.CurrentLevel}";
+            string timePart = timeString;
+            
             // print it on console
-            Console.SetCursorPosition(0, 0);
-            Console.Write(line_1.PadRight(boardWidth));
+            Console.SetCursorPosition(0, 0);            
+            Console.Write(BuildCentredLine(namePart, lvlPart, timePart, boardWidth));
             // Second Row with lives keys and door open or closed with Operator
-            string liveString = new string(_symbols.HearthSymbol, _lives);
-            string keyString = $"{_symbols.KeyFragmentSymbol} x{_keys}";
+
+            string liveString = $"{_symbols.HearthSymbol}  x{_lives}";
+            string keyString = $"{_symbols.KeyFragmentSymbol}  x{_keys}";
             string doorString = _isDoorOpen ? $"{_symbols.OpenDoorSideWallSymbol} = Open" : $"{_symbols.ClosedDoorSideWallSymbol} = Closed";
             // print second row on console
-            string line2 = $"{_symbols.HearthSymbol}{_keys}".PadRight(zone_1 + zone_2) + doorString.PadLeft(zone_3);
             Console.SetCursorPosition(0, 1);
-            Console.Write(line2.PadRight(boardWidth));
+            Console.Write(BuildCentredLine(liveString, doorString, keyString, boardWidth));
             // Test extraline
             Console.SetCursorPosition(0, 2);
             Console.WriteLine(new string('─', boardWidth));
@@ -71,6 +69,53 @@ namespace Semester1_D001_Escape_Room_Rosenberg
 
 
         }
+
+
+        private string BuildCentredLine(string leftZone, string midZone, string rightZone, int lineMaxLenght)
+        {
+            // Start position from midZone
+            int midZoneStartPosition = (lineMaxLenght / 2) - (midZone.Length / 2);
+
+            // line = LeftZone
+            string line = leftZone;
+            // calculate empty spaces betweeen leftZone and midZoneStartPosition
+            int leftZoneSpace = Math.Max(1, (midZoneStartPosition - leftZone.Length));
+            // add empty spaces to line
+            line += new string(' ', leftZoneSpace);
+            // add midZone to line
+            line += midZone;
+            // calculate empty spaces between M´midZoneSTartPosition and rightZone
+            int rightZoneSpace = Math.Max(1, (lineMaxLenght - line.Length - rightZone.Length));
+            // add empty spaces to line
+            line += new string(' ', rightZoneSpace);
+            // add rightZone to line
+            line += rightZone;
+            // return line
+            return line;
+        }
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

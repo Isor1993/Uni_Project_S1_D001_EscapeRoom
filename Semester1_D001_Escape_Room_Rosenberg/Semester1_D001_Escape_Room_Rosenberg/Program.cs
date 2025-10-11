@@ -37,7 +37,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg
             // Start Timer
             uIBuilder.StartTimer();
             //build Hud
-            uIBuilder.BuildHud();
+            uIBuilder.BuildTopHud();
             printer.PrintArray(boardBuilder.GameBoardArray);
             // get start porsition
             move.SetStartPosition(spawn.PlayerStartposition);
