@@ -12,6 +12,17 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         /// Symbols used throughout the game
         /// Each symbol can be accessed or modified via its corresponding property.
         /// </summary>
+
+        private char _wallTDownSymbol = '\u2566'; //                 ' ╦ '  
+
+        private char _wallTUpSymbol = '\u2569'; //                   ' ╩ '  
+
+        private char _wallTRightSymbol = '\u2560'; //                ' ╠ '  
+
+        private char _wallTLeftSymbol = '\u2563'; //                 ' ╣ '  
+
+        private char _wallCrossSymbol = '\u256C'; //                 ' ╬ '  
+
         private char _wallTopSymbol = '\u2550';//                    ' ═ '
 
         private char _wallSideSymbol = '\u2551';//                   ' ║'
@@ -53,6 +64,12 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         /// <summary>
         /// Properties for accessing or optionally changing symbols later
         /// </summary>
+
+        public char WallTDownSymbol { get => _wallTDownSymbol; set => _wallTDownSymbol = value; }
+        public char WallTUpSymbol { get => _wallTUpSymbol; set => _wallTUpSymbol = value; }
+        public char WallTRightSymbol { get => _wallTRightSymbol; set => _wallTRightSymbol = value; }
+        public char WallTLeftSymbol { get => _wallTLeftSymbol; set => _wallTLeftSymbol = value; }
+        public char WallCrossSymbol { get => _wallCrossSymbol; set => _wallCrossSymbol = value; }
         public char WallTopSymbol { get => _wallTopSymbol; set => _wallTopSymbol = value; }
         public char WallSideSymbol { get => _wallSideSymbol; set => _wallSideSymbol = value; }
         public char WallLeftTopCornerSymbol { get => _wallLeftTopCornerSymbol; set => _wallLeftTopCornerSymbol = value; }

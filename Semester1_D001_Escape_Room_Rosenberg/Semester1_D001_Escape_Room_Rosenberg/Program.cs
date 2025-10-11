@@ -10,12 +10,15 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         {
             // Console output encoding
             Console.OutputEncoding = System.Text.Encoding.UTF8;
+            // damit es beim vollbild nicht verzehrt wird
+            Console.SetWindowSize(120, 20);
+            Console.SetBufferSize(120, 20);
             // Initialize core objects
             PrinterManager printer = new PrinterManager();
             SymbolsManager symbols = new SymbolsManager();
             // GameBoardBuilder receives printer and symbols as read-only references
             GameBoardBuilder boardBuilder = new GameBoardBuilder(printer, symbols);
-            UIManager uIBuilder=new UIManager(boardBuilder,symbols);
+            UIManager uIBuilder=new UIManager(boardBuilder,symbols,printer);
             RulesManager rules = new RulesManager(symbols, boardBuilder, printer);
             SpawnerManager spawn = new SpawnerManager(printer, symbols, rules, boardBuilder);
             MovePlayerManager move = new MovePlayerManager(spawn,boardBuilder,rules,symbols);
@@ -39,6 +42,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg
             //build Hud
             uIBuilder.BuildTopHud();
             printer.PrintArray(boardBuilder.GameBoardArray);
+            uIBuilder.FillUpBottomHud("System","Reward :",symbols.KeyFragmentSymbol,5);
             // get start porsition
             move.SetStartPosition(spawn.PlayerStartposition);
             // Move funktion

@@ -77,8 +77,8 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         /// </summary>
         public void DecideArraySize()
         {
-            _arraySizeX = _printer.AskForIntInRange("How wide should the game board be?", 4, 120);
-            _arraySizeY = _printer.AskForIntInRange("How high should the game board be?", 4, 25);
+            _arraySizeX = _printer.AskForIntInRange("How wide should the game board be?", 30, 120);
+            _arraySizeY = _printer.AskForIntInRange("How high should the game board be?", 15, 20);
             _gameBoardArray = new char[_arraySizeY, _arraySizeX];
         }
         /// <summary>
