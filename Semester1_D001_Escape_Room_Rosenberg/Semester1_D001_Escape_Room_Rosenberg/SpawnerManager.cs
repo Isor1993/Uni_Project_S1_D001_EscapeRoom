@@ -19,17 +19,19 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         private readonly SymbolsManager _symbols;
         private readonly RulesManager _rules;
         private readonly GameBoardBuilder _boardBuilder;
-        private readonly Random _rand = new Random();
+        private readonly RandomManager _random;
+        
 
-        public SpawnerManager(PrinterManager printer, SymbolsManager symbols, RulesManager rules, GameBoardBuilder boardBuilder)
+        public SpawnerManager(RandomManager random ,PrinterManager printer, SymbolsManager symbols, RulesManager rules, GameBoardBuilder boardBuilder)
         {
             _printer = printer;
             _symbols = symbols;
             _rules = rules;
             _boardBuilder = boardBuilder;
+            _random = random;
 
         }
-
+        
         private (int y, int x) _playerSartPosition;
         public (int y, int x) PlayerStartposition { get => _playerSartPosition; private set => _playerSartPosition = value; }
 
@@ -68,7 +70,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg
             // Get the list of wall positions and store it in _listWallPositions
             List<(int y, int x)> _listWallPositions = _boardBuilder.ListWallPositions;
             // Get a random number within the range of wall positions and store it in randomIndex
-            int randomIndex = _rand.Next(0, _listWallPositions.Count);
+            int randomIndex =_random.Random.Next(0, _listWallPositions.Count);
             // Get the wall position using the random index and store it in _doorPosition
             (int y, int x) _doorPosition = _listWallPositions[randomIndex];
             if ((_doorPosition.x == 0 && _doorPosition.y == 0) ||
@@ -119,7 +121,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg
                     return;
                 }
 
-                int randomIndex = _rand.Next(0, _listEmptyPositions.Count);
+                int randomIndex = _random.Random.Next(0, _listEmptyPositions.Count);
                 _playerSartPosition = _listEmptyPositions[randomIndex];
                 isAreaFree = _rules.IsPositionFree(_playerSartPosition);
                 // Increment attempt counter
@@ -178,7 +180,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg
                         return;
                     }
 
-                    int randomIndex = _rand.Next(0, _listEmptyPositions.Count);
+                    int randomIndex = _random.Random.Next(0, _listEmptyPositions.Count);
                     _keyFragmentPosition = _listEmptyPositions[randomIndex];
                     isAreaFree = _rules.IsPositionFree(_keyFragmentPosition);
                     attempts++;
@@ -223,7 +225,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg
                         _printer.GetErrorMessage("Warning: SpawnQuestNpc() = _listEmptyPositions is empty !");
                         return;
                     }
-                    int randomIndex = _rand.Next(0, _listEmptyPositions.Count);
+                    int randomIndex = _random.Random.Next(0, _listEmptyPositions.Count);
                     _questNpcPosition = _listEmptyPositions[randomIndex];
                     isAreaFree = _rules.IsPositionFree(_questNpcPosition);
                     attempts++;
