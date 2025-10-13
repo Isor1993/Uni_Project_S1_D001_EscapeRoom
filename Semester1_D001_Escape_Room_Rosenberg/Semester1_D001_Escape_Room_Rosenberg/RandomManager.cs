@@ -9,24 +9,24 @@ namespace Semester1_D001_Escape_Room_Rosenberg
 {
     internal class RandomManager
     {
-        private readonly Random _rand;
+        private readonly Random _random;
         public RandomManager()
         {
-            _rand = new Random();
+            _random = new Random();
         }
         
 
         /// <summary>
         /// Gibt die globale Random-Instanz zurück.
         /// </summary>
-        public Random Random => _rand;
+        public Random Random => _random;
 
         /// <summary>
         /// Gibt eine Zufallszahl zwischen min (inklusive) und max (exklusive) zurück.
         /// </summary>
         public int Range(int min, int max)
         {
-            return _rand.Next(min, max);
+            return _random.Next(min, max);
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         /// </summary>
         public double Value()
         {
-            return _rand.NextDouble();
+            return _random.NextDouble();
         }
     }
 

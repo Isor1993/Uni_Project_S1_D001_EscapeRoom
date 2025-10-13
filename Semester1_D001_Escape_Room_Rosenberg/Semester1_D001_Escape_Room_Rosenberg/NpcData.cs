@@ -19,6 +19,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg
 
         public int RewardPoints { get; }
 
+
         // Konstruktor for the Properties
         public NpcData(string name, string question, string correctAnswer, int rewardKeyFragment,int rewardPoints)
         {
