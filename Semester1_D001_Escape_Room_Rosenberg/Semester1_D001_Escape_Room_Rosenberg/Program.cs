@@ -11,8 +11,8 @@ namespace Semester1_D001_Escape_Room_Rosenberg
             // Console output encoding
             Console.OutputEncoding = System.Text.Encoding.UTF8;
             // damit es beim vollbild nicht verzehrt wird
-            Console.SetWindowSize(120, 22);
-            Console.SetBufferSize(120, 22);
+            Console.SetWindowSize(120, 30);
+            Console.SetBufferSize(120, 30);
             //
             RandomManager random= new RandomManager();
             // Initialize core objects
