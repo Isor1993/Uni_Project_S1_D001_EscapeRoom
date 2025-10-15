@@ -112,10 +112,10 @@ namespace Semester1_D001_Escape_Room_Rosenberg
             if (_rules.IsMoveAllowed(newPosition))
             {
                 // Clear the player's old position on the console and draw new empty symbol.
-                Console.SetCursorPosition(_playerPosition.x,_playerPosition.y+PrinterManager.BoardTopOffset);
+                Console.SetCursorPosition(_playerPosition.x,_playerPosition.y);
                 Console.Write(_symbols.EmptySymbol);
                 // Draw the player at the new position.
-                Console.SetCursorPosition(newPosition.x,newPosition.y+PrinterManager.BoardTopOffset);
+                Console.SetCursorPosition(newPosition.x,newPosition.y);
                 Console.Write(_symbols.PlayerSymbol);
                 // Update the game board data array.
                 _boardBuilder.GameBoardArray[_playerPosition.y, _playerPosition.x] = _symbols.EmptySymbol;
