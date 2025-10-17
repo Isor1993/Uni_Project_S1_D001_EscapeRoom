@@ -20,7 +20,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         //
         private readonly Random _random;
         NpcData _currentNpc;
-        public NpcData CurrentNpc{ get => _currentNpc; }
+        public NpcData CurrentNpc { get => _currentNpc; }
         // List where all loaded NPC objects are stored for later access.
         public List<NpcData> NpcList { get; private set; } = new List<NpcData>();
         // List where curent loaded NPC objects are stored for later access.
@@ -76,21 +76,25 @@ namespace Semester1_D001_Escape_Room_Rosenberg
 
         public NpcData? GetRandomNpc()
         {
-            if (NpcList.Count == 0)
+            int index = 0;
+            try
+            {
+                index = _random.Next(0, NpcList.Count);
+                if (NpcList.Count == 0) throw new NullReferenceException();
+                return NpcList[index];
+            }
+            catch (Exception zex)
             {
                 _diagnostics.AddWarning($"{nameof(NpcManager)}: Npc list empty -> No NPC data loaded");
                 return null;
             }
-            int index = _random.Next(0, NpcList.Count);
-            return NpcList[index];
-
         }
 
         public NpcData? GetCurrentNpc()
         {
-            
+
             NpcData? randomNpc = GetRandomNpc();
-            if(randomNpc == null)
+            if (randomNpc == null)
             {
                 return null;
             }
@@ -102,7 +106,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg
             if (_currentNpc == null)
             {
                 _diagnostics.AddWarning($"{nameof(NpcManager)}: No current NPC selected-> No name.");
-                return string .Empty;
+                return string.Empty;
             }
             return _currentNpc.Name;
         }

@@ -65,12 +65,14 @@ namespace Semester1_D001_Escape_Room_Rosenberg
             int result;
             while (true)
             {
-                // Output the question text and range (min and max)
+                    // Output the question text and range (min and max)
                 PrintLine(question + $"(between {min} and {max}):");
                 // Read input from the player
                 string input = Console.ReadLine();
                 // Clear console for the next input attempt
                 Console.Clear();
+                
+                
                 // Try to convert the input to int and check if successful
                 if (int.TryParse(input, out result))
                 {
@@ -100,6 +102,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg
             // Iterate through the first dimension (rows)
             for (int y = 0; y < Array.GetLength(0); y++)
             {
+               // Console.Write(Array[y, ]);
                 Console.SetCursorPosition(0, y + BoardTopOffset);
                 // Iterate through the second dimension (columns)
                 for (int x = 0; x < Array.GetLength(1); x++)
