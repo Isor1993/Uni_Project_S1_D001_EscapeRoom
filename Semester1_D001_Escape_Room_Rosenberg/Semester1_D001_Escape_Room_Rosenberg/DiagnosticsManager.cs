@@ -25,7 +25,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         /// Adds an exception message to the error log.
         /// </summary>
         /// <param name="message">The message describing the exception.</param>
-        public void AddEception(string message) => _exception.Add($"[Exception] {message}");
+        public void AddException(string message) => _exception.Add($"[Exception] {message}");
         /// <summary>
         /// Adds an error message to the error log.
         /// </summary>

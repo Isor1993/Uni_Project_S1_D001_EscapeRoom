@@ -1,161 +1,139 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
+using System.IO;
 using System.Security;
-using System.Security.AccessControl;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc
 {
+    /// <summary>
+    /// Handles loading and parsing of NPC data from external text files.
+    /// Creates and returns a list of <see cref="NpcInstance"/> objects based on file contents.
+    /// Includes extensive exception handling and diagnostic logging for reliability.
+    /// </summary>
     internal class NpcDataLoader
     {
-        // Reference to the diagnostics manager for logging messages and errors.
+        // === Dependencies ===
         private readonly DiagnosticsManager _diagnostics;
-        public NpcDataLoader(DiagnosticsManager diagnostics)
+        private readonly SymbolsManager _symbolsManager;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NpcDataLoader"/> class.
+        /// </summary>
+        /// <param name="diagnostics">Reference to the diagnostics manager used for logging messages and exceptions.</param>
+        /// <param name="symbolsManager">Reference to the symbols manager providing NPC-related symbols.</param>
+        public NpcDataLoader(DiagnosticsManager diagnostics, SymbolsManager symbolsManager)
         {
             _diagnostics = diagnostics;
+            _symbolsManager = symbolsManager;
         }
-            List<NpcData> tempNpcList;
+
         /// <summary>
-        /// 
+        /// Loads and parses NPC data from a specified file.
+        /// Each line of the file is expected to contain semicolon-separated NPC parameters:
+        /// <br/> <c>[Name];[Question];[CorrectAnswer];[OptionB];[OptionC];[KeyFragments];[RewardPoints]</c>
         /// </summary>
-        /// <param name="filePath"></param>
-        private void LoadNpcDataFromFile(string filePath)
+        /// <param name="filePath">The full path to the NPC data file.</param>
+        /// <returns>
+        /// A list of <see cref="NpcInstance"/> objects representing all successfully loaded NPCs.
+        /// Returns an empty list if an exception occurs during loading.
+        /// </returns>
+        public List<NpcInstance> LoadNpcDataFromFile(string filePath)
         {
-            //
+            List<NpcInstance> tempNpcList = new List<NpcInstance>();
             try
             {
-                //
-
-                //
                 foreach (string line in File.ReadAllLines(filePath))
                 {
                     // Skip empty or whitespace-only lines.
                     if (string.IsNullOrWhiteSpace(line)) continue;
 
                     // Split the line into parts separated by ';'.
-                    string[] parts = line.Split(';');
-                    // Validate that the line contains all 5 required parts.
-                    if (parts.Length < 7) continue;
+                    // Removes all leading and trailing whitespace characters from each string part.
+                    string[] parts = line.Split(';', StringSplitOptions.TrimEntries);
 
-                    // Create a new NPC data object using the parsed values.
-                    //
-                    NpcMetaData npcMeta = new NpcMetaData(parts[0], (0, 0));
-                    //
+                    // Validate that the line contains all 7 required parts.
+                    if (parts.Length < 7)
+                    {
+                        _diagnostics.AddWarning($"{nameof(NpcDataLoader)}: Incomplete line skipped: '{line}'");
+                        continue;
+                    }
+
+                    // === Create NPC components ===
+                    // The meta includes name, position, and automatically assigns the symbol from the SymbolsManager.
+                    NpcMetaData npcMeta = new NpcMetaData(parts[0], (0, 0), _symbolsManager);
+                    // The dialog includes a question, correct answer, and three possible answer options.
                     NpcDialogData npcDialog = new NpcDialogData(parts[1], parts[2], new List<(string A, string B, string C)> { (parts[2], parts[3], parts[4]) });
-                    //
-                    NpcRewardData npcReward = new NpcRewardData(Convert.ToInt32(parts[5]), Convert.ToInt32(parts[6]));
+                    // Parse reward-related values.
+                    int keyFragments, rewardPoints;
+                    if (!int.TryParse(parts[5], out keyFragments) || !int.TryParse(parts[6], out rewardPoints))
+                    {
+                        _diagnostics.AddWarning($"{nameof(NpcDataLoader)}: Invalid reward values in line '{line}' – default values applied.");
+                        keyFragments = 0;
+                        rewardPoints = 0;
+                    }
 
+                    //The Reward includes key fragments and points.
+                    NpcRewardData npcReward = new NpcRewardData(keyFragments, rewardPoints);
+                    // Combine all NPC data into a single instance and add it to the list.
+                    NpcInstance npcInstance = new NpcInstance(npcMeta, npcDialog, npcReward);
                     // Add the NPC object to the list.
-                    tempNpcList.Add(npcDialog,);
+                    tempNpcList.Add(npcInstance);
                 }
+                _diagnostics.AddCheck($"{nameof(NpcDataLoader)}: Successfully loaded {tempNpcList.Count} Npc records.");
                 return tempNpcList;
+            }
 
-            }         
+            // === Exception Handling ===
             catch (FileNotFoundException ex)
             {
-                // Datei nicht gefunden
-                _diagnostics.AddEception ($"{nameof(NpcDataLoader)}: Datei nicht gefunden");
+                _diagnostics.AddException($"{nameof(NpcDataLoader)}: File not found ({ex.Message})");
+                return new List<NpcInstance>();
             }
             catch (DirectoryNotFoundException ex)
             {
-                // Ordner existiert nicht
-                _diagnostics.AddEception($"{nameof(NpcDataLoader)}: Ordner existiert nicht");
+                _diagnostics.AddException($"{nameof(NpcDataLoader)}: Directory not found ({ex.Message})");
             }
             catch (PathTooLongException ex)
             {
-                // Pfad zu lang
-                _diagnostics.AddEception($"{nameof(NpcDataLoader)}: Pfad zu lang");
+                _diagnostics.AddException($"{nameof(NpcDataLoader)}: Path too long ({ex.Message})");
             }
             catch (UnauthorizedAccessException ex)
             {
-                // Keine Berechtigung
-                _diagnostics.AddEception($"{nameof(NpcDataLoader)}: Keine Berechtigung");
+                _diagnostics.AddException($"{nameof(NpcDataLoader)}: Access denied ({ex.Message})");
             }
             catch (SecurityException ex)
             {
-                // Sicherheitsfehler
-                _diagnostics.AddEception($"{nameof(NpcDataLoader)}: Sicherheitsfehler");
+                _diagnostics.AddException($"{nameof(NpcDataLoader)}: Security violation ({ex.Message})");
             }
             catch (IOException ex)
             {
-                // Allgemeine IO-Fehler (z. B. Stream bereits geöffnet)
-                _diagnostics.AddEception($"{nameof(NpcDataLoader)}: Allgemeine IO-Fehler (z. B. Stream bereits geöffnet)");
+                _diagnostics.AddException($"{nameof(NpcDataLoader)}: General I/O error (e.g., stream already open) ({ex.Message})");
             }
             catch (ArgumentNullException ex)
             {
-                // Parameter null übergeben
-                _diagnostics.AddEception($"{nameof(NpcDataLoader)}: Parameter null übergeben");
+                _diagnostics.AddException($"{nameof(NpcDataLoader)}: Null argument passed ({ex.Message})");
             }
             catch (ArgumentException ex)
             {
-                // Falsches Argumentformat
-                _diagnostics.AddEception($"{nameof(NpcDataLoader)}: Falsches Argumentformat");
+                _diagnostics.AddException($"{nameof(NpcDataLoader)}: Invalid argument format ({ex.Message})");
             }
             catch (FormatException ex)
             {
-                // Formatfehler beim Parsen etc.
-                _diagnostics.AddEception($"{nameof(NpcDataLoader)}: Formatfehler beim Parsen etc.");
+                _diagnostics.AddException($"{nameof(NpcDataLoader)}: Format error while parsing values ({ex.Message})");
             }
             catch (NotSupportedException ex)
             {
-                // Feature/Format nicht unterstützt
-                _diagnostics.AddEception($"{nameof(NpcDataLoader)}: Feature/Format nicht unterstützt");
+                _diagnostics.AddException($"{nameof(NpcDataLoader)}: Unsupported feature or file format ({ex.Message})");
             }
             catch (OverflowException ex)
             {
-                // Zahlenüberlauf o. Ä.
-                _diagnostics.AddEception($"{nameof(NpcDataLoader)}: Zahlenüberlauf o. Ä.");
+                _diagnostics.AddException($"{nameof(NpcDataLoader)}: Numeric overflow error ({ex.Message})");
             }
             catch (Exception ex)
             {
-                // Fallback: alle anderen
-                _diagnostics.AddEception($"{nameof(NpcDataLoader)}: alle anderen");
+                _diagnostics.AddException($"{nameof(NpcDataLoader)}: Unknown exception occurred ({ex.Message})");
             }
-
-
-
+            return new List<NpcInstance>();
         }
-
-
-
-
-
-
-
-
-        /// <summary>
-        /// Loads all NPC data from an external text file into the internal list.
-        /// Expected format per line: Name;Question;Answer;RewardKey;RewardPoints
-        /// </summary>
-        /// <param name="filePath">The path to the NPC data file.</param>
-        private void LoadNpcDataFromFile_2(string filePath)
-        {
-            // Check if the file exists; if not, log an error and stop loading.
-            if (!File.Exists(filePath))
-            {
-                _diagnostics.AddError($"{nameof(NpcManager)}: File 'npc_questions.txt' was not found!");
-                return;
-            }
-            // Open the file, read all lines, and process each one.
-            foreach (string line in File.ReadAllLines(filePath))
-            {
-                // Skip empty or whitespace-only lines.
-                if (string.IsNullOrWhiteSpace(line)) continue;
-
-                // Split the line into parts separated by ';'.
-                string[] parts = line.Split(';');
-                // Validate that the line contains all 5 required parts.
-                if (parts.Length < 5) continue;
-
-                // Create a new NPC data object using the parsed values.
-                NpcData npc = new NpcData(parts[0], parts[1], parts[2], int.Parse(parts[3]), int.Parse(parts[4]));
-                // Add the NPC object to the list.
-                NpcList.Add(npc);
-            }
-            // Log a success message through the diagnostics manager.
-            _diagnostics.AddCheck($"{nameof(NpcManager)}: Successfully loaded {NpcList.Count} Npc records.");
-        }
+    }
 }

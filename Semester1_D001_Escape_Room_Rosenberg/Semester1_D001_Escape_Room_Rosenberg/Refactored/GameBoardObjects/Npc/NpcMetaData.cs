@@ -1,27 +1,42 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc
+﻿namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc
 {
+    /// <summary>
+    /// Represents the metadata of a non-player character (NPC).
+    /// Contains the NPC's name, map position, and display symbol information.
+    /// </summary>
     internal class NpcMetaData
     {
-        readonly SymbolsManager _symbolsManager;
+        // === Fields ===
+        readonly SymbolsManager _symbolsManager;        
+        private string _name;
+        private (int y, int x) _position;
+        private char _symbol;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NpcMetaData"/> class.
+        /// </summary>
+        /// <param name="name">The name of the NPC.</param>
+        /// <param name="position">The NPC's position on the game board, represented by (y, x) coordinates.</param>
+        /// <param name="symbolsManager">The symbol manager responsible for providing NPC-related symbols.</param>
         public NpcMetaData(string name, (int y, int x) position, SymbolsManager symbolsManager)
         {
             _name = name;
             _position = position;
             _symbolsManager = symbolsManager;
-            _symbol = Symbol;
+            _symbol = _symbolsManager.QuestSymbol;
         }
-        private string _name;
-        private (int y, int x) _position;
-        private char _symbol;
 
+        /// <summary>
+        /// Gets the name of the NPC.
+        /// </summary>
         public string Name => _name;
+        /// <summary>
+        /// Gets the NPC’s current position on the game board.
+        /// </summary>
         public (int y, int x) Position => _position;
-        public char Symbol => _symbolsManager.QuestSymbol;
+        /// <summary>
+        /// Gets the visual symbol representing the NPC on the board.
+        /// </summary>
+        public char Symbol => _symbol;
     }
 }

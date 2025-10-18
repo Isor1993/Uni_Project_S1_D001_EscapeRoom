@@ -14,6 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Refactored\GameBoardObjects\Door\" />
     <Folder Include="Refactored\GameBoardObjects\Player\" />
   </ItemGroup>
 
