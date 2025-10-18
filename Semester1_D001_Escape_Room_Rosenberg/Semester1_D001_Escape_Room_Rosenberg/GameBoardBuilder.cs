@@ -8,6 +8,15 @@ using System.Threading.Tasks;
 
 namespace Semester1_D001_Escape_Room_Rosenberg
 {
+    enum TileTyp
+    {
+        None = 0,
+        Wall,
+        Door,
+        Npc,
+        Key,
+        Player,
+    }
     internal class GameBoardBuilder
     {
         /// Used only to read from printer and symbols
@@ -24,14 +33,35 @@ namespace Semester1_D001_Escape_Room_Rosenberg
             _printer = printer;
             _symbols = symbols;
         }
+        // Variablen
+        private int _arraySizeY;
+        private int _arraySizeX;
         /// <summary>
         /// Array variables
         /// </summary>
-        private char[,] _gameBoardArray;
-        private int _arraySizeX;
-        private int _arraySizeY;
-        // ArrayOffset 
+        private TileTyp[,] _gameBoardArray;
         
+        
+        /// Property for the game board array
+        /// </summary>
+        public TileTyp[,] GameBoardArray => _gameBoardArray;
+
+        /// <summary>
+        /// Property for array X
+        /// </summary>
+        public int ArraySizeX
+        {
+            get => _arraySizeX;
+            set => _arraySizeX = value;
+        }
+        /// <summary>
+        /// Property for array Y
+        /// </summary>
+        public int ArraySizeY
+        {
+            get => _arraySizeY;
+            set => _arraySizeY = value;
+        }
         /// <summary>
         /// List for wall positions to spawn rnd door later
         /// </summary>
@@ -50,26 +80,6 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         /// </summary>
         public List<(int y, int x)> ListEmptyPositions => _listEmptyPositions;
         /// <summary>
-        /// Property for the game board array
-        /// </summary>
-        public char[,] GameBoardArray => _gameBoardArray;
-
-        /// <summary>
-        /// Property for array X
-        /// </summary>
-        public int ArraySizeX
-        {
-            get => _arraySizeX;
-            set => _arraySizeX = value;
-        }
-        /// <summary>
-        /// Property for array Y
-        /// </summary>
-        public int ArraySizeY
-        {
-            get => _arraySizeY;
-            set => _arraySizeY = value;
-        }
 
 
         /// <summary>
@@ -79,7 +89,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         {
             _arraySizeX = _printer.AskForIntInRange("How wide should the game board be?", 30, 120);
             _arraySizeY = _printer.AskForIntInRange("How high should the game board be?", 15, 20);
-            _gameBoardArray = new char[_arraySizeY, _arraySizeX];
+            _gameBoardArray = new TileTyp[_arraySizeY, _arraySizeX];
         }
         /// <summary>
         /// Fills array with symbols (walls + empty spaces)
@@ -95,7 +105,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg
                     // Top and bottom row
                     if (y == 0 || y == _arraySizeY - 1)
                     {
-                        _gameBoardArray[y, x] = _symbols.WallTopSymbol;
+                        _gameBoardArray[y, x] = TileTyp.Wall;
                         // Save wall position in list
                         _listWallPositions.Add((y, x));
                     }

@@ -21,7 +21,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg
             SymbolsManager symbols = new SymbolsManager();
             // GameBoardBuilder receives printer and symbols as read-only references
             GameBoardBuilder boardBuilder = new GameBoardBuilder(printer, symbols);
-            RulesManager rules = new RulesManager(symbols, boardBuilder, printer);
+            /*RulesManager rules = new RulesManager(symbols, boardBuilder, printer);
             SpawnerManager spawner = new SpawnerManager(random,printer, symbols, rules, boardBuilder);
             MovePlayerManager move = new MovePlayerManager(spawner,boardBuilder,rules,symbols);
             UIManager uIBuilder=new UIManager(random,boardBuilder,symbols,printer,spawner);
@@ -54,6 +54,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg
                 ConsoleKey key = Console.ReadKey(true).Key;
                 move.MovePlayer(key);
             }
+            */
             // Keep console window open
             Console.ReadKey();
         }

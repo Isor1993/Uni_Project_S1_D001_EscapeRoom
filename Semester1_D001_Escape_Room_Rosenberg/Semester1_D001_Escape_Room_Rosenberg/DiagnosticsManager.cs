@@ -18,7 +18,14 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         private readonly List<string> _warnings = new();
         // Collection storing system or validation checks (informational messages).
         private readonly List<string> _checks = new();
+        // Collection storing system or validation checks (informational messages).
+        private readonly List<string> _exception = new();
 
+        /// <summary>
+        /// Adds an exception message to the error log.
+        /// </summary>
+        /// <param name="message">The message describing the exception.</param>
+        public void AddEception(string message) => _exception.Add($"[Exception] {message}");
         /// <summary>
         /// Adds an error message to the error log.
         /// </summary>
@@ -47,8 +54,13 @@ namespace Semester1_D001_Escape_Room_Rosenberg
             foreach (string msg in _warnings) printer.PrintLine(msg);
             // Finally, print all system checks.
             foreach (string msg in _checks) printer.PrintLine(msg);
+            //// Finally, print all exception checks.
+            foreach (string msg in _exception) printer.PrintLine(msg);
         }
-
+        /// <summary>
+        /// Gets the total number of recorded exception messages.
+        /// </summary>
+        public int ExceptionCount => _errors.Count;
         /// <summary>
         /// Gets the total number of recorded error messages.
         /// </summary>
@@ -70,6 +82,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg
             printer.PrintLine($"Total Errors: {ErrorCount}");
             printer.PrintLine($"Total Warnings: {WarningCount}");
             printer.PrintLine($"Total Ckecks: {CheckCount}");
+            printer.PrintLine($"Total Ckecks: {ExceptionCount}");
         }
     }
 }

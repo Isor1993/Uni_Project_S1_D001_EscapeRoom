@@ -7,9 +7,16 @@ using System.Threading.Tasks;
 
 namespace Semester1_D001_Escape_Room_Rosenberg
 {
+    /// <summary>
+    /// 
+    /// </summary>
     internal class RandomManager
     {
+        /// <summary>
+        /// 
+        /// </summary>
         private readonly Random _random;
+
         public RandomManager()
         {
             _random = new Random();
