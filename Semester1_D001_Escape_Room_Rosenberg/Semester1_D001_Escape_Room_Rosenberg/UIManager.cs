@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Semester1_D001_Escape_Room_Rosenberg.Refactored;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.Tracing;
 using System.Drawing;
@@ -14,11 +15,11 @@ namespace Semester1_D001_Escape_Room_Rosenberg
     {
         private readonly GameBoardBuilder _boardBuilder;
         private readonly SymbolsManager _symbols;
-        private readonly PrinterManager _printer;
+        private readonly PrintManager _printer;
         private readonly SpawnerManager _spawner;
         private readonly RandomManager _random;
        
-        public UIManager(RandomManager random ,GameBoardBuilder boardBuilder, SymbolsManager symbols, PrinterManager printer,SpawnerManager spawner)
+        public UIManager(RandomManager random ,GameBoardBuilder boardBuilder, SymbolsManager symbols, PrintManager printer,SpawnerManager spawner)
         {
             _boardBuilder = boardBuilder;
             _symbols = symbols;
@@ -104,7 +105,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg
 
             string liveString = $"{_symbols.HearthSymbol}  x{_lives}";
             string keyString = $"{_symbols.KeyFragmentSymbol}  x{_keys}";
-            string doorString = _isDoorOpen ? $"{_symbols.OpenDoorSideWallSymbol} = Open" : $"{_symbols.ClosedDoorSideWallSymbol} = Closed";
+            string doorString = _isDoorOpen ? $"{_symbols.OpenDoorVerticalSymbol} = Open" : $"{_symbols.ClosedDoorVerticalSymbol} = Closed";
             // print second row on console
             Console.SetCursorPosition(0, 1);
             Console.Write(BuildCentredLine(liveString, doorString, keyString, boardWidth));
@@ -331,9 +332,9 @@ namespace Semester1_D001_Escape_Room_Rosenberg
 
             string infoBoxSymbol = $"{symbol} x{count}";
             string infoBox = infoBoxstring + infoBoxSymbol;
-            BuildBottomHudLine_1(_symbols.WallLeftTopCornerSymbol, _symbols.WallRightTopCornerSymbol, _boardBuilder.ArraySizeX, _symbols.WallTDownSymbol, _symbols.WallTopSymbol);
-            BuildBottomHudLine_2(messangerName, infoBox, _boardBuilder.ArraySizeY, _symbols.WallSideSymbol);
-            BuildBottomHudLine_3(_symbols.WallLeftBottomCornerSymbol, _symbols.WallRightBottomCornerSymbol, _boardBuilder.ArraySizeX, _symbols.WallTUpSymbol, _symbols.WallTopSymbol);
+            BuildBottomHudLine_1(_symbols.WallCornerTopLeftSymbol, _symbols.WallCornerTopRightSymbol, _boardBuilder.ArraySizeX, _symbols.WallTDownSymbol, _symbols.WallHorizontalSymbol);
+            BuildBottomHudLine_2(messangerName, infoBox, _boardBuilder.ArraySizeY, _symbols.WallVerticalSymbol);
+            BuildBottomHudLine_3(_symbols.WallCornerBottomLeftSymbol, _symbols.WallCornerBottomRightSymbol, _boardBuilder.ArraySizeX, _symbols.WallTUpSymbol, _symbols.WallHorizontalSymbol);
 
             int innerWidth = _boardBuilder.ArraySizeX - 2;
             List<string> cutTextLines = CutNpcMessageIntoLines(GetRandomNpcMessage(), innerWidth);
@@ -343,27 +344,27 @@ namespace Semester1_D001_Escape_Room_Rosenberg
 
 
 
-            BuildBottomHudLine_4(_symbols.WallSideSymbol, _boardBuilder.ArraySizeX, cutTextLines[0]);
-            BuildBottomHudLine_5(_symbols.WallSideSymbol, _boardBuilder.ArraySizeX, cutTextLines.Count > 1 ? cutTextLines[1] : "");
-            BuildBottomHudLine_6(_symbols.WallSideSymbol, _boardBuilder.ArraySizeX, cutTextLines.Count > 2 ? cutTextLines[2] : "");
+            BuildBottomHudLine_4(_symbols.WallVerticalSymbol, _boardBuilder.ArraySizeX, cutTextLines[0]);
+            BuildBottomHudLine_5(_symbols.WallVerticalSymbol, _boardBuilder.ArraySizeX, cutTextLines.Count > 1 ? cutTextLines[1] : "");
+            BuildBottomHudLine_6(_symbols.WallVerticalSymbol, _boardBuilder.ArraySizeX, cutTextLines.Count > 2 ? cutTextLines[2] : "");
 
-            BuildBottomHudLine_7(_symbols.WallTRightSymbol, _symbols.WallTLeftSymbol, _boardBuilder.ArraySizeX, _symbols.WallTopSymbol);
+            BuildBottomHudLine_7(_symbols.WallTRightSymbol, _symbols.WallTLeftSymbol, _boardBuilder.ArraySizeX, _symbols.WallHorizontalSymbol);
 
             //TODO Umschreiben das readline funktioniert
-            BuildBottomHudLine_8(_symbols.WallSideSymbol, _boardBuilder.ArraySizeX);
-            BuildBottomHudLine_9(_symbols.WallLeftBottomCornerSymbol, _symbols.WallRightBottomCornerSymbol, _boardBuilder.ArraySizeX, _symbols.WallTopSymbol);
+            BuildBottomHudLine_8(_symbols.WallVerticalSymbol, _boardBuilder.ArraySizeX);
+            BuildBottomHudLine_9(_symbols.WallCornerBottomLeftSymbol, _symbols.WallCornerBottomRightSymbol, _boardBuilder.ArraySizeX, _symbols.WallHorizontalSymbol);
 
 
             //TODO nur fürs testen kommt noch in printer
-            Console.WriteLine(BuildBottomHudLine_1(_symbols.WallLeftTopCornerSymbol, _symbols.WallRightTopCornerSymbol, _boardBuilder.ArraySizeX, _symbols.WallTDownSymbol, _symbols.WallTopSymbol));
-            Console.WriteLine(BuildBottomHudLine_2(messangerName, infoBox, _boardBuilder.ArraySizeY, _symbols.WallSideSymbol));
-            Console.WriteLine(BuildBottomHudLine_3(_symbols.WallTRightSymbol, _symbols.WallTLeftSymbol, _boardBuilder.ArraySizeX, _symbols.WallTUpSymbol, _symbols.WallTopSymbol));
-            Console.WriteLine(BuildBottomHudLine_4(_symbols.WallSideSymbol, _boardBuilder.ArraySizeX, cutTextLines[0]));
-            Console.WriteLine(BuildBottomHudLine_5(_symbols.WallSideSymbol, _boardBuilder.ArraySizeX, cutTextLines.Count > 1 ? cutTextLines[1] : ""));
-            Console.WriteLine(BuildBottomHudLine_6(_symbols.WallSideSymbol, _boardBuilder.ArraySizeX, cutTextLines.Count > 2 ? cutTextLines[2] : ""));
-            Console.WriteLine(BuildBottomHudLine_7(_symbols.WallTRightSymbol, _symbols.WallTLeftSymbol, _boardBuilder.ArraySizeX, _symbols.WallTopSymbol));
-            Console.WriteLine(BuildBottomHudLine_8(_symbols.WallSideSymbol, _boardBuilder.ArraySizeX));
-            Console.WriteLine(BuildBottomHudLine_9(_symbols.WallLeftBottomCornerSymbol, _symbols.WallRightBottomCornerSymbol, _boardBuilder.ArraySizeX, _symbols.WallTopSymbol));
+            Console.WriteLine(BuildBottomHudLine_1(_symbols.WallCornerTopLeftSymbol, _symbols.WallCornerTopRightSymbol, _boardBuilder.ArraySizeX, _symbols.WallTDownSymbol, _symbols.WallHorizontalSymbol));
+            Console.WriteLine(BuildBottomHudLine_2(messangerName, infoBox, _boardBuilder.ArraySizeY, _symbols.WallVerticalSymbol));
+            Console.WriteLine(BuildBottomHudLine_3(_symbols.WallTRightSymbol, _symbols.WallTLeftSymbol, _boardBuilder.ArraySizeX, _symbols.WallTUpSymbol, _symbols.WallHorizontalSymbol));
+            Console.WriteLine(BuildBottomHudLine_4(_symbols.WallVerticalSymbol, _boardBuilder.ArraySizeX, cutTextLines[0]));
+            Console.WriteLine(BuildBottomHudLine_5(_symbols.WallVerticalSymbol, _boardBuilder.ArraySizeX, cutTextLines.Count > 1 ? cutTextLines[1] : ""));
+            Console.WriteLine(BuildBottomHudLine_6(_symbols.WallVerticalSymbol, _boardBuilder.ArraySizeX, cutTextLines.Count > 2 ? cutTextLines[2] : ""));
+            Console.WriteLine(BuildBottomHudLine_7(_symbols.WallTRightSymbol, _symbols.WallTLeftSymbol, _boardBuilder.ArraySizeX, _symbols.WallHorizontalSymbol));
+            Console.WriteLine(BuildBottomHudLine_8(_symbols.WallVerticalSymbol, _boardBuilder.ArraySizeX));
+            Console.WriteLine(BuildBottomHudLine_9(_symbols.WallCornerBottomLeftSymbol, _symbols.WallCornerBottomRightSymbol, _boardBuilder.ArraySizeX, _symbols.WallHorizontalSymbol));
         }
 
 

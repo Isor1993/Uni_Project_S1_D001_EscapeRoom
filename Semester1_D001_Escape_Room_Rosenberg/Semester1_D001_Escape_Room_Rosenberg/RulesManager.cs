@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Semester1_D001_Escape_Room_Rosenberg.Refactored;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -10,16 +11,16 @@ namespace Semester1_D001_Escape_Room_Rosenberg
 {
     internal class RulesManager
     {
-        private readonly SymbolsManager _symbols;
-        private readonly GameBoardBuilder _boardBuilder;
-        private readonly PrinterManager _printer;
+        private readonly SymbolsManager _symbolsManager;
+        private readonly GameBoardBuilder _gameBoardBuilder;
+        private readonly PrintManager _printManager;
 
 
-        public RulesManager(SymbolsManager symbols, GameBoardBuilder boardBuilder, PrinterManager printer)
+        public RulesManager(SymbolsManager symbols, GameBoardBuilder gameBoardBuilder, PrintManager printManager)
         {
-            _symbols = symbols;
-            _boardBuilder = boardBuilder;
-            _printer = printer;
+            this._symbolsManager = symbols;
+            this._gameBoardBuilder = gameBoardBuilder;
+            this._printManager = printManager;
         }
 
         /// <summary>
@@ -30,7 +31,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         public bool IsPositionFree((int y, int x) position)
         {
             // Get the game board array.
-            char[,] board = _boardBuilder.GameBoardArray;
+            char[,] board = _gameBoardBuilder.GameBoardArray;
             // Get the maximum board boundaries.
             int height = board.GetLength(0);
             int width = board.GetLength(1);
@@ -45,7 +46,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg
                         continue;
                     }
                     // If any surrounding cell is not empty, the position is not free.
-                    if (board[y, x] != _symbols.EmptySymbol)
+                    if (board[y, x] != _symbolsManager.EmptySymbol)
                     {
                         return false;
                     }
@@ -62,30 +63,30 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         public bool IsMoveAllowed((int y, int x) newPlayerPosition)
         {
             // Retrieve the symbol at the target cell.
-            char arrayCell = _boardBuilder.GameBoardArray[newPlayerPosition.y, newPlayerPosition.x];
+            char arrayCell = _gameBoardBuilder.GameBoardArray[newPlayerPosition.y, newPlayerPosition.x];
             // Check if the cell contains a blocking symbol. If so, movement is not allowed.
-            if (arrayCell == _symbols.WallTopSymbol ||
-                arrayCell == _symbols.WallSideSymbol ||
-                arrayCell == _symbols.WallRightTopCornerSymbol ||
-                arrayCell == _symbols.WallRightBottomCornerSymbol ||
-                arrayCell == _symbols.WallLeftTopCornerSymbol ||
-                arrayCell == _symbols.WallLeftBottomCornerSymbol ||
-                arrayCell == _symbols.QuestSymbol ||
-                arrayCell == _symbols.PlayerSymbol ||
-                arrayCell == _symbols.ClosedDoorTopWallSymbol ||
-                arrayCell == _symbols.ClosedDoorSideWallSymbol ||
-                arrayCell == _symbols.DeathSymbol)
+            if (arrayCell == _symbolsManager.WallHorizontalSymbol ||
+                arrayCell == _symbolsManager.WallVerticalSymbol ||
+                arrayCell == _symbolsManager.WallCornerTopRightSymbol ||
+                arrayCell == _symbolsManager.WallCornerBottomRightSymbol ||
+                arrayCell == _symbolsManager.WallCornerTopLeftSymbol ||
+                arrayCell == _symbolsManager.WallCornerBottomLeftSymbol ||
+                arrayCell == _symbolsManager.QuestSymbol ||
+                arrayCell == _symbolsManager.PlayerSymbol ||
+                arrayCell == _symbolsManager.ClosedDoorHorizontalSymbol ||
+                arrayCell == _symbolsManager.ClosedDoorVerticalSymbol ||
+                arrayCell == _symbolsManager.DeathSymbol)
             { return false; }
             // Check if the cell contains a valid movement symbol. If so, movement is allowed.
-            else if (arrayCell == _symbols.OpenDoorTopWallSymbol ||
-                arrayCell == _symbols.OpenDoorSideWallSymbol ||
-                arrayCell == _symbols.KeyFragmentSymbol ||
-                arrayCell == _symbols.EmptySymbol)
+            else if (arrayCell == _symbolsManager.OpenDoororizontalSymbol ||
+                arrayCell == _symbolsManager.OpenDoorVerticalSymbol ||
+                arrayCell == _symbolsManager.KeyFragmentSymbol ||
+                arrayCell == _symbolsManager.EmptySymbol)
             { return true; }
             // Handle unexpected symbols: log an error and prevent movement.
             else
             {
-                _printer.GetErrorMessage("Critical Error: IsMoveAllowed() => Unknown symbol encountered!");
+                _printManager.GetErrorMessage("Critical Error: IsMoveAllowed() => Unknown symbol encountered!");
                 return false;
             }
         }

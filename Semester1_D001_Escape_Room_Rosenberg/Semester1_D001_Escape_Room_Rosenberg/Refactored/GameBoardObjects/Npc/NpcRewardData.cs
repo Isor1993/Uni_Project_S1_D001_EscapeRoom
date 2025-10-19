@@ -24,18 +24,18 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc
         /// <param name="points">The number of points awarded to the player as part of the NPC’s reward.</param>
         public NpcRewardData(int keyFragment, int points)
         {
-            _keyFragment = keyFragment;
-            _points = points;
+            this._keyFragment = keyFragment;
+            this._points = points;
         }
 
         /// <summary>
         /// Gets the number of key fragments the player receives from this NPC.
         /// </summary>
-        public int KeyFragment=> _keyFragment;
+        public int KeyFragment => _keyFragment;
 
         /// <summary>
         /// Gets the number of points the player receives from this NPC.
         /// </summary>
-        public int Points => _points;        
+        public int Points => _points;
     }
 }

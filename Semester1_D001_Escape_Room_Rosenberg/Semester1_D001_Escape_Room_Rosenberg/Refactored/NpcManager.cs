@@ -10,7 +10,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored
     internal class NpcManager
     {
         // Reference to the PrinterManager, used for console or UI output.
-        private readonly PrinterManager _printer;
+        private readonly PrintManager _printer;
         // Reference to the DiagnosticsManager, used for logging errors, warnings, and checks.
         private readonly DiagnosticsManager _diagnostics;
         // Reference to the NpcDataLoader, responsible for reading NPC data from external files.
@@ -22,7 +22,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored
         /// <param name="printerManager">The PrinterManager instance responsible for displaying output.</param>
         /// <param name="diagnosticsManager">The DiagnosticsManager instance for logging and diagnostics.</param>
         /// <param name="npcDataLoader">The NpcDataLoader used to load NPC data from text files.</param>
-        public NpcManager(PrinterManager printerManager, DiagnosticsManager diagnosticsManager, NpcDataLoader npcDataLoader)
+        public NpcManager(PrintManager printerManager, DiagnosticsManager diagnosticsManager, NpcDataLoader npcDataLoader)
         {
             _printer = printerManager;
             _diagnostics = diagnosticsManager;

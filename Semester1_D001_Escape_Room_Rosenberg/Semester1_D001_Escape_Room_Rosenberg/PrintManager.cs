@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 // RSK Kontrolle ok
 namespace Semester1_D001_Escape_Room_Rosenberg
 {
-    internal class PrinterManager
+    internal class PrintManager
     {
         // 2 HUD-Zeilen + 1 Trennlinie
         public const int BoardTopOffset = 3; 

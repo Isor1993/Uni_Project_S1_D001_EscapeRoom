@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Semester1_D001_Escape_Room_Rosenberg.Refactored;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -15,14 +16,14 @@ namespace Semester1_D001_Escape_Room_Rosenberg
     internal class SpawnerManager
 
     {
-        private readonly PrinterManager _printer;
+        private readonly PrintManager _printer;
         private readonly SymbolsManager _symbols;
         private readonly RulesManager _rules;
         private readonly GameBoardBuilder _boardBuilder;
         private readonly RandomManager _random;
         
 
-        public SpawnerManager(RandomManager random ,PrinterManager printer, SymbolsManager symbols, RulesManager rules, GameBoardBuilder boardBuilder)
+        public SpawnerManager(RandomManager random ,PrintManager printer, SymbolsManager symbols, RulesManager rules, GameBoardBuilder boardBuilder)
         {
             _printer = printer;
             _symbols = symbols;
@@ -88,13 +89,13 @@ namespace Semester1_D001_Escape_Room_Rosenberg
             else if (_doorPosition.y == 0 || _doorPosition.y == _boardBuilder.ArraySizeY - 1)
             {
                 // Place the door symbol in the game board array
-                _boardBuilder.GameBoardArray[_doorPosition.y, _doorPosition.x] = _symbols.ClosedDoorTopWallSymbol;
+                _boardBuilder.GameBoardArray[_doorPosition.y, _doorPosition.x] = _symbols.ClosedDoorHorizontalSymbol;
             }
             // All remaining walls are side walls
             else
             {
                 // Place the door symbol in the game board array
-                _boardBuilder.GameBoardArray[_doorPosition.y, _doorPosition.x] = _symbols.ClosedDoorSideWallSymbol;
+                _boardBuilder.GameBoardArray[_doorPosition.y, _doorPosition.x] = _symbols.ClosedDoorVerticalSymbol;
             }
         }
         /// <summary>

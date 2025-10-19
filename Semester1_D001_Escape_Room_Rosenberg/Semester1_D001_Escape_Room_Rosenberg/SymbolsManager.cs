@@ -23,17 +23,17 @@ namespace Semester1_D001_Escape_Room_Rosenberg
 
         private char _wallCrossSymbol = '\u256C'; //                 ' ╬ '  
 
-        private char _wallTopSymbol = '\u2550';//                    ' ═ '
+        private char _wallHorizontalSymbol = '\u2550';//             ' ═ '
 
-        private char _wallSideSymbol = '\u2551';//                   ' ║'
+        private char _wallVerticalSymbol = '\u2551';//               ' ║'
 
-        private char _wallLeftTopCornerSymbol = '\u2554';//          ' ╔ '
+        private char _wallCornerTopLeftSymbol = '\u2554';//          ' ╔ '
 
-        private char _wallRightTopCornerSymbol = '\u2557';//         ' ╗ '
+        private char _wallCornerTopRightSymbol = '\u2557';//         ' ╗ '
 
-        private char _wallLeftBottomCornerSymbol = '\u255A';//       ' ╚ '
+        private char _wallCornerBottomLeftSymbol = '\u255A';//       ' ╚ '
 
-        private char _wallRightBottomCornerSymbol = '\u255D';//      ' ╝ '
+        private char _wallCornerBottomRightSymbol = '\u255D';//      ' ╝ '
 
         private char _playerSymbol = '\u2659';//                     ' ♙ '   //\u2603 Schneeman  \u2659 bauer
 
@@ -49,13 +49,13 @@ namespace Semester1_D001_Escape_Room_Rosenberg
 
         private char _emptySymbol = ' ';//                           '   '
 
-        private char _closedDoorSideWallSymbol = '\u25AE';//         ' ▮ '
+        private char _closedDoorVerticalSymbol = '\u25AE';//         ' ▮ '
 
-        private char _openDoorSideWallSymbol = '\u25AF';//           ' ▯ '
+        private char _openDoorVerticalSymbol = '\u25AF';//           ' ▯ '
 
-        private char _closedDoorTopWallSymbol = '\u25AC';//          ' ▬ '
+        private char _closedDoorHorizontalSymbol = '\u25AC';//          ' ▬ '
 
-        private char _openDoorTopWallSymbol = '\u25AD';//            ' ▭ '
+        private char _openDoorHorizontalSymbol = '\u25AD';//            ' ▭ '
 
         private char _timeWatchSymbol = '\u23f1';//                  ' ⏱ '
 
@@ -70,12 +70,12 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         public char WallTRightSymbol { get => _wallTRightSymbol; set => _wallTRightSymbol = value; }
         public char WallTLeftSymbol { get => _wallTLeftSymbol; set => _wallTLeftSymbol = value; }
         public char WallCrossSymbol { get => _wallCrossSymbol; set => _wallCrossSymbol = value; }
-        public char WallTopSymbol { get => _wallTopSymbol; set => _wallTopSymbol = value; }
-        public char WallSideSymbol { get => _wallSideSymbol; set => _wallSideSymbol = value; }
-        public char WallLeftTopCornerSymbol { get => _wallLeftTopCornerSymbol; set => _wallLeftTopCornerSymbol = value; }
-        public char WallRightTopCornerSymbol { get => _wallRightTopCornerSymbol; set => _wallRightTopCornerSymbol = value; }
-        public char WallLeftBottomCornerSymbol { get => _wallLeftBottomCornerSymbol; set => _wallLeftBottomCornerSymbol = value; }
-        public char WallRightBottomCornerSymbol { get => _wallRightBottomCornerSymbol; set => _wallRightBottomCornerSymbol = value; }
+        public char WallHorizontalSymbol { get => _wallHorizontalSymbol; set => _wallHorizontalSymbol = value; }
+        public char WallVerticalSymbol { get => _wallVerticalSymbol; set => _wallVerticalSymbol = value; }
+        public char WallCornerTopLeftSymbol { get => _wallCornerTopLeftSymbol; set => _wallCornerTopLeftSymbol = value; }
+        public char WallCornerTopRightSymbol { get => _wallCornerTopRightSymbol; set => _wallCornerTopRightSymbol = value; }
+        public char WallCornerBottomLeftSymbol { get => _wallCornerBottomLeftSymbol; set => _wallCornerBottomLeftSymbol = value; }
+        public char WallCornerBottomRightSymbol { get => _wallCornerBottomRightSymbol; set => _wallCornerBottomRightSymbol = value; }
         public char PlayerSymbol { get => _playerSymbol; set => _playerSymbol = value; }
         public char TrapSymbol { get => _trapSymbol; set => _trapSymbol = value; }
         public char FogSymbol { get => _fogSymbol; set => _fogSymbol = value; }
@@ -83,10 +83,10 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         public char KeyFragmentSymbol { get => _keyFragmentSymbol; set => _keyFragmentSymbol = value; }
         public char QuestSymbol { get => _questSymbol; set => _questSymbol = value; }
         public char EmptySymbol { get => _emptySymbol; set => _emptySymbol = value; }
-        public char OpenDoorSideWallSymbol { get => _openDoorSideWallSymbol; set => _openDoorSideWallSymbol = value; }
-        public char ClosedDoorSideWallSymbol { get => _closedDoorSideWallSymbol; set => _closedDoorSideWallSymbol = value; }
-        public char OpenDoorTopWallSymbol { get => _openDoorTopWallSymbol; set => _openDoorTopWallSymbol = value; }
-        public char ClosedDoorTopWallSymbol { get => _closedDoorTopWallSymbol; set => _closedDoorTopWallSymbol = value; }
+        public char OpenDoorVerticalSymbol { get => _openDoorVerticalSymbol; set => _openDoorVerticalSymbol = value; }
+        public char ClosedDoorVerticalSymbol { get => _closedDoorVerticalSymbol; set => _closedDoorVerticalSymbol = value; }
+        public char OpenDoororizontalSymbol { get => _openDoorHorizontalSymbol; set => _openDoorHorizontalSymbol = value; }
+        public char ClosedDoorHorizontalSymbol { get => _closedDoorHorizontalSymbol; set => _closedDoorHorizontalSymbol = value; }
         public char TimeWatchSymbol { get => _timeWatchSymbol; set => _timeWatchSymbol = value; }
         public char HearthSymbol { get => _hearthSymbol; set => _hearthSymbol = value; }
 

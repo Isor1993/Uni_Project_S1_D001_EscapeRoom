@@ -46,7 +46,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         /// Prints all collected diagnostics to the console using the PrinterManager.
         /// </summary>
         /// <param name="printer">The PrinterManager instance responsible for console output.</param>
-        public void PrintAll(PrinterManager printer)
+        public void PrintAll(PrintManager printer)
         {
             //  Print all error messages first.
             foreach (string msg in _errors) printer.PrintLine(msg);
@@ -77,7 +77,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         /// Prints a summary of all diagnostic counts (errors, warnings, checks).
         /// </summary>
         /// <param name="printer">The PrinterManager instance responsible for console output.</param>
-        public void PrintAllCount(PrinterManager printer)
+        public void PrintAllCount(PrintManager printer)
         {
             printer.PrintLine($"Total Errors: {ErrorCount}");
             printer.PrintLine($"Total Warnings: {WarningCount}");
