@@ -1,4 +1,5 @@
-﻿using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc;
+﻿using Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies;
+using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -7,7 +8,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Semester1_D001_Escape_Room_Rosenberg.Refactored
+namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 {
     /// <summary>
     /// Defines the available tile types used on the game board.
@@ -32,13 +33,10 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored
     /// Responsible for creating and managing the structure of the game board.
     /// Handles board initialization, dimension selection, and wall placement logic.
     /// </summary>
-    internal class GameBoardBuilder
+    internal class GameBoardManager
     {
         // === Dependencies ===
-        // Handles user interaction and console output.
-        private readonly PrintManager _printManager;
-        // Logs system messages and diagnostics information.
-        private readonly DiagnosticsManager _diagnosticsManager;
+        private readonly GameBoardBuilderDependencies _gameBoardBuilderDeps;
 
         // === Fields ===
         private int _arraySizeY;
@@ -46,14 +44,16 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored
         private TileTyp[,]? _gameBoardArray;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GameBoardBuilder"/> class.
-        /// 
-        /// <param name="printManager">The print manager responsible for player input and display prompts.</param>
-        /// <param name="diagnosticsManager">The diagnostics manager used for logging checks and warnings.</param>
-        public GameBoardBuilder(PrintManager printManager, DiagnosticsManager diagnosticsManager)
+        /// Initializes a new instance of the <see cref="GameBoardManager"/> class.
+        /// Sets up all required dependencies for board creation, printing, and diagnostics.
+        /// </summary>
+        /// <param name="gameBoardBuilderDependencies">
+        /// Reference to the <see cref="GameBoardBuilderDependencies"/> object that provides
+        /// the necessary managers for board rendering and diagnostic logging.
+        /// </param>
+        public GameBoardManager(GameBoardBuilderDependencies gameBoardBuilderDependencies)
         {
-            this._printManager = printManager;
-            this._diagnosticsManager = diagnosticsManager;
+            _gameBoardBuilderDeps= gameBoardBuilderDependencies;
         }
         
         /// <summary>
@@ -80,16 +80,16 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored
             // If a previous board exists, warn that it will be overwritten.
             if (_gameBoardArray != null)
             {
-                _diagnosticsManager.AddWarning($"{nameof(GameBoardBuilder)}.{nameof(DecideArraySize)}: GameBoardArray was recreated.");
+                _gameBoardBuilderDeps.DiagnosticsManager.AddWarning($"{nameof(GameBoardManager)}.{nameof(DecideArraySize)}: GameBoardArray was recreated.");
             }
 
             // Ask for dimensions within predefined limits.
-            _arraySizeX = _printManager.AskForIntInRange("How wide should the game board be?", 30, 120);        
-            _arraySizeY = _printManager.AskForIntInRange("How high should the game board be?", 15, 20);
+            _arraySizeX = _gameBoardBuilderDeps.PrintManager.AskForIntInRange("How wide should the game board be?", 30, 120);        
+            _arraySizeY = _gameBoardBuilderDeps.PrintManager.AskForIntInRange("How high should the game board be?", 15, 20);
 
             // Initialize a new 2D array based on user input.
             _gameBoardArray = new TileTyp[_arraySizeY, _arraySizeX];
-            _diagnosticsManager.AddCheck($"{nameof(GameBoardBuilder)}.{nameof(DecideArraySize)}: Board successfully initialized ({_arraySizeX}x{_arraySizeY}).");
+            _gameBoardBuilderDeps.DiagnosticsManager.AddCheck($"{nameof(GameBoardManager)}.{nameof(DecideArraySize)}: Board successfully initialized ({_arraySizeX}x{_arraySizeY}).");
         }
         /// <summary>
         /// Fills the game board array with tile data.
@@ -100,14 +100,14 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored
             // Check if the board exists and recreate before trying to fill it.
             if (_gameBoardArray == null)
             {
-                _diagnosticsManager.AddError($"{nameof(GameBoardBuilder)}.{nameof(FillWallTypesToBoard)}: Cannot fill walls. Board has not been initialized.");
+                _gameBoardBuilderDeps.DiagnosticsManager.AddError($"{nameof(GameBoardManager)}.{nameof(FillWallTypesToBoard)}: Cannot fill walls. Board has not been initialized.");
                 _gameBoardArray = new TileTyp[_arraySizeY, _arraySizeX];
             }
 
             // Optional: warn if it’s already filled with data (not empty anymore)
             if (_gameBoardArray[0, 0] != TileTyp.None)
             {
-                _diagnosticsManager.AddWarning($"{nameof(GameBoardBuilder)}.{nameof(FillWallTypesToBoard)}: Existing board data will be overwritten.");
+                _gameBoardBuilderDeps.DiagnosticsManager.AddWarning($"{nameof(GameBoardManager)}.{nameof(FillWallTypesToBoard)}: Existing board data will be overwritten.");
             }
             // Iterate through all rows.
             for (int y = 0; y < _arraySizeY; y++)
@@ -137,11 +137,20 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored
         }
 
         /// <summary>
-        /// Sets the four corner tiles of the game board to their respective corner wall types.
-        /// Ensures visual and logical consistency for the board’s boundaries.
+        /// Assigns corner tiles to the four corners of the game board array.
+        /// Each corner is initialized with its corresponding <see cref="TileTyp"/> value:
+        /// top-left, top-right, bottom-left, and bottom-right.
+        /// Logs a diagnostic message if the game board array is not initialized.
         /// </summary>
         private void SetCorners()
         {
+            if (_gameBoardArray == null)
+            {
+
+                _gameBoardBuilderDeps.DiagnosticsManager.AddCheck($"{nameof(GameBoardManager)}.{nameof(SetCorners)}: ");
+
+                return;
+            }
             _gameBoardArray[0, 0] = TileTyp.WallCornerTopLeft;
             _gameBoardArray[_arraySizeY - 1, _arraySizeX - 1] = TileTyp.WallCornerBottomRight;
             _gameBoardArray[0, _arraySizeX - 1] = TileTyp.WallCornerTopRight;

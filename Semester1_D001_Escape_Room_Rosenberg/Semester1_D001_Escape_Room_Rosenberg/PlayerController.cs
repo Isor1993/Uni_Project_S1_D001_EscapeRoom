@@ -1,4 +1,4 @@
-﻿using Semester1_D001_Escape_Room_Rosenberg.Refactored;
+﻿using Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace Semester1_D001_Escape_Room_Rosenberg
 {
-    internal class MovePlayerManager
+    internal class PlayerController
     {
-        private readonly SpawnerManager _spawner;
-        private readonly GameBoardBuilder _boardBuilder;
+        private readonly SpawnManager _spawner;
+        private readonly GameBoardManager _boardBuilder;
         private readonly RulesManager _rules;
         private readonly SymbolsManager _symbols;
-        public MovePlayerManager(SpawnerManager spawner, GameBoardBuilder boardBuilder, RulesManager rules,SymbolsManager symbols)
+        public PlayerController(SpawnManager spawner, GameBoardManager boardBuilder, RulesManager rules,SymbolsManager symbols)
         {
             _spawner = spawner;
             _boardBuilder = boardBuilder;

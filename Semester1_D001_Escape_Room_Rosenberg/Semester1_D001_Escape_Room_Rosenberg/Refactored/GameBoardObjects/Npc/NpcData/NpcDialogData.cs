@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc
+namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc.NpcData
 {
     /// <summary>
     /// Represents the dialog data of a non-player character (NPC).
@@ -22,9 +22,9 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc
         /// <param name="answerGroups">A list of possible answer sets, each containing three options (A, B, and C).</param>
         public NpcDialogData(string question, string correctAnswer, List<(string A, string B, string C)> answerGroups)
         {
-            this._question = question;
-            this._correctAnswer = correctAnswer;
-            this._answerGroups = answerGroups;
+            _question = question;
+            _correctAnswer = correctAnswer;
+            _answerGroups = answerGroups;
         }
 
         /// <summary>

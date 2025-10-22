@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies;
+using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc.NpcData;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Security;
@@ -13,22 +15,22 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc
     internal class NpcDataLoader
     {
         // === Dependencies ===
-        private readonly DiagnosticsManager _diagnosticsManager;
-        private readonly SymbolsManager _symbolsManager;
+        private readonly NpcDataLoaderDependencies _loaderDeps;
 
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NpcDataLoader"/> class.
-        /// Sets up all required dependencies for reading and processing NPC data files,
-        /// and registers the loader creation in the diagnostics log.
+        /// Sets up all required dependencies for NPC data loading and registers
+        /// the loader creation event in the diagnostics log.
         /// </summary>
-        /// <param name="diagnosticsManager">Reference to the <see cref="DiagnosticsManager"/> used for logging messages and exceptions.</param>
-        /// <param name="symbolsManager">Reference to the <see cref="SymbolsManager"/> providing NPC-related symbols.</param>
-        public NpcDataLoader(DiagnosticsManager diagnosticsManager, SymbolsManager symbolsManager)
+        /// <param name="npcDataLoaderDependencies">
+        /// Reference to the <see cref="NpcDataLoaderDependencies"/> object that provides
+        /// the required managers and configuration data for loading NPC information.
+        /// </param>
+        public NpcDataLoader(NpcDataLoaderDependencies npcDataLoaderDependencies)
         {
-            this._diagnosticsManager = diagnosticsManager;
-            this._symbolsManager = symbolsManager;
-            _diagnosticsManager.AddCheck($"{nameof(NpcDataLoader)}: Loader instance successfully created.");
+            _loaderDeps = npcDataLoaderDependencies;
+            _loaderDeps.DiagnosticsManager.AddCheck($"{nameof(NpcDataLoader)}: Loader instance successfully created.");
         }
 
         /// <summary>
@@ -58,20 +60,20 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc
                     // Validate that the line contains all 7 required parts.
                     if (parts.Length < 7)
                     {
-                        _diagnosticsManager.AddWarning($"{nameof(NpcDataLoader)}.{nameof(LoadNpcDataFromFile)}: Incomplete line {line} skipped ");
+                       _loaderDeps.DiagnosticsManager.AddWarning($"{nameof(NpcDataLoader)}.{nameof(LoadNpcDataFromFile)}: Incomplete line {line} skipped ");
                         continue;
                     }
 
                     // === Create NPC components ===
                     // The meta includes name, position, and automatically assigns the symbol from the SymbolsManager.
-                    NpcMetaData npcMeta = new NpcMetaData(_symbolsManager,parts[0], (0, 0) );
+                    NpcMetaData npcMeta = new NpcMetaData(_loaderDeps.SymbolsManager,parts[0], (0, 0) );
                     // The dialog includes a question, correct answer, and three possible answer options.
                     NpcDialogData npcDialog = new NpcDialogData(parts[1], parts[2], new List<(string A, string B, string C)> { (parts[2], parts[3], parts[4]) });
                     // Parse reward-related values.
                     int keyFragments, rewardPoints;
                     if (!int.TryParse(parts[5], out keyFragments) || !int.TryParse(parts[6], out rewardPoints))
                     {
-                        _diagnosticsManager.AddWarning($"{nameof(NpcDataLoader)}.{nameof(LoadNpcDataFromFile)}: Invalid reward values in line {line} – default values applied.");
+                        _loaderDeps.DiagnosticsManager.AddWarning($"{nameof(NpcDataLoader)}.{nameof(LoadNpcDataFromFile)}: Invalid reward values in line {line} – default values applied.");
                         keyFragments = 0;
                         rewardPoints = 0;
                     }
@@ -79,63 +81,63 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc
                     // The Reward includes key fragments and points.
                     NpcRewardData npcReward = new NpcRewardData(keyFragments, rewardPoints);
                     // Combine all NPC data into a single instance and add it to the list.
-                    NpcInstance npcInstance = new NpcInstance(npcMeta, npcDialog, npcReward, _diagnosticsManager);
+                    NpcInstance npcInstance = new NpcInstance(_loaderDeps.NpcInstanceDependencies);
                     // Add the NPC object to the list.
                     tempNpcList.Add(npcInstance);
                 }
-                _diagnosticsManager.AddCheck($"{nameof(NpcDataLoader)}.{nameof(LoadNpcDataFromFile)}: Successfully loaded {tempNpcList.Count} Npc records.");
+                _loaderDeps.DiagnosticsManager.AddCheck($"{nameof(NpcDataLoader)}.{nameof(LoadNpcDataFromFile)}: Successfully loaded {tempNpcList.Count} Npc records.");
                 return tempNpcList;
             }
 
             // === Exception Handling ===
             catch (FileNotFoundException ex)
             {
-                _diagnosticsManager.AddException($"{nameof(NpcDataLoader)}.{nameof(LoadNpcDataFromFile)}: File not found ({ex.Message})");
+                _loaderDeps.DiagnosticsManager.AddException($"{nameof(NpcDataLoader)}.{nameof(LoadNpcDataFromFile)}: File not found ({ex.Message})");
                 return new List<NpcInstance>();
             }
             catch (DirectoryNotFoundException ex)
             {
-                _diagnosticsManager.AddException($"{nameof(NpcDataLoader)}.{nameof(LoadNpcDataFromFile)}: Directory not found ({ex.Message})");
+                _loaderDeps.DiagnosticsManager.AddException($"{nameof(NpcDataLoader)}.{nameof(LoadNpcDataFromFile)}: Directory not found ({ex.Message})");
             }
             catch (PathTooLongException ex)
             {
-                _diagnosticsManager.AddException($"{nameof(NpcDataLoader)}.{nameof(LoadNpcDataFromFile)}: Path too long ({ex.Message})");
+                _loaderDeps.DiagnosticsManager.AddException($"{nameof(NpcDataLoader)}.{nameof(LoadNpcDataFromFile)}: Path too long ({ex.Message})");
             }
             catch (UnauthorizedAccessException ex)
             {
-                _diagnosticsManager.AddException($"{nameof(NpcDataLoader)}.{nameof(LoadNpcDataFromFile)}: Access denied ({ex.Message})");
+                _loaderDeps.DiagnosticsManager.AddException($"{nameof(NpcDataLoader)}.{nameof(LoadNpcDataFromFile)}: Access denied ({ex.Message})");
             }
             catch (SecurityException ex)
             {
-                _diagnosticsManager.AddException($"{nameof(NpcDataLoader)}.{nameof(LoadNpcDataFromFile)}: Security violation ({ex.Message})");
+                _loaderDeps.DiagnosticsManager.AddException($"{nameof(NpcDataLoader)}.{nameof(LoadNpcDataFromFile)}: Security violation ({ex.Message})");
             }
             catch (IOException ex)
             {
-                _diagnosticsManager.AddException($"{nameof(NpcDataLoader)}.{nameof(LoadNpcDataFromFile)}: General I/O error (e.g., stream already open) ({ex.Message})");
+                _loaderDeps.DiagnosticsManager.AddException($"{nameof(NpcDataLoader)}.{nameof(LoadNpcDataFromFile)}: General I/O error (e.g., stream already open) ({ex.Message})");
             }
             catch (ArgumentNullException ex)
             {
-                _diagnosticsManager.AddException($"{nameof(NpcDataLoader)}.{nameof(LoadNpcDataFromFile)}: Null argument passed ({ex.Message})");
+                _loaderDeps.DiagnosticsManager.AddException($"{nameof(NpcDataLoader)}.{nameof(LoadNpcDataFromFile)}: Null argument passed ({ex.Message})");
             }
             catch (ArgumentException ex)
             {
-                _diagnosticsManager.AddException($"{nameof(NpcDataLoader)}.{nameof(LoadNpcDataFromFile)}: Invalid argument format ({ex.Message})");
+                _loaderDeps.DiagnosticsManager.AddException($"{nameof(NpcDataLoader)}.{nameof(LoadNpcDataFromFile)}: Invalid argument format ({ex.Message})");
             }
             catch (FormatException ex)
             {
-                _diagnosticsManager.AddException($"{nameof(NpcDataLoader)}.{nameof(LoadNpcDataFromFile)}: Format error while parsing values ({ex.Message})");
+                _loaderDeps.DiagnosticsManager.AddException($"{nameof(NpcDataLoader)}.{nameof(LoadNpcDataFromFile)}: Format error while parsing values ({ex.Message})");
             }
             catch (NotSupportedException ex)
             {
-                _diagnosticsManager.AddException($"{nameof(NpcDataLoader)}.{nameof(LoadNpcDataFromFile)}: Unsupported feature or file format ({ex.Message})");
+                _loaderDeps.DiagnosticsManager.AddException($"{nameof(NpcDataLoader)}.{nameof(LoadNpcDataFromFile)}: Unsupported feature or file format ({ex.Message})");
             }
             catch (OverflowException ex)
             {
-                _diagnosticsManager.AddException($"{nameof(NpcDataLoader)}.{nameof(LoadNpcDataFromFile)}: Numeric overflow error ({ex.Message})");
+                _loaderDeps.DiagnosticsManager.AddException($"{nameof(NpcDataLoader)}.{nameof(LoadNpcDataFromFile)}: Numeric overflow error ({ex.Message})");
             }
             catch (Exception ex)
             {
-                _diagnosticsManager.AddException($"{nameof(NpcDataLoader)}.{nameof(LoadNpcDataFromFile)}: Unknown exception occurred ({ex.Message})");
+                _loaderDeps.DiagnosticsManager.AddException($"{nameof(NpcDataLoader)}.{nameof(LoadNpcDataFromFile)}: Unknown exception occurred ({ex.Message})");
             }
             return new List<NpcInstance>();
         }

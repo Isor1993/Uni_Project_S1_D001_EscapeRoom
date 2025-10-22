@@ -1,5 +1,5 @@
 ﻿// RSK Kontrolle ok
-using Semester1_D001_Escape_Room_Rosenberg.Refactored;
+using Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers;
 
 namespace Semester1_D001_Escape_Room_Rosenberg
 {
@@ -16,13 +16,13 @@ namespace Semester1_D001_Escape_Room_Rosenberg
             Console.SetWindowSize(120, 25);
             Console.SetBufferSize(120, 25);
             //
-            RandomManager randomManager= new RandomManager();
+            RandomManager randomManager= new RandomManager(diagnosticsManager);
             // Initialize core objects
             PrintManager printManager = new PrintManager();
             DiagnosticsManager diagnosticsManager = new DiagnosticsManager();
             SymbolsManager symbolsManager = new SymbolsManager();
             // GameBoardBuilder receives printer and symbols as read-only references
-            GameBoardBuilder gameBoardBuilder = new GameBoardBuilder(printManager,diagnosticsManager);
+            GameBoardManager gameBoardBuilder = new GameBoardBuilder(printManager,diagnosticsManager);
             /*RulesManager rules = new RulesManager(symbols, boardBuilder, printer);
             SpawnerManager spawner = new SpawnerManager(random,printer, symbols, rules, boardBuilder);
             MovePlayerManager move = new MovePlayerManager(spawner,boardBuilder,rules,symbols);

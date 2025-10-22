@@ -1,4 +1,6 @@
-﻿using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Door;
+﻿using Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies;
+using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Door;
+using Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers;
 
 namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Key
 {
@@ -9,29 +11,29 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Key
     /// </summary>
     internal class KeyFragmentInstance
     {
+        // === Dependencies ===
+        private readonly KeyFragmentInstanceDependencies _keyFragmentInstanceDeps;
         // === Fields ===
-        private readonly SymbolsManager _symbolsManager;
-        private readonly DiagnosticsManager _diagnosticsManager;
         private char _symbol;
         private (int y, int x) _position;
         private TileTyp _typ;
 
         /// <summary>
-        ///Initializes a new instance of the <see cref="KeyFragmentInstance"/> class.
-        /// Sets up all required dependencies and assigns the default key fragment symbol and type.
-        /// Also logs the creation event through the diagnostics manager.
+        /// Initializes a new instance of the <see cref="KeyFragmentInstance"/> class.
+        /// Sets up all required dependencies, assigns the default key fragment symbol,
+        /// initializes its position and tile type, and logs the creation event.
         /// </summary>
-        /// <param name="symbolsManager">Reference to the <see cref="SymbolsManager"/> used to assign the key fragment symbol.</param>
-        /// <param name="diagnosticsManager">Reference to the <see cref="DiagnosticsManager"/> used for logging operations.</param>
-        public KeyFragmentInstance(SymbolsManager symbolsManager, DiagnosticsManager diagnosticsManager)
+        /// <param name="keyFragmentInstanceDependencies">
+        /// Reference to the <see cref="KeyFragmentInstanceDependencies"/> object that provides
+        /// the required managers and configuration data for initializing the key fragment instance.
+        /// </param>
+        public KeyFragmentInstance(KeyFragmentInstanceDependencies keyFragmentInstanceDependencies)
         {
-            this._symbolsManager = symbolsManager;
-            this._diagnosticsManager = diagnosticsManager;
-            _symbol = _symbolsManager.KeyFragmentSymbol;
+            _keyFragmentInstanceDeps = keyFragmentInstanceDependencies;
+            _symbol = _keyFragmentInstanceDeps.SymbolsManager.KeyFragmentSymbol;
             _position = (0, 0);
             _typ = TileTyp.Key;
-            _diagnosticsManager.AddCheck($"{nameof(KeyFragmentInstance)}: Default symbol {_symbol} - Keyfragment assigned at start.");
-
+            _keyFragmentInstanceDeps.DiagnosticsManager.AddCheck($"{nameof(KeyFragmentInstance)}: Default symbol {_symbol} - Keyfragment assigned at start.");
         }
 
         /// <summary>
@@ -57,7 +59,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Key
         public void AssignSymbol(char symbol)
         {
             _symbol = symbol;
-            _diagnosticsManager.AddCheck($"{nameof(KeyFragmentInstance)}.{nameof(AssignSymbol)}: Symbol {_symbol} - KeyFragment symbol successfully assigned");
+            _keyFragmentInstanceDeps.DiagnosticsManager.AddCheck($"{nameof(KeyFragmentInstance)}.{nameof(AssignSymbol)}: Symbol {_symbol} - KeyFragment symbol successfully assigned");
         }
 
         /// <summary>
@@ -67,7 +69,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Key
         public void AssignPosition((int y, int x) position)
         {
             _position = position;
-            _diagnosticsManager.AddCheck($"{nameof(KeyFragmentInstance)}.{nameof(AssignPosition)}: Position {position} - KeyFragment successfully assigned");
+            _keyFragmentInstanceDeps.DiagnosticsManager.AddCheck($"{nameof(KeyFragmentInstance)}.{nameof(AssignPosition)}: Position {_position} - KeyFragment successfully assigned");
         }
 
         /// <summary>

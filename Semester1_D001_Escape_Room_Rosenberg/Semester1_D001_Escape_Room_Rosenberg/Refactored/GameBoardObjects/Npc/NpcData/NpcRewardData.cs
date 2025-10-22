@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc
+namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc.NpcData
 {
     /// <summary>
     /// Represents the reward data assigned to a non-player character (NPC).
@@ -24,8 +24,8 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc
         /// <param name="points">The number of points awarded to the player as part of the NPC’s reward.</param>
         public NpcRewardData(int keyFragment, int points)
         {
-            this._keyFragment = keyFragment;
-            this._points = points;
+            _keyFragment = keyFragment;
+            _points = points;
         }
 
         /// <summary>

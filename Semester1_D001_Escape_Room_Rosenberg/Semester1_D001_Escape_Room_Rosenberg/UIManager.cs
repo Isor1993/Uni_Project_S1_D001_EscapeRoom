@@ -1,4 +1,4 @@
-﻿using Semester1_D001_Escape_Room_Rosenberg.Refactored;
+﻿using Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Tracing;
@@ -13,13 +13,13 @@ namespace Semester1_D001_Escape_Room_Rosenberg
 {
     internal class UIManager
     {
-        private readonly GameBoardBuilder _boardBuilder;
+        private readonly GameBoardManager _boardBuilder;
         private readonly SymbolsManager _symbols;
         private readonly PrintManager _printer;
-        private readonly SpawnerManager _spawner;
+        private readonly SpawnManager _spawner;
         private readonly RandomManager _random;
        
-        public UIManager(RandomManager random ,GameBoardBuilder boardBuilder, SymbolsManager symbols, PrintManager printer,SpawnerManager spawner)
+        public UIManager(RandomManager random ,GameBoardManager boardBuilder, SymbolsManager symbols, PrintManager printer,SpawnManager spawner)
         {
             _boardBuilder = boardBuilder;
             _symbols = symbols;

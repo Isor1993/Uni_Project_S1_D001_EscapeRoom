@@ -1,4 +1,4 @@
-﻿using Semester1_D001_Escape_Room_Rosenberg.Refactored;
+﻿using Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,52 +9,82 @@ using System.Threading.Tasks;
 
 namespace Semester1_D001_Escape_Room_Rosenberg
 {
+    /// <summary>
+    /// 
+    /// </summary>
     internal class RulesManager
     {
+        // === Dependencies ===
         private readonly SymbolsManager _symbolsManager;
-        private readonly GameBoardBuilder _gameBoardBuilder;
-        private readonly PrintManager _printManager;
+        private readonly GameBoardManager _gameBoardBuilder;
+        private readonly DiagnosticsManager _diagnosticsManager;
 
 
-        public RulesManager(SymbolsManager symbols, GameBoardBuilder gameBoardBuilder, PrintManager printManager)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="symbols"></param>
+        /// <param name="gameBoardBuilder"></param>
+        /// <param name="diagnosticsManager"></param>
+        public RulesManager(SymbolsManager symbols, GameBoardManager gameBoardBuilder, DiagnosticsManager diagnosticsManager)
         {
             this._symbolsManager = symbols;
             this._gameBoardBuilder = gameBoardBuilder;
-            this._printManager = printManager;
+            this._diagnosticsManager = diagnosticsManager;
         }
 
+
         /// <summary>
-        /// Determines whether there are no obstacles around the given position.
+        /// Checks whether a given position on the game board is free and suitable for spawning.
+        /// The method verifies a 3x3 area around the specified coordinates to ensure that
+        /// no interactive or blocking tiles (such as doors, players, NPCs, or key fragments)
+        /// are present in the surrounding cells.
         /// </summary>
-        /// <param name="position">The target position to check</param>
-        /// <returns>True if all surrounding cells are empty; otherwise, false.</returns>
+        /// <param name="position">The target position to evaluate, represented as (y, x) coordinates.</param>
+        /// <returns>
+        /// <c>true</c> if the position and its 3x3 surroundings are free of interactive tiles;
+        /// otherwise, <c>false</c>.
+        /// </returns>
         public bool IsPositionFree((int y, int x) position)
         {
-            // Get the game board array.
-            char[,] board = _gameBoardBuilder.GameBoardArray;
-            // Get the maximum board boundaries.
+            if(_gameBoardBuilder.GameBoardArray==null)
+            {
+                _diagnosticsManager.AddCheck($"{nameof(RulesManager)}.{nameof(IsPositionFree)}: GameboardArray is null");
+                return false;
+            }
+            // Retrieve the game board.
+            TileTyp[,] board = _gameBoardBuilder.GameBoardArray;
             int height = board.GetLength(0);
             int width = board.GetLength(1);
-            // Iterate through all cells in a 3x3 area around the given position.
+
+            // Iterate through all cells in the 3x3 area around the given position.
             for (int y = position.y - 1; y <= position.y + 1; y++)
             {
                 for (int x = position.x - 1; x <= position.x + 1; x++)
                 {
                     // Skip positions outside the board boundaries.
                     if (y < 0 || x < 0 || y >= height || x >= width)
-                    {
                         continue;
-                    }
-                    // If any surrounding cell is not empty, the position is not free.
-                    if (board[y, x] != _symbolsManager.EmptySymbol)
+
+                    //  Prevent spawning near any interactive object
+                    if (board[y, x] == TileTyp.Door ||
+                        board[y, x] == TileTyp.Player ||
+                        board[y, x] == TileTyp.Npc ||
+                        board[y, x] == TileTyp.Key)
                     {
+                        _diagnosticsManager.AddWarning($"{nameof(RulesManager)}.{nameof(IsPositionFree)}:  Position {position} rejected — too close to an active object {board[y, x]}.");
                         return false;
                     }
                 }
-            }
-            // All surrounding cells are empty — position is free.
+            }           
             return true;
         }
+
+
+
+       //TODO  noch refactorn später
+       // |
+       // V
         /// <summary>
         /// Determines whether the player is allowed to move to the specified position.
         /// </summary>
