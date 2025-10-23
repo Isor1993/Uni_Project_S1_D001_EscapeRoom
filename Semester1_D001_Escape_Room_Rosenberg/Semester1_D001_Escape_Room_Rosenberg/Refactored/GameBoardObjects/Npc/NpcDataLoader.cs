@@ -40,12 +40,12 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc
         /// </summary>
         /// <param name="filePath">The full path to the NPC data file.</param>
         /// <returns>
-        /// A list of <see cref="NpcInstance"/> objects representing all successfully loaded NPCs.
+        /// A list of <see cref="NpcRawData"/> objects representing all successfully loaded NPCs.
         /// Returns an empty list if an exception occurs during loading.
         /// </returns>
-        public List<NpcInstance> LoadNpcDataFromFile(string filePath)
+        public List<NpcRawData> LoadNpcDataFromFile(string filePath)
         {
-            List<NpcInstance> tempNpcList = new List<NpcInstance>();
+            List<NpcRawData> npcRawList = new List<NpcRawData>();
             try
             {
                 foreach (string line in File.ReadAllLines(filePath))
@@ -64,7 +64,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc
                         continue;
                     }
 
-                    // === Create NPC components ===
+                    // === Create raw NPC data objects ===
                     // The meta includes name, position, and automatically assigns the symbol from the SymbolsManager.
                     NpcMetaData npcMeta = new NpcMetaData(_loaderDeps.SymbolsManager,parts[0], (0, 0) );
                     // The dialog includes a question, correct answer, and three possible answer options.
@@ -80,20 +80,20 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc
 
                     // The Reward includes key fragments and points.
                     NpcRewardData npcReward = new NpcRewardData(keyFragments, rewardPoints);
-                    // Combine all NPC data into a single instance and add it to the list.
-                    NpcInstance npcInstance = new NpcInstance(_loaderDeps.NpcInstanceDependencies);
+                    // === Combine into a single NpcRawData record ===
+                    NpcRawData npcRaw = new NpcRawData(npcMeta,npcDialog,npcReward);
                     // Add the NPC object to the list.
-                    tempNpcList.Add(npcInstance);
+                    npcRawList.Add(npcRaw);
                 }
-                _loaderDeps.DiagnosticsManager.AddCheck($"{nameof(NpcDataLoader)}.{nameof(LoadNpcDataFromFile)}: Successfully loaded {tempNpcList.Count} Npc records.");
-                return tempNpcList;
+                _loaderDeps.DiagnosticsManager.AddCheck($"{nameof(NpcDataLoader)}.{nameof(LoadNpcDataFromFile)}: Successfully loaded {npcRawList.Count} Npc records.");
+                return npcRawList;
             }
 
             // === Exception Handling ===
             catch (FileNotFoundException ex)
             {
                 _loaderDeps.DiagnosticsManager.AddException($"{nameof(NpcDataLoader)}.{nameof(LoadNpcDataFromFile)}: File not found ({ex.Message})");
-                return new List<NpcInstance>();
+                return new List<NpcRawData>();
             }
             catch (DirectoryNotFoundException ex)
             {
@@ -139,7 +139,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc
             {
                 _loaderDeps.DiagnosticsManager.AddException($"{nameof(NpcDataLoader)}.{nameof(LoadNpcDataFromFile)}: Unknown exception occurred ({ex.Message})");
             }
-            return new List<NpcInstance>();
+            return new List<NpcRawData>();
         }
     }
 }

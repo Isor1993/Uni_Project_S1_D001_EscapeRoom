@@ -1,13 +1,13 @@
 ﻿using Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc;
+using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc.NpcData;
 using System;
 
 namespace Semester1_D001_Escape_Room_Rosenberg.Refactored
 {
     /// <summary>
-    /// Handles the management of all NPC (Non-Player Character) data within the game.
-    /// Responsible for loading NPCs from an external data file and storing their dialogue,
-    /// rewards, and related attributes for in-game interaction.
+    /// 
+    /// </summary>
     internal class NpcManager
     {
 
@@ -28,23 +28,32 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored
         }
 
         /// <summary>
-        /// Internal list that stores all loaded NPC instances.
+        /// 
         /// </summary>
         private List<NpcInstance> _npcList = new List<NpcInstance>();
         /// <summary>
-        /// Gets the list of all loaded NPC instances.
-        /// Each instance contains its dialogue, quest information, and reward data.
+        /// 
         /// </summary>
         public List<NpcInstance> NpcList => _npcList;
 
-        /// <summary>
-        /// Loads all NPC data from the specified file path and stores it in memory.
-        /// </summary>
-        /// <param name="filePath">The path to the NPC data file.</param>
+       /// <summary>
+       /// 
+       /// </summary>
+       /// <param name="filePath"></param>
         public void LoadAllNpcData(string filePath)
         {
-            _npcList = _npcManagerDeps.NpcDataLoader.LoadNpcDataFromFile(filePath);
-            _npcManagerDeps.Diagnostics.AddCheck($"{nameof(NpcManager)}: Successfully loaded {_npcList.Count} NPC records.");
+            
+            List<NpcRawData>rawDataList = _npcManagerDeps.NpcDataLoader.LoadNpcDataFromFile(filePath);
+
+            _npcList = new List<NpcInstance>();
+            foreach (NpcRawData rawData in rawDataList)
+            {
+                NpcInstanceDependencies npcInstanceDeps = new NpcInstanceDependencies(_npcManagerDeps.Diagnostics, rawData.NpcMetaData, rawData.NpcDialogData, rawData.NpcRewardData);
+
+                NpcInstance npcInstance = new NpcInstance(npcInstanceDeps);
+                _npcList.Add(npcInstance);
+            }
+            _npcManagerDeps.Diagnostics.AddCheck($"{nameof(NpcManager)}: Successfully created {_npcList.Count} NPC instances from raw data.");
         }
 
     }

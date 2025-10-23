@@ -156,5 +156,22 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
             _gameBoardArray[0, _arraySizeX - 1] = TileTyp.WallCornerTopRight;
             _gameBoardArray[_arraySizeY - 1, 0] = TileTyp.WallCornerBottomLeft;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="tileTyp"></param>
+        /// <param name="position"></param>
+        public void PlaceObjectOnBoard(TileTyp tileTyp, (int y, int x) position)
+        {
+            if (_gameBoardArray == null)
+            {
+
+                _gameBoardBuilderDeps.DiagnosticsManager.AddCheck($"{nameof(GameBoardManager)}.{nameof(SetCorners)}: ");
+
+                return;
+            }
+            _gameBoardArray[position.y, position.x] = tileTyp;
+        }
     }
 }
