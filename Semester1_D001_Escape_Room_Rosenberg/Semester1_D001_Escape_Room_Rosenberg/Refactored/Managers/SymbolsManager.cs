@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 // RSK Kontrolle ok
-namespace Semester1_D001_Escape_Room_Rosenberg
+namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 {
     internal class SymbolsManager
     {
@@ -89,9 +89,5 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         public char ClosedDoorHorizontalSymbol { get => _closedDoorHorizontalSymbol; set => _closedDoorHorizontalSymbol = value; }
         public char TimeWatchSymbol { get => _timeWatchSymbol; set => _timeWatchSymbol = value; }
         public char HearthSymbol { get => _hearthSymbol; set => _hearthSymbol = value; }
-
-
-
-
     }
 }

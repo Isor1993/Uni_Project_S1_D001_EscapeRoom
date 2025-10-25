@@ -13,11 +13,11 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies
     /// the <see cref="DiagnosticsManager"/> for logging and validation,
     /// and the <see cref="NpcDataLoader"/> for loading NPC-related data.
     /// </summary>
-    /// <param name="Printer">
+    /// <param name="Print">
     /// Reference to the <see cref="PrintManager"/> responsible for displaying
     /// NPC-related information and debug output on the console.
     /// </param>
-    /// <param name="Diagnostics">
+    /// <param name="Diagnostic">
     /// Reference to the <see cref="DiagnosticsManager"/> used for tracking logs,
     /// warnings, and diagnostic checks during NPC operations.
     /// </param>
@@ -27,8 +27,8 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies
     /// </param>
     internal sealed record NpcManagerDependencies
     (
-        PrintManager Printer,
-        DiagnosticsManager Diagnostics,
+        PrintManager Print,
+        DiagnosticsManager Diagnostic,
         NpcDataLoader NpcDataLoader
     );
 }

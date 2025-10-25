@@ -11,7 +11,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored
     internal class NpcManager
     {
 
-        private readonly NpcManagerDependencies _npcManagerDeps;
+        private readonly NpcManagerDependencies _deps;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NpcManager"/> class.
@@ -24,7 +24,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored
         /// </param>
         public NpcManager(NpcManagerDependencies npcManagerDependencies)
         {
-            _npcManagerDeps = npcManagerDependencies;
+            _deps = npcManagerDependencies;
         }
 
         /// <summary>
@@ -43,17 +43,17 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored
         public void LoadAllNpcData(string filePath)
         {
             
-            List<NpcRawData>rawDataList = _npcManagerDeps.NpcDataLoader.LoadNpcDataFromFile(filePath);
+            List<NpcRawData>rawDataList = _deps.NpcDataLoader.LoadNpcDataFromFile(filePath);
 
             _npcList = new List<NpcInstance>();
             foreach (NpcRawData rawData in rawDataList)
             {
-                NpcInstanceDependencies npcInstanceDeps = new NpcInstanceDependencies(_npcManagerDeps.Diagnostics, rawData.NpcMetaData, rawData.NpcDialogData, rawData.NpcRewardData);
+                NpcInstanceDependencies npcInstanceDeps = new NpcInstanceDependencies(_deps.Diagnostic, rawData.NpcMetaData, rawData.NpcDialogData, rawData.NpcRewardData);
 
                 NpcInstance npcInstance = new NpcInstance(npcInstanceDeps);
                 _npcList.Add(npcInstance);
             }
-            _npcManagerDeps.Diagnostics.AddCheck($"{nameof(NpcManager)}: Successfully created {_npcList.Count} NPC instances from raw data.");
+            _deps.Diagnostic.AddCheck($"{nameof(NpcManager)}: Successfully created {_npcList.Count} NPC instances from raw data.");
         }
 
     }

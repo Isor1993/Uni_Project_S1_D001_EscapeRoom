@@ -12,7 +12,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Wall
     {
 
         // === Dependencies ===
-        private readonly WallInstanceDependencies _wallInstanceDeps;
+        private readonly WallInstanceDependencies _deps;
 
         // === Fields ===
         private char _symbol;
@@ -30,9 +30,9 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Wall
         /// </param>
         public WallInstance(WallInstanceDependencies wallInstanceDependencies)
         {
-            _wallInstanceDeps = wallInstanceDependencies;
+            _deps = wallInstanceDependencies;
             _typ = TileTyp.None;
-            _wallInstanceDeps.DiagnosticsManager.AddCheck($"{nameof(WallInstance)}: Wall instance successfully created.");
+            _deps.Diagnostic.AddCheck($"{nameof(WallInstance)}: Wall instance successfully created.");
         }
 
         /// <summary>
@@ -59,38 +59,38 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Wall
         {
             if (typ == TileTyp.WallHorizontal)
             {
-                _symbol = _wallInstanceDeps.SymbolsManager.WallHorizontalSymbol;
-                _wallInstanceDeps.DiagnosticsManager.AddCheck($"{nameof(WallInstance)}.{nameof(AssignSymbol)}: Symbol {_symbol} assigned (horizontal wall).");
+                _symbol = _deps.Symbol.WallHorizontalSymbol;
+                _deps.Diagnostic.AddCheck($"{nameof(WallInstance)}.{nameof(AssignSymbol)}: Symbol {_symbol} assigned (horizontal wall).");
             }
             else if (typ == TileTyp.WallVertical)
             {
-                _symbol = _wallInstanceDeps.SymbolsManager.WallVerticalSymbol;
-                _wallInstanceDeps.DiagnosticsManager.AddCheck($"{nameof(WallInstance)}.{nameof(AssignSymbol)}: Symbol {_symbol} assigned (vertical wall).");
+                _symbol = _deps.Symbol.WallVerticalSymbol;
+                _deps.Diagnostic.AddCheck($"{nameof(WallInstance)}.{nameof(AssignSymbol)}: Symbol {_symbol} assigned (vertical wall).");
             }
             else if (typ == TileTyp.WallCornerBottomLeft)
             {
-                _symbol = _wallInstanceDeps.SymbolsManager.WallCornerBottomLeftSymbol;
-                _wallInstanceDeps.DiagnosticsManager.AddCheck($"{nameof(WallInstance)}.{nameof(AssignSymbol)}: Symbol {_symbol} assigned (bottom-left corner).");
+                _symbol = _deps.Symbol.WallCornerBottomLeftSymbol;
+                _deps.Diagnostic.AddCheck($"{nameof(WallInstance)}.{nameof(AssignSymbol)}: Symbol {_symbol} assigned (bottom-left corner).");
             }
             else if (typ == TileTyp.WallCornerBottomRight)
             {
-                _symbol = _wallInstanceDeps.SymbolsManager.WallCornerBottomRightSymbol;
-                _wallInstanceDeps.DiagnosticsManager.AddCheck($"{nameof(WallInstance)}.{nameof(AssignSymbol)}: Symbol {_symbol} assigned (bottom-right corner).");
+                _symbol = _deps.Symbol.WallCornerBottomRightSymbol;
+                _deps.Diagnostic.AddCheck($"{nameof(WallInstance)}.{nameof(AssignSymbol)}: Symbol {_symbol} assigned (bottom-right corner).");
             }
             else if (typ == TileTyp.WallCornerTopLeft)
             {
-                _symbol = _wallInstanceDeps.SymbolsManager.WallCornerTopLeftSymbol;
-                _wallInstanceDeps.DiagnosticsManager.AddCheck($"{nameof(WallInstance)}.{nameof(AssignSymbol)}: Symbol {_symbol} assigned (top-left corner).");
+                _symbol = _deps.Symbol.WallCornerTopLeftSymbol;
+                _deps.Diagnostic.AddCheck($"{nameof(WallInstance)}.{nameof(AssignSymbol)}: Symbol {_symbol} assigned (top-left corner).");
             }
             else if (typ == TileTyp.WallCornerTopRight)
             {
-                _symbol = _wallInstanceDeps.SymbolsManager.WallCornerTopRightSymbol;
-                _wallInstanceDeps.DiagnosticsManager.AddCheck($"{nameof(WallInstance)}.{nameof(AssignSymbol)}: Symbol {_symbol} assigned (top-right corner).");
+                _symbol = _deps.Symbol.WallCornerTopRightSymbol;
+                _deps.Diagnostic.AddCheck($"{nameof(WallInstance)}.{nameof(AssignSymbol)}: Symbol {_symbol} assigned (top-right corner).");
             }
             else
             {
-                _symbol = _wallInstanceDeps.SymbolsManager.DeathSymbol;
-                _wallInstanceDeps.DiagnosticsManager.AddWarning($"{nameof(WallInstance)}.{nameof(AssignSymbol)}: Invalid wall type provided — using fallback symbol.");
+                _symbol = _deps.Symbol.DeathSymbol;
+                _deps.Diagnostic.AddWarning($"{nameof(WallInstance)}.{nameof(AssignSymbol)}: Invalid wall type provided — using fallback symbol.");
             }
         }
 
@@ -115,7 +115,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Wall
         public void AssignPosition((int y, int x) position)
         {
             _position = position;
-            _wallInstanceDeps.DiagnosticsManager.AddCheck($"{nameof(WallInstance)}.{nameof(AssignPosition)}: Position {_position} successfully assigned.");
+            _deps.Diagnostic.AddCheck($"{nameof(WallInstance)}.{nameof(AssignPosition)}: Position {_position} successfully assigned.");
         }
     }
 }

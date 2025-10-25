@@ -33,7 +33,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
     {
         // === Dependencies ===
         // Provides access to core managers and builders.
-        private readonly SpawnManagerDependencies _scd;
+        private readonly SpawnManagerDependencies _deps;
         // Manages door creation.
         private readonly DoorInstance _doorInstance;
         // Handles key fragment creation.
@@ -46,8 +46,8 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         private readonly WallInstance _wallInstance;
 
         // === Fields ===
-        private List<(int y, int x)> _wallPositions=new();
-        private List<(int y, int x)> _emptyPositions=new();
+        private List<(int y, int x)> _wallPositions = new();
+        private List<(int y, int x)> _emptyPositions = new();
         private List<(int y, int x)> _npcPositions = new();
         private List<(int y, int x)> _keyFragmentsPositions = new();
 
@@ -66,7 +66,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         /// <param name="wallInstance">Reference to the <see cref="WallInstance"/> used for wall placement logic.</param>
         public SpawnManager(SpawnManagerDependencies spawnManagerDependencies, DoorInstance doorInstance, KeyFragmentInstance keyFragmentInstance, NpcInstance npcInstance, PlayerInstance playerInstance, WallInstance wallInstance)
         {
-            _scd = spawnManagerDependencies;
+            _deps = spawnManagerDependencies;
             _doorInstance = doorInstance;
             _keyFragmentInstance = keyFragmentInstance;
             _npcInstance = npcInstance;
@@ -95,33 +95,41 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         public List<(int y, int x)> KeyFragmentPositions => _keyFragmentsPositions;
 
         /// <summary>
-        /// Attempts to find a free spawn position within the provided position list.
-        /// Makes multiple randomized attempts until a valid position is found or
-        /// the maximum number of attempts is reached.
+        /// Attempts to find a valid free spawn position from the provided list of positions.
+        /// Performs multiple randomized attempts until a valid position is found or the
+        /// maximum number of attempts is reached.
         /// </summary>
-        /// <param name="positions">The list of potential spawn coordinates to test.</param>
-        /// <param name="maxAttempts">The maximum number of attempts to try before failing.</param>
+        /// <param name="positions">
+        /// A list of candidate positions to evaluate for potential spawning.
+        /// </param>
         /// <returns>
         /// A tuple containing a success flag and the resulting position.
         /// If no valid position is found, <c>success</c> is <c>false</c> and
-        /// position defaults to (0, 0).
+        /// <c>position</c> defaults to (0, 0).
         /// </returns>
-        private (bool success, (int y, int x) position) TryFindFreeSpawnPosition(List<(int y, int x)> positions, int maxAttempts)
+        /// <remarks>
+        /// This method uses randomized selection and rule validation via
+        /// <see cref="RulesManager.IsPositionFree((int, int))"/> to ensure that
+        /// spawned entities are placed only in valid, non-occupied areas.
+        /// All attempts and outcomes are logged through the <see cref="DiagnosticsManager"/>.
+        /// </remarks>
+        private (bool success, (int y, int x) position) TryFindFreeSpawnPosition(List<(int y, int x)> positions)
         {
+            int maxAttempts = 50;
             for (int attempt = 1; attempt <= maxAttempts; attempt++)
             {
-                (int y, int x) position = _scd.RandomManager.RadomPositionFromList(positions);
+                (int y, int x) position = _deps.Random.RandomPositionFromList(positions);
 
-                if (_scd.RulesManager.IsPositionFree(position))
+                if (_deps.Rule.IsPositionFreeForSpawn(position))
                 {
-                    _scd.DiagnosticsManager.AddCheck($"{nameof(SpawnManager)}.{nameof(TryFindFreeSpawnPosition)}: Found free position {position} after {attempt} attempt(s).");
+                    _deps.Diagnostic.AddCheck($"{nameof(SpawnManager)}.{nameof(TryFindFreeSpawnPosition)}: Found free position {position} after {attempt} attempt(s).");
                     return (true, position);
                 }
 
-                _scd.DiagnosticsManager.AddWarning($"{nameof(SpawnManager)}.{nameof(TryFindFreeSpawnPosition)}: Attempt {attempt} failed at {position}.");
+                _deps.Diagnostic.AddWarning($"{nameof(SpawnManager)}.{nameof(TryFindFreeSpawnPosition)}: Attempt {attempt} failed at {position}.");
             }
 
-            _scd.DiagnosticsManager.AddError($"{nameof(SpawnManager)}.{nameof(TryFindFreeSpawnPosition)}: No free position found after {maxAttempts} attempts.");
+            _deps.Diagnostic.AddError($"{nameof(SpawnManager)}.{nameof(TryFindFreeSpawnPosition)}: No free position found after {maxAttempts} attempts.");
             return (false, (0, 0));
         }
 
@@ -131,16 +139,16 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         /// </summary>
         public void CollectSpawnPositions()
         {
-            _wallPositions = new List<(int y, int x)>();
-            _emptyPositions = new List<(int y, int x)>();
+            _wallPositions.Clear();
+            _emptyPositions.Clear();
 
-            if (_scd.GameBoardManager.GameBoardArray == null)
+            if (_deps.GameBoard.GameBoardArray == null)
             {
-                _scd.DiagnosticsManager.AddError($"{nameof(SpawnManager)}.{nameof(CollectSpawnPositions)}: GameBoardArray is null. Run {nameof(GameBoardManager)}.{nameof(GameBoardManager.DecideArraySize)}() first.");
+                _deps.Diagnostic.AddError($"{nameof(SpawnManager)}.{nameof(CollectSpawnPositions)}: GameBoardArray is null. Run {nameof(GameBoardManager)}.{nameof(GameBoardManager.DecideArraySize)}() first.");
                 return;
             }
 
-            TileTyp[,] board = _scd.GameBoardManager.GameBoardArray;
+            TileTyp[,] board = _deps.GameBoard.GameBoardArray;
 
             for (int y = 0; y < board.GetLength(0); y++)
             {
@@ -157,7 +165,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
                     }
                 }
             }
-            _scd.DiagnosticsManager.AddCheck($"{nameof(SpawnManager)}.{nameof(CollectSpawnPositions)}: Found {_wallPositions.Count} walls and {_emptyPositions.Count} empty positions.");
+            _deps.Diagnostic.AddCheck($"{nameof(SpawnManager)}.{nameof(CollectSpawnPositions)}: Found {_wallPositions.Count} walls and {_emptyPositions.Count} empty positions.");
         }
 
 
@@ -168,19 +176,19 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         {
             if (_doorInstance == null)
             {
-                _scd.DiagnosticsManager.AddError($"{nameof(SpawnManager)}.{nameof(SpawnDoor)}: No doorInstance found");
+                _deps.Diagnostic.AddError($"{nameof(SpawnManager)}.{nameof(SpawnDoor)}: No doorInstance found");
                 return;
             }
 
-            DoorInstance doorInstance = new DoorInstance(_scd.DoorInstanceDependencies);
+            DoorInstance doorInstance = new DoorInstance(_deps.DoorInstance);
 
-            doorInstance.Initialize(_scd.RandomManager.RadomPositionFromList(_wallPositions));
-            _scd.GameBoardManager.PlaceObjectOnBoard(TileTyp.Door,doorInstance.Position);
-            _scd.GameObjectManager.RegisterObject(doorInstance.Position, doorInstance);
+            doorInstance.Initialize(_deps.Random.RandomPositionFromList(_wallPositions));
+            _deps.GameBoard.PlaceTileTypOnBoard(TileTyp.Door, doorInstance.Position);
+            _deps.GameObject.RegisterObject(doorInstance.Position, doorInstance);
             _wallPositions.Remove(doorInstance.Position);
-            
 
-            _scd.DiagnosticsManager.AddCheck($"{nameof(SpawnManager)}.{nameof(SpawnDoor)}: Placed door at {doorInstance.Position}");
+
+            _deps.Diagnostic.AddCheck($"{nameof(SpawnManager)}.{nameof(SpawnDoor)}: Placed door at {doorInstance.Position}");
         }
 
         /// <summary>
@@ -190,24 +198,24 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         {
             if (_playerInstance == null)
             {
-                _scd.DiagnosticsManager.AddError($"{nameof(SpawnManager)}.{nameof(SpawnPlayer)}: No playerInstance found");
+                _deps.Diagnostic.AddError($"{nameof(SpawnManager)}.{nameof(SpawnPlayer)}: No playerInstance found");
                 return;
             }
 
-            (bool success, (int y, int x) position) result = TryFindFreeSpawnPosition(_emptyPositions, 50);
+            (bool success, (int y, int x) position) result = TryFindFreeSpawnPosition(_emptyPositions);
 
             if (!result.success)
             {
                 return;
             }
-            PlayerInstance playerInstance = new PlayerInstance(_scd.PlayerInstanceDependencies);
+            PlayerInstance playerInstance = new PlayerInstance(_deps.PlayerInstance);
 
             playerInstance.Initialize(result.position);
-            _scd.GameBoardManager.PlaceObjectOnBoard(TileTyp.Player, result.position);
-            _scd.GameObjectManager.RegisterObject(result.position, playerInstance);
+            _deps.GameBoard.PlaceTileTypOnBoard(TileTyp.Player, result.position);
+            _deps.GameObject.RegisterObject(result.position, playerInstance);
             _emptyPositions.Remove(result.position);
 
-            _scd.DiagnosticsManager.AddCheck($"{nameof(SpawnManager)}.{nameof(SpawnPlayer)}: Player placed successfully at {result.position}.");
+            _deps.Diagnostic.AddCheck($"{nameof(SpawnManager)}.{nameof(SpawnPlayer)}: Player placed successfully at {result.position}.");
         }
 
         /// <summary>
@@ -227,28 +235,28 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         /// </remarks>
         public void SpawnKeyFragment(int amount)
         {
-            for (int i = 0; i >= amount;i++)
+            for (int i = 0; i < amount; i++)
             {
                 if (_keyFragmentInstance == null)
                 {
-                    _scd.DiagnosticsManager.AddError($"{nameof(SpawnManager)}.{nameof(SpawnKeyFragment)}: No keyFragmentInstance found");
+                    _deps.Diagnostic.AddError($"{nameof(SpawnManager)}.{nameof(SpawnKeyFragment)}: No keyFragmentInstance found");
                     return;
                 }
 
-                (bool success, (int y, int x) position) result = TryFindFreeSpawnPosition(_emptyPositions, 50);
+                (bool success, (int y, int x) position) result = TryFindFreeSpawnPosition(_emptyPositions);
 
                 if (!result.success)
                 {
                     return;
                 }
-                KeyFragmentInstance keyFragmentInstance = new KeyFragmentInstance(_scd.KeyFragmentInstanceDependencies);
+                KeyFragmentInstance keyFragmentInstance = new KeyFragmentInstance(_deps.KeyFragmentInstance);
 
                 keyFragmentInstance.Initialize(result.position);
-                _scd.GameBoardManager.PlaceObjectOnBoard(TileTyp.Key, result.position);
-                _scd.GameObjectManager.RegisterObject(result.position, keyFragmentInstance);
+                _deps.GameBoard.PlaceTileTypOnBoard(TileTyp.Key, result.position);
+                _deps.GameObject.RegisterObject(result.position, keyFragmentInstance);
                 _emptyPositions.Remove(result.position);
 
-                _scd.DiagnosticsManager.AddCheck($"{nameof(SpawnManager)}.{nameof(SpawnKeyFragment)}: KeyFragment placed successfully at {result.position}.");
+                _deps.Diagnostic.AddCheck($"{nameof(SpawnManager)}.{nameof(SpawnKeyFragment)}: KeyFragment placed successfully at {result.position}.");
             }
         }
 
@@ -258,17 +266,17 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         /// <param name="amount">The number of NPCs to spawn.</param>
         public void SpawnNpc(int amount)
         {
-            List<NpcInstance> tempNpcList = _scd.RandomManager.GetRadomElements(_scd.NpcManager.NpcList, amount);
-                        
+            List<NpcInstance> tempNpcList = _deps.Random.GetRandomElements(_deps.Npc.NpcList, amount);
+
             foreach (NpcInstance npc in tempNpcList)
-            {                
+            {
                 if (npc == null)
                 {
-                    _scd.DiagnosticsManager.AddError($"{nameof(SpawnManager)}.{nameof(SpawnNpc)}: No NpcInstance found");
+                    _deps.Diagnostic.AddError($"{nameof(SpawnManager)}.{nameof(SpawnNpc)}: No NpcInstance found");
                     return;
                 }
 
-                (bool success, (int y, int x) position) result = TryFindFreeSpawnPosition(_emptyPositions, 50);
+                (bool success, (int y, int x) position) result = TryFindFreeSpawnPosition(_emptyPositions);
 
                 if (!result.success)
                 {
@@ -276,12 +284,37 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
                 }
 
                 npc.AssignPosition(result.position);
-                _scd.GameBoardManager.PlaceObjectOnBoard(TileTyp.Npc,result.position);
-                _scd.GameObjectManager.RegisterObject(result.position, npc);
+                _deps.GameBoard.PlaceTileTypOnBoard(TileTyp.Npc, result.position);
+                _deps.GameObject.RegisterObject(result.position, npc);
                 _emptyPositions.Remove(result.position);
 
-                _scd.DiagnosticsManager.AddCheck($"{nameof(SpawnManager)}.{nameof(SpawnNpc)}: Npc placed successfully at {result.position}.");
+                _deps.Diagnostic.AddCheck($"{nameof(SpawnManager)}.{nameof(SpawnNpc)}: Npc placed successfully at {result.position}.");
             }
+        }
+
+        /// <summary>
+        /// Executes a complete spawning sequence for all core game objects,
+        /// including the door, player, NPCs, and key fragments.
+        /// </summary>
+        /// <param name="npcAmount">
+        /// The total number of NPCs to spawn on the game board.
+        /// </param>
+        /// <param name="keyAmount">
+        /// The total number of key fragments to spawn on the game board.
+        /// </param>
+        /// <remarks>
+        /// This method serves as a high-level initialization routine that triggers
+        /// all individual spawn methods in sequence. It first collects valid board
+        /// positions, then spawns the door, player, NPCs, and key fragments in the
+        /// correct order to ensure logical placement and gameplay integrity.
+        /// </remarks>
+        public void SpawnAll(int npcAmount, int keyAmount)
+        {
+            CollectSpawnPositions();
+            SpawnDoor();
+            SpawnPlayer();
+            SpawnNpc(npcAmount);
+            SpawnKeyFragment(keyAmount);
         }
     }
 }

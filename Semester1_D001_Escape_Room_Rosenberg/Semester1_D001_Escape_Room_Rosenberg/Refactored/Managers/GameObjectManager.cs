@@ -15,7 +15,8 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
     {
         // === Fields ===
         private readonly Dictionary<(int y, int x), object> _objectOnBoard = new();
-        private readonly DiagnosticsManager _diagnosticsManager;
+        private readonly DiagnosticsManager _diagnostic;
+        private readonly GameBoardManager _gameBoard;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GameObjectManager"/> class.
@@ -25,10 +26,11 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         /// Reference to the <see cref="DiagnosticsManager"/> used for logging
         /// checks, warnings, and error messages during object registration and access.
         /// </param>
-        public GameObjectManager(DiagnosticsManager diagnosticsManager)
+        public GameObjectManager(DiagnosticsManager diagnosticsManager, GameBoardManager gameBoardManager)
         {
-            _diagnosticsManager = diagnosticsManager;
-            _diagnosticsManager.AddCheck($"{nameof(GameObjectManager)}: Instance successfully created.");
+            _diagnostic = diagnosticsManager;
+            _gameBoard = gameBoardManager;
+            _diagnostic.AddCheck($"{nameof(GameObjectManager)}: Instance successfully created.");
         }
 
         /// <summary>
@@ -44,11 +46,11 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         {
             if (boardObject == null)
             {
-                _diagnosticsManager.AddError($"{nameof(GameObjectManager)}.{nameof(RegisterObject)}: Tried to register a null object at {position}.");
+                _diagnostic.AddError($"{nameof(GameObjectManager)}.{nameof(RegisterObject)}: Tried to register a null object at {position}.");
                 return;
             }
             _objectOnBoard[position] = boardObject;
-            _diagnosticsManager.AddCheck($"{nameof(GameObjectManager)}: Registered {boardObject.GetType().Name} at {position}.");
+            _diagnostic.AddCheck($"{nameof(GameObjectManager)}: Registered {boardObject.GetType().Name} at {position}.");
         }
 
         /// <summary>
@@ -61,9 +63,9 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         public void RemoveObject((int y, int x) position)
         {
             if (_objectOnBoard.Remove(position))
-                _diagnosticsManager.AddCheck($"{nameof(GameObjectManager)}: Removed object at {position}.");
+                _diagnostic.AddCheck($"{nameof(GameObjectManager)}: Removed object at {position}.");
             else
-                _diagnosticsManager.AddWarning($"{nameof(GameObjectManager)}: Tried to remove object at {position}, but none was found.");
+                _diagnostic.AddWarning($"{nameof(GameObjectManager)}: Tried to remove object at {position}, but none was found.");
         }
 
         /// <summary>
@@ -86,11 +88,11 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 
             if (!success || boardObject == null)
             {
-                _diagnosticsManager.AddWarning($"{nameof(GameObjectManager)}.{nameof(TryGetObject)}: No object found at {position}.");
+                _diagnostic.AddWarning($"{nameof(GameObjectManager)}.{nameof(TryGetObject)}: No object found at {position}.");
             }
             else
             {
-                _diagnosticsManager.AddCheck($"{nameof(GameObjectManager)}.{nameof(TryGetObject)}: Found {boardObject.GetType().Name} at {position}.");
+                _diagnostic.AddCheck($"{nameof(GameObjectManager)}.{nameof(TryGetObject)}: Found {boardObject.GetType().Name} at {position}.");
             }
 
             return success;
@@ -118,7 +120,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
             {
                 return instance;
             }
-            _diagnosticsManager.AddWarning($"{nameof(GameObjectManager)}.{nameof(GetObject)}: No object found or wrong type at {position}.");
+            _diagnostic.AddWarning($"{nameof(GameObjectManager)}.{nameof(GetObject)}: No object found or wrong type at {position}.");
             return null;
         }
 
@@ -129,7 +131,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         public void ClearAll()
         {
             _objectOnBoard.Clear();
-            _diagnosticsManager.AddCheck($"{nameof(GameObjectManager)}: Cleared all registered objects.");
+            _diagnostic.AddCheck($"{nameof(GameObjectManager)}: Cleared all registered objects.");
         }
 
         /// <summary>
@@ -143,6 +145,16 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         public IReadOnlyDictionary<(int y, int x), object> GetAllObjects()
         {
             return new Dictionary<(int y, int x), object>(_objectOnBoard);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="typ"></param>
+        /// <param name="position"></param>
+        public void UpdateBoard(TileTyp typ,(int y,int x) position)
+        {
+            _gameBoard.PlaceTileTypOnBoard(typ, position);
         }
     }
 }

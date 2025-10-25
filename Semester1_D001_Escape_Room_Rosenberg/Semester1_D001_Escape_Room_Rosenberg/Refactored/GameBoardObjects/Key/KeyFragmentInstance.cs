@@ -12,11 +12,12 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Key
     internal class KeyFragmentInstance
     {
         // === Dependencies ===
-        private readonly KeyFragmentInstanceDependencies _keyFragmentInstanceDeps;
+        private readonly KeyFragmentInstanceDependencies _deps;
         // === Fields ===
         private char _symbol;
         private (int y, int x) _position;
         private TileTyp _typ;
+        private int _amount;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="KeyFragmentInstance"/> class.
@@ -29,12 +30,18 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Key
         /// </param>
         public KeyFragmentInstance(KeyFragmentInstanceDependencies keyFragmentInstanceDependencies)
         {
-            _keyFragmentInstanceDeps = keyFragmentInstanceDependencies;
-            _symbol = _keyFragmentInstanceDeps.SymbolsManager.KeyFragmentSymbol;
+            _deps = keyFragmentInstanceDependencies;
+            _symbol = _deps.Symbol.KeyFragmentSymbol;
             _position = (0, 0);
             _typ = TileTyp.Key;
-            _keyFragmentInstanceDeps.DiagnosticsManager.AddCheck($"{nameof(KeyFragmentInstance)}: Default symbol {_symbol} - Keyfragment assigned at start.");
+            _amount = 1;
+            _deps.Diagnostic.AddCheck($"{nameof(KeyFragmentInstance)}: Default symbol {_symbol} - Keyfragment assigned at start.");
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public int Amount=>_amount;
 
         /// <summary>
         /// Gets the tile type assigned to this key fragment (typically <see cref="TileTyp.Key"/>).
@@ -59,7 +66,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Key
         public void AssignSymbol(char symbol)
         {
             _symbol = symbol;
-            _keyFragmentInstanceDeps.DiagnosticsManager.AddCheck($"{nameof(KeyFragmentInstance)}.{nameof(AssignSymbol)}: Symbol {_symbol} - KeyFragment symbol successfully assigned");
+            _deps.Diagnostic.AddCheck($"{nameof(KeyFragmentInstance)}.{nameof(AssignSymbol)}: Symbol {_symbol} - KeyFragment symbol successfully assigned");
         }
 
         /// <summary>
@@ -69,7 +76,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Key
         public void AssignPosition((int y, int x) position)
         {
             _position = position;
-            _keyFragmentInstanceDeps.DiagnosticsManager.AddCheck($"{nameof(KeyFragmentInstance)}.{nameof(AssignPosition)}: Position {_position} - KeyFragment successfully assigned");
+            _deps.Diagnostic.AddCheck($"{nameof(KeyFragmentInstance)}.{nameof(AssignPosition)}: Position {_position} - KeyFragment successfully assigned");
         }
 
         /// <summary>
@@ -80,5 +87,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Key
         {
             AssignPosition(position);
         }
+
+        
     }
 }

@@ -50,17 +50,18 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         {
             //  Print all error messages first.
             foreach (string msg in _errors) printer.PrintLine(msg);
+            //// Finally, print all exception checks.
+            foreach (string msg in _exception) printer.PrintLine(msg);
             // Then print all warnings.
             foreach (string msg in _warnings) printer.PrintLine(msg);
             // Finally, print all system checks.
             foreach (string msg in _checks) printer.PrintLine(msg);
-            //// Finally, print all exception checks.
-            foreach (string msg in _exception) printer.PrintLine(msg);
+            printer.PrintLine("--- END OF DIAGNOSTICS ---");
         }
         /// <summary>
         /// Gets the total number of recorded exception messages.
         /// </summary>
-        public int ExceptionCount => _errors.Count;
+        public int ExceptionCount => _exception.Count;
         /// <summary>
         /// Gets the total number of recorded error messages.
         /// </summary>
@@ -80,9 +81,26 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         public void PrintAllCount(PrintManager printer)
         {
             printer.PrintLine($"Total Errors: {ErrorCount}");
+            printer.PrintLine($"Total Exceptions: {ExceptionCount}");
             printer.PrintLine($"Total Warnings: {WarningCount}");
-            printer.PrintLine($"Total Ckecks: {CheckCount}");
-            printer.PrintLine($"Total Ckecks: {ExceptionCount}");
+            printer.PrintLine($"Total Checks: {CheckCount}");
+        }
+
+        /// <summary>
+        /// Clears all stored diagnostic entries, including errors, warnings,
+        /// checks, and exceptions, resetting the diagnostics state completely.
+        /// </summary>
+        /// <remarks>
+        /// This method provides a full reset of the diagnostics system, removing
+        /// all accumulated log entries. It should typically be called when starting
+        /// a new test, scene, or game session to ensure a clean diagnostic state.
+        /// </remarks>
+        public void ClearAll()
+        {
+            _errors.Clear();
+            _warnings.Clear();
+            _checks.Clear();
+            _exception.Clear();
         }
     }
 }

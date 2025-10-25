@@ -36,7 +36,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
     internal class GameBoardManager
     {
         // === Dependencies ===
-        private readonly GameBoardBuilderDependencies _gameBoardBuilderDeps;
+        private readonly GameBoardBuilderDependencies _deps;
 
         // === Fields ===
         private int _arraySizeY;
@@ -53,7 +53,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         /// </param>
         public GameBoardManager(GameBoardBuilderDependencies gameBoardBuilderDependencies)
         {
-            _gameBoardBuilderDeps= gameBoardBuilderDependencies;
+            _deps= gameBoardBuilderDependencies;
         }
         
         /// <summary>
@@ -80,16 +80,16 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
             // If a previous board exists, warn that it will be overwritten.
             if (_gameBoardArray != null)
             {
-                _gameBoardBuilderDeps.DiagnosticsManager.AddWarning($"{nameof(GameBoardManager)}.{nameof(DecideArraySize)}: GameBoardArray was recreated.");
+                _deps.Diagnostic.AddWarning($"{nameof(GameBoardManager)}.{nameof(DecideArraySize)}: GameBoardArray was recreated.");
             }
 
             // Ask for dimensions within predefined limits.
-            _arraySizeX = _gameBoardBuilderDeps.PrintManager.AskForIntInRange("How wide should the game board be?", 30, 120);        
-            _arraySizeY = _gameBoardBuilderDeps.PrintManager.AskForIntInRange("How high should the game board be?", 15, 20);
+            _arraySizeX = _deps.Print.AskForIntInRange("How wide should the game board be?", 30, 120);        
+            _arraySizeY = _deps.Print.AskForIntInRange("How high should the game board be?", 15, 20);
 
             // Initialize a new 2D array based on user input.
             _gameBoardArray = new TileTyp[_arraySizeY, _arraySizeX];
-            _gameBoardBuilderDeps.DiagnosticsManager.AddCheck($"{nameof(GameBoardManager)}.{nameof(DecideArraySize)}: Board successfully initialized ({_arraySizeX}x{_arraySizeY}).");
+            _deps.Diagnostic.AddCheck($"{nameof(GameBoardManager)}.{nameof(DecideArraySize)}: Board successfully initialized ({_arraySizeX}x{_arraySizeY}).");
         }
         /// <summary>
         /// Fills the game board array with tile data.
@@ -100,14 +100,14 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
             // Check if the board exists and recreate before trying to fill it.
             if (_gameBoardArray == null)
             {
-                _gameBoardBuilderDeps.DiagnosticsManager.AddError($"{nameof(GameBoardManager)}.{nameof(FillWallTypesToBoard)}: Cannot fill walls. Board has not been initialized.");
+                _deps.Diagnostic.AddError($"{nameof(GameBoardManager)}.{nameof(FillWallTypesToBoard)}: Cannot fill walls. Board has not been initialized.");
                 _gameBoardArray = new TileTyp[_arraySizeY, _arraySizeX];
             }
 
             // Optional: warn if it’s already filled with data (not empty anymore)
             if (_gameBoardArray[0, 0] != TileTyp.None)
             {
-                _gameBoardBuilderDeps.DiagnosticsManager.AddWarning($"{nameof(GameBoardManager)}.{nameof(FillWallTypesToBoard)}: Existing board data will be overwritten.");
+                _deps.Diagnostic.AddWarning($"{nameof(GameBoardManager)}.{nameof(FillWallTypesToBoard)}: Existing board data will be overwritten.");
             }
             // Iterate through all rows.
             for (int y = 0; y < _arraySizeY; y++)
@@ -147,7 +147,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
             if (_gameBoardArray == null)
             {
 
-                _gameBoardBuilderDeps.DiagnosticsManager.AddCheck($"{nameof(GameBoardManager)}.{nameof(SetCorners)}: ");
+                _deps.Diagnostic.AddCheck($"{nameof(GameBoardManager)}.{nameof(SetCorners)}: ");
 
                 return;
             }
@@ -162,16 +162,30 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         /// </summary>
         /// <param name="tileTyp"></param>
         /// <param name="position"></param>
-        public void PlaceObjectOnBoard(TileTyp tileTyp, (int y, int x) position)
+        public void PlaceTileTypOnBoard(TileTyp tileTyp, (int y, int x) position)
         {
             if (_gameBoardArray == null)
             {
 
-                _gameBoardBuilderDeps.DiagnosticsManager.AddCheck($"{nameof(GameBoardManager)}.{nameof(SetCorners)}: ");
+                _deps.Diagnostic.AddCheck($"{nameof(GameBoardManager)}.{nameof(SetCorners)}: ");
 
                 return;
             }
             _gameBoardArray[position.y, position.x] = tileTyp;
+        }
+
+        public TileTyp GetTileTyp((int y,int x)position)
+        {
+            if ( _gameBoardArray == null)
+            {
+
+                _deps.Diagnostic.AddError($"{nameof(GameBoardManager)}.{nameof(GetTileTyp)}: GameBoardArray is null");
+
+                return TileTyp.None;
+            }
+            return _gameBoardArray[position y,position.x];
+               
+            
         }
     }
 }

@@ -20,7 +20,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Door
     internal class DoorInstance
     {
         // === Dependencies ===
-        private readonly DoorInstanceDependencies _doorInstanceDeps;
+        private readonly DoorInstanceDependencies _deps;
 
         // === Fields ===
         private (int y, int x) _position;
@@ -39,10 +39,10 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Door
         /// </param>
         public DoorInstance(DoorInstanceDependencies doorInstanceDependencies)
         {
-            _doorInstanceDeps = doorInstanceDependencies;
+            _deps = doorInstanceDependencies;
             _isOpen = false;
             _typ = TileTyp.Door;
-            _doorInstanceDeps.DiagnosticsManager.AddCheck($"{nameof(DoorInstance)}: Door instance successfully created.");
+            _deps.Diagnostic.AddCheck($"{nameof(DoorInstance)}: Door instance successfully created.");
         }
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Door
         public void AssignPosition((int y, int x) position)
         {
             _position = position;
-            _doorInstanceDeps.DiagnosticsManager.AddCheck($"{nameof(DoorInstance)}.{nameof(AssignPosition)}: Position {position} - Door successfully assigned");
+            _deps.Diagnostic.AddCheck($"{nameof(DoorInstance)}.{nameof(AssignPosition)}: Position {position} - Door successfully assigned");
         }
 
         /// <summary>
@@ -82,7 +82,8 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Door
         public void CloseDoor()
         {
             _isOpen = false;
-            _doorInstanceDeps.DiagnosticsManager.AddCheck($"{nameof(DoorInstance)}.{nameof(CloseDoor)}:  Door closed successfully.");
+            AssignDoorSymbol()
+            _deps.Diagnostic.AddCheck($"{nameof(DoorInstance)}.{nameof(CloseDoor)}:  Door closed successfully.");
 
         }
         /// <summary>
@@ -91,7 +92,8 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Door
         public void OpenDoor()
         {
             _isOpen = true;
-            _doorInstanceDeps.DiagnosticsManager.AddCheck($"{nameof(DoorInstance)}.{nameof(OpenDoor)}:  Door opened successfully.");
+            AssignDoorSymbol()
+            _deps.Diagnostic.AddCheck($"{nameof(DoorInstance)}.{nameof(OpenDoor)}:  Door opened successfully.");
         }
 
         /// <summary>
@@ -105,41 +107,41 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Door
 
             if (_isOpen)
             {
-                if (_position.x == 0 || _position.x == _doorInstanceDeps.GameboardBuilder.ArraySizeX - 1)
+                if (_position.x == 0 || _position.x == _deps.GameBoard.ArraySizeX - 1)
                 {
-                    _symbol = _doorInstanceDeps.SymbolsManager.OpenDoorVerticalSymbol;
-                    _doorInstanceDeps.DiagnosticsManager.AddCheck($"{nameof(DoorInstance)}.{nameof(AssignDoorSymbol)}: Symbol{_symbol} - Door symbol successfully assigned");
+                    _symbol = _deps.Symbol.OpenDoorVerticalSymbol;
+                    _deps.Diagnostic.AddCheck($"{nameof(DoorInstance)}.{nameof(AssignDoorSymbol)}: Symbol{_symbol} - Door symbol successfully assigned");
                 }
-                else if (_position.y == 0 || _position.y == _doorInstanceDeps.GameboardBuilder.ArraySizeY - 1)
+                else if (_position.y == 0 || _position.y == _deps.GameBoard.ArraySizeY - 1)
                 {
-                    _symbol = _doorInstanceDeps.SymbolsManager.OpenDoororizontalSymbol;
-                    _doorInstanceDeps.DiagnosticsManager.AddCheck($"{nameof(DoorInstance)}.{nameof(AssignDoorSymbol)}: Symbol{_symbol} - Door symbol successfully assigned");
+                    _symbol = _deps.Symbol.OpenDoororizontalSymbol;
+                    _deps.Diagnostic.AddCheck($"{nameof(DoorInstance)}.{nameof(AssignDoorSymbol)}: Symbol{_symbol} - Door symbol successfully assigned");
                 }
 
                 else
                 {
-                    _doorInstanceDeps.DiagnosticsManager.AddWarning($"{nameof(DoorInstance)}.{nameof(AssignDoorSymbol)}: Position{_position} - Wall is not in the right position!");
-                    _symbol = _doorInstanceDeps.SymbolsManager.DeathSymbol;
+                    _deps.Diagnostic.AddWarning($"{nameof(DoorInstance)}.{nameof(AssignDoorSymbol)}: Position{_position} - Wall is not in the right position!");
+                    _symbol = _deps.Symbol.DeathSymbol;
                 }
             }
 
             else
             {
-                if (_position.x == 0 || _position.x == _doorInstanceDeps.GameboardBuilder.ArraySizeX - 1)
+                if (_position.x == 0 || _position.x == _deps.GameBoard.ArraySizeX - 1)
                 {
-                    _symbol = _doorInstanceDeps.SymbolsManager.ClosedDoorVerticalSymbol;
-                    _doorInstanceDeps.DiagnosticsManager.AddCheck($"{nameof(DoorInstance)}.{nameof(AssignDoorSymbol)}: Symbol{_symbol} - Door symbol successfully assigned");
+                    _symbol = _deps.Symbol.ClosedDoorVerticalSymbol;
+                    _deps.Diagnostic.AddCheck($"{nameof(DoorInstance)}.{nameof(AssignDoorSymbol)}: Symbol{_symbol} - Door symbol successfully assigned");
                 }
-                else if (_position.y == 0 || _position.y == _doorInstanceDeps.GameboardBuilder.ArraySizeY - 1)
+                else if (_position.y == 0 || _position.y == _deps.GameBoard.ArraySizeY - 1)
                 {
-                    _symbol = _doorInstanceDeps.SymbolsManager.ClosedDoorHorizontalSymbol;
-                    _doorInstanceDeps.DiagnosticsManager.AddCheck($"{nameof(DoorInstance)}.{nameof(AssignDoorSymbol)}: Symbol{_symbol} - Door symbol successfully assigned");
+                    _symbol = _deps.Symbol.ClosedDoorHorizontalSymbol;
+                    _deps.Diagnostic.AddCheck($"{nameof(DoorInstance)}.{nameof(AssignDoorSymbol)}: Symbol{_symbol} - Door symbol successfully assigned");
                 }
 
                 else
                 {
-                    _doorInstanceDeps.DiagnosticsManager.AddWarning($"{nameof(DoorInstance)}.{nameof(AssignDoorSymbol)}: Position {_position} - Wall is not in the right position!");
-                    _symbol = _doorInstanceDeps.SymbolsManager.DeathSymbol;
+                    _deps.Diagnostic.AddWarning($"{nameof(DoorInstance)}.{nameof(AssignDoorSymbol)}: Position {_position} - Wall is not in the right position!");
+                    _symbol = _deps.Symbol.DeathSymbol;
                 }
             }
         }

@@ -9,12 +9,12 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         public static int CurrentLevel { get => _currentlevel; }
 
         static void Main(string[] args)
-        {
+        {/*
             // Console output encoding
             Console.OutputEncoding = System.Text.Encoding.UTF8;
             // damit es beim vollbild nicht verzehrt wird
+            Console.SetBufferSize(120, 200);
             Console.SetWindowSize(120, 25);
-            Console.SetBufferSize(120, 25);
             //
             RandomManager randomManager= new RandomManager(diagnosticsManager);
             // Initialize core objects

@@ -13,22 +13,22 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies
     /// structure for spatial context, and the diagnostics manager for runtime
     /// logging and validation.
     /// </summary>
-    /// <param name="SymbolsManager">
-    /// Reference to the <see cref="SymbolsManager"/> responsible for providing
+    /// <param name="Symbol">
+    /// Reference to the <see cref="Symbol"/> responsible for providing
     /// door-related visual symbols and graphical representations used in the board layout.
     /// </param>
-    /// <param name="GameboardBuilder">
+    /// <param name="GameBoard">
     /// Reference to the <see cref="GameBoardManager"/> that manages the logical
     /// structure and dimensions of the game board where door instances are placed.
     /// </param>
-    /// <param name="DiagnosticsManager">
-    /// Reference to the <see cref="DiagnosticsManager"/> used to record creation
+    /// <param name="Diagnostic">
+    /// Reference to the <see cref="Diagnostic"/> used to record creation
     /// checks, warnings, and status messages during door initialization.
     /// </param>
     internal sealed record DoorInstanceDependencies
     (
-        SymbolsManager SymbolsManager,
-        GameBoardManager GameboardBuilder,
-        DiagnosticsManager DiagnosticsManager
+        SymbolsManager Symbol,
+        GameBoardManager GameBoard,
+        DiagnosticsManager Diagnostic
     );
 }

@@ -14,7 +14,10 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc
     internal class NpcInstance
     {
         // === Dependencies ===
-        private readonly NpcInstanceDependencies _instanceDeps;        
+        private readonly NpcInstanceDependencies _instanceDeps;
+        private readonly NpcMetaData _meta;
+        private readonly NpcDialogData _dialog;
+        private readonly NpcRewardData _reward;
 
         // === Fields ===
         private bool _isActive;
@@ -30,13 +33,16 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc
         /// Reference to the <see cref="NpcInstanceDependencies"/> object that provides
         /// the necessary managers and configuration data for NPC setup.
         /// </param>
-        public NpcInstance(NpcInstanceDependencies npcInstanceDependencies)
+        public NpcInstance(NpcInstanceDependencies npcInstanceDependencies,NpcMetaData npcMetaData,NpcDialogData npcDialogData,NpcRewardData npcRewardData)
         {
-            _instanceDeps=npcInstanceDependencies;            
+            _instanceDeps=npcInstanceDependencies;  
+            _meta=npcMetaData;
+            _dialog=npcDialogData;
+            _reward=npcRewardData;
             _isActive = false;
             _hasInteracted = false;
             _typ = TileTyp.Npc;
-            _instanceDeps.DiagnosticsManager.AddCheck($"{nameof(NpcInstance)}: Instance successfully created.");
+            _instanceDeps.Diagnostic.AddCheck($"{nameof(NpcInstance)}: Instance successfully created.");
         }
 
         /// <summary>
@@ -47,15 +53,15 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc
         /// <summary>
         /// Gets the metadata information for this NPC.
         /// </summary>
-        public NpcMetaData Meta => _instanceDeps.Meta;
+        public NpcMetaData Meta => _meta;
         /// <summary>
         /// Gets the dialog data associated with this NPC.
         /// </summary>
-        public NpcDialogData Dialog => _instanceDeps.Dialog;
+        public NpcDialogData Dialog => _dialog;
         /// <summary>
         /// Gets the reward data associated with this NPC.
         /// </summary>
-        public NpcRewardData Reward => _instanceDeps.Reward;
+        public NpcRewardData Reward => _reward;
 
         /// <summary>
         /// Indicates whether the NPC is currently active in the game.
@@ -72,7 +78,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc
         public void Activate()
         {
             _isActive = true;
-            _instanceDeps.DiagnosticsManager.AddCheck($"{nameof(NpcInstance)}: NPC {_instanceDeps.Meta.Name} activated.");
+            _instanceDeps.Diagnostic.AddCheck($"{nameof(NpcInstance)}: NPC {_meta.Name} activated.");
         }
 
         /// <summary>
@@ -81,7 +87,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc
         public void Deactivate()
         {
             _isActive = false;
-            _instanceDeps.DiagnosticsManager.AddCheck($"{nameof(NpcInstance)}: NPC {_instanceDeps.Meta.Name} deactivated.");
+            _instanceDeps.Diagnostic.AddCheck($"{nameof(NpcInstance)}: NPC {_meta.Name} deactivated.");
         }
 
         /// <summary>
@@ -90,7 +96,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc
         public void MarkAsInteracted()
         {
             _hasInteracted = true;
-            _instanceDeps.DiagnosticsManager.AddCheck($"{nameof(NpcInstance)}: NPC {_instanceDeps.Meta.Name} marked as interacted.");
+            _instanceDeps.Diagnostic.AddCheck($"{nameof(NpcInstance)}: NPC {_meta.Name} marked as interacted.");
         }
 
         /// <summary>
@@ -99,7 +105,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc
         public void MarkAsNotInteracted()
         {
             _hasInteracted = false;
-            _instanceDeps.DiagnosticsManager.AddCheck($"{nameof(NpcInstance)}: NPC {_instanceDeps.Meta.Name} marked as not interacted.");
+            _instanceDeps.Diagnostic.AddCheck($"{nameof(NpcInstance)}: NPC {_meta.Name} marked as not interacted.");
         }
         /// <summary>
         /// Updates the NPC’s position on the game board.
@@ -107,8 +113,8 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc
         /// <param name="position">The new position of the NPC, represented as (y, x) coordinates.</param>
         public void AssignPosition((int y,int x)position)
         {
-            _instanceDeps.Meta.AssignPosition(position);
-            _instanceDeps.DiagnosticsManager.AddCheck($"{nameof(NpcInstance)}: NPC {_instanceDeps.Meta.Name} position updated to {position}.");
+            _meta.AssignPosition(position);
+            _instanceDeps.Diagnostic.AddCheck($"{nameof(NpcInstance)}: NPC {_meta.Name} position updated to {position}.");
         }
     }
 }

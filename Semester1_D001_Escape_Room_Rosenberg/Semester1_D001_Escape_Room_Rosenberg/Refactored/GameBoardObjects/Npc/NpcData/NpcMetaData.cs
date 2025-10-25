@@ -1,4 +1,6 @@
-﻿namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc.NpcData
+﻿using Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers;
+
+namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc.NpcData
 {
 
     /// <summary>
@@ -9,7 +11,7 @@
     internal class NpcMetaData
     {
         // === Dependencies ===
-        readonly SymbolsManager _symbolsManager;
+        readonly SymbolsManager _symbols;
 
         // === Fields ===
         private string _name;        
@@ -23,10 +25,10 @@
         /// <param name="position"></param>
         public NpcMetaData(SymbolsManager symbolsManager, string name, (int y, int x) position)
         {
-            _symbolsManager = symbolsManager;
+            _symbols = symbolsManager;
             _name = name;
             Position = position;
-            _symbol = _symbolsManager.QuestSymbol;
+            _symbol = _symbols.QuestSymbol;
         }
 
         /// <summary>

@@ -17,12 +17,14 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Playe
     internal class PlayerInstance
     {
         // === Dependencies ===
-        private readonly PlayerInstanceDependencies _playerInstanceDeps;
+        private readonly PlayerInstanceDependencies _deps;
 
         // === Fields ===
         private char _symbol;
         private (int y, int x) _position;
         private TileTyp _typ;
+        private bool _isAlive=true;
+        private int _heart = 3;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PlayerInstance"/> class.
@@ -35,10 +37,10 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Playe
         /// </param>
         public PlayerInstance(PlayerInstanceDependencies playerInstanceDependencies)
         {
-            _playerInstanceDeps = playerInstanceDependencies;
+            _deps = playerInstanceDependencies;
             _typ = TileTyp.Player;
-            _symbol= _playerInstanceDeps.SymbolsManager.PlayerSymbol;
-            _playerInstanceDeps.DiagnosticsManager.AddCheck($"{nameof(PlayerInstance)}: Default symbol {_symbol} - Player instance successfully created with default symbol");           
+            _symbol= _deps.Symbol.PlayerSymbol;            
+            _deps.Diagnostic.AddCheck($"{nameof(PlayerInstance)}: Default symbol {_symbol} - Player instance successfully created with default symbol");           
         }
 
         /// <summary>
@@ -46,6 +48,15 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Playe
         /// </summary>
         public char Symbol => _symbol;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public int Heart => _heart;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool IsAlive => _isAlive;
         /// <summary>
         /// Gets the current position of the player on the game board,
         /// represented as (y, x) coordinates.
@@ -64,7 +75,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Playe
         public void AssignSymbol(char symbol)
         {
             _symbol = symbol;
-            _playerInstanceDeps.DiagnosticsManager.AddCheck($"{nameof(PlayerInstance)}.{nameof(AssignSymbol)}: Symbol {_symbol} - Player symbol successfully assigned");
+            _deps.Diagnostic.AddCheck($"{nameof(PlayerInstance)}.{nameof(AssignSymbol)}: Symbol {_symbol} - Player symbol successfully assigned");
         }
 
         /// <summary>
@@ -74,7 +85,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Playe
         public void AssignPosition((int y, int x) position)
         {
             _position = position;
-            _playerInstanceDeps.DiagnosticsManager.AddCheck($"{nameof(PlayerInstance)}.{nameof(AssignPosition)}: Position {_position} - Player successfully assigned");
+            _deps.Diagnostic.AddCheck($"{nameof(PlayerInstance)}.{nameof(AssignPosition)}: Position {_position} - Player successfully assigned");
         }
 
         /// <summary>
@@ -84,6 +95,22 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Playe
         public void Initialize((int y, int x) position)
         {
             AssignPosition(position);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public void isDead()
+        {
+            _isAlive = false ; 
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public void loseHearth()
+        {
+            _heart = -1;
         }
     }
 }
