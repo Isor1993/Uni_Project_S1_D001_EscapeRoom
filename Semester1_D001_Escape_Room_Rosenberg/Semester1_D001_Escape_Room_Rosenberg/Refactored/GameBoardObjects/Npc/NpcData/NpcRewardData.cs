@@ -7,10 +7,12 @@ using System.Threading.Tasks;
 namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc.NpcData
 {
     /// <summary>
-    /// Represents the reward data assigned to a non-player character (NPC).
-    /// Stores information about the number of key fragments and points granted
-    /// to the player after interacting with or completing a task for the NPC.
+    /// Represents the reward data associated with a non-player character (NPC).
     /// </summary>
+    /// <remarks>
+    /// Contains information about the number of key fragments and points 
+    /// the player receives after interacting with the NPC or completing their task.
+    /// </remarks>
     internal class NpcRewardData
     {
         // === Fields ===
@@ -18,10 +20,10 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc.N
         private int _points;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="NpcRewardData"/> class.
+        /// nitializes a new instance of the <see cref="NpcRewardData"/> class.
         /// </summary>
-        /// <param name="keyFragment">The number of key fragments awarded to the player as part of the NPC’s reward.</param>
-        /// <param name="points">The number of points awarded to the player as part of the NPC’s reward.</param>
+        /// <param name="keyFragment">The number of key fragments granted to the player as part of the reward.</param>
+        /// <param name="points">The number of points granted to the player as part of the reward.</param>
         public NpcRewardData(int keyFragment, int points)
         {
             _keyFragment = keyFragment;

@@ -8,27 +8,25 @@ using System.Threading.Tasks;
 namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies
 {
     /// <summary>
-    /// Defines all required dependencies for the <see cref="DoorInstance"/> class.
-    /// Provides access to the symbol manager for door visuals, the game board
-    /// structure for spatial context, and the diagnostics manager for runtime
-    /// logging and validation.
+    /// <summary>
+    /// Provides all dependencies required for initializing and managing a <see cref="DoorInstance"/>.
     /// </summary>
+    /// <remarks>
+    /// The <see cref="DoorInstanceDependencies"/> record bundles the <see cref="SymbolsManager"/> 
+    /// and <see cref="DiagnosticsManager"/> together to ensure consistent symbol assignment 
+    /// and diagnostic logging across all door operations.
+    /// </remarks>
     /// <param name="Symbol">
-    /// Reference to the <see cref="Symbol"/> responsible for providing
-    /// door-related visual symbols and graphical representations used in the board layout.
-    /// </param>
-    /// <param name="GameBoard">
-    /// Reference to the <see cref="GameBoardManager"/> that manages the logical
-    /// structure and dimensions of the game board where door instances are placed.
+    /// Reference to the <see cref="SymbolsManager"/> containing all door-related symbols 
+    /// (open/closed, horizontal/vertical).
     /// </param>
     /// <param name="Diagnostic">
-    /// Reference to the <see cref="Diagnostic"/> used to record creation
-    /// checks, warnings, and status messages during door initialization.
+    /// Reference to the <see cref="DiagnosticsManager"/> responsible for tracking and logging 
+    /// all door-related actions and validations.
     /// </param>
     internal sealed record DoorInstanceDependencies
     (
-        SymbolsManager Symbol,
-        GameBoardManager GameBoard,
+        SymbolsManager Symbol,        
         DiagnosticsManager Diagnostic
     );
 }

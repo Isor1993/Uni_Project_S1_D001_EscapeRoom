@@ -2,116 +2,130 @@
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers;
 
 namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Wall
-{    
+{
     /// <summary>
     /// Represents a wall element on the game board.
-    /// Provides access to wall symbols and stores both the symbol and position data
-    /// for individual wall instances.
     /// </summary>
+    /// <remarks>
+    /// A <see cref="WallInstance"/> stores the type, position, and symbol of a single wall tile.  
+    /// It retrieves its visual symbol from the <see cref="WallInstanceDependencies.Symbol"/> configuration 
+    /// and logs all initialization steps via <see cref="DiagnosticsManager"/> for debugging and validation.
+    /// </remarks>
     internal class WallInstance
     {
-
         // === Dependencies ===
         private readonly WallInstanceDependencies _deps;
 
         // === Fields ===
         private char _symbol;
         private (int y, int x) _position;
-        private TileTyp _typ;
+        private TileTyp _type;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WallInstance"/> class.
-        /// Sets up all required dependencies for wall initialization and logging,
-        /// and assigns a default tile type of <see cref="TileTyp.None"/>.
         /// </summary>
         /// <param name="wallInstanceDependencies">
-        /// Reference to the <see cref="WallInstanceDependencies"/> object that provides
-        /// the required managers and configuration data for wall initialization.
+        /// Reference to the <see cref="WallInstanceDependencies"/> object providing 
+        /// access to the symbol configuration and diagnostic manager.
         /// </param>
         public WallInstance(WallInstanceDependencies wallInstanceDependencies)
         {
             _deps = wallInstanceDependencies;
-            _typ = TileTyp.None;
-            _deps.Diagnostic.AddCheck($"{nameof(WallInstance)}: Wall instance successfully created.");
+            _type = TileTyp.None;
+            _deps.Diagnostic.AddCheck($"{nameof(WallInstance)}: successfully created.");
         }
 
         /// <summary>
-        /// Gets the tile type assigned to this Wall (typically a <see cref="TileTyp.Wall..."/> value).
+        /// Gets the tile type assigned to this wall instance 
+        /// (typically one of the <see cref="TileTyp.Wall..."/> values).
         /// </summary>
-        public TileTyp Typ=>_typ;
+        public TileTyp Typ => _type;
+
         /// <summary>
-        /// Gets the character symbol that visually represents this wall element.
+        /// GGets the visual character symbol representing this wall instance.
         /// </summary>
         public char Symbol => _symbol;
 
         /// <summary>
-        /// Gets the wall's position on the game board.
+        /// Gets the wall’s position on the game board.
         /// </summary>
         public (int y, int x) Position => _position;
 
         /// <summary>
-        /// TODO Switch case upgrade?
-        /// Assigns the correct wall symbol based on the given <see cref="TileTyp"/>.
-        /// Logs the assignment result through the diagnostics manager.
+        /// Assigns a visual symbol to the wall based on the provided <see cref="TileTyp"/>.
         /// </summary>
-        /// <param name="typ">The wall type that determines which symbol will be assigned.</param>
-        public void AssignSymbol(TileTyp typ)
+        /// <remarks>
+        /// This method maps each wall type to its corresponding character symbol 
+        /// from the <see cref="WallInstanceDependencies.Symbol"/> configuration.  
+        /// Each assignment is logged through the diagnostics system.  
+        /// If the provided type is invalid, a fallback death symbol is used.
+        /// </remarks>
+        /// <param name="type">The type of wall to assign a symbol for.</param>
+        public void AssignSymbol(TileTyp type)
         {
-            if (typ == TileTyp.WallHorizontal)
+            switch (type)
             {
-                _symbol = _deps.Symbol.WallHorizontalSymbol;
-                _deps.Diagnostic.AddCheck($"{nameof(WallInstance)}.{nameof(AssignSymbol)}: Symbol {_symbol} assigned (horizontal wall).");
-            }
-            else if (typ == TileTyp.WallVertical)
-            {
-                _symbol = _deps.Symbol.WallVerticalSymbol;
-                _deps.Diagnostic.AddCheck($"{nameof(WallInstance)}.{nameof(AssignSymbol)}: Symbol {_symbol} assigned (vertical wall).");
-            }
-            else if (typ == TileTyp.WallCornerBottomLeft)
-            {
-                _symbol = _deps.Symbol.WallCornerBottomLeftSymbol;
-                _deps.Diagnostic.AddCheck($"{nameof(WallInstance)}.{nameof(AssignSymbol)}: Symbol {_symbol} assigned (bottom-left corner).");
-            }
-            else if (typ == TileTyp.WallCornerBottomRight)
-            {
-                _symbol = _deps.Symbol.WallCornerBottomRightSymbol;
-                _deps.Diagnostic.AddCheck($"{nameof(WallInstance)}.{nameof(AssignSymbol)}: Symbol {_symbol} assigned (bottom-right corner).");
-            }
-            else if (typ == TileTyp.WallCornerTopLeft)
-            {
-                _symbol = _deps.Symbol.WallCornerTopLeftSymbol;
-                _deps.Diagnostic.AddCheck($"{nameof(WallInstance)}.{nameof(AssignSymbol)}: Symbol {_symbol} assigned (top-left corner).");
-            }
-            else if (typ == TileTyp.WallCornerTopRight)
-            {
-                _symbol = _deps.Symbol.WallCornerTopRightSymbol;
-                _deps.Diagnostic.AddCheck($"{nameof(WallInstance)}.{nameof(AssignSymbol)}: Symbol {_symbol} assigned (top-right corner).");
-            }
-            else
-            {
-                _symbol = _deps.Symbol.DeathSymbol;
-                _deps.Diagnostic.AddWarning($"{nameof(WallInstance)}.{nameof(AssignSymbol)}: Invalid wall type provided — using fallback symbol.");
+                case TileTyp.WallHorizontal:
+                    _symbol = _deps.Symbol.WallHorizontalSymbol;
+                    _deps.Diagnostic.AddCheck($"{nameof(WallInstance)}.{nameof(AssignSymbol)}: Symbol {_symbol} assigned (horizontal wall).");
+                    break;
+
+                case TileTyp.WallVertical:
+                    _symbol = _deps.Symbol.WallVerticalSymbol;
+                    _deps.Diagnostic.AddCheck($"{nameof(WallInstance)}.{nameof(AssignSymbol)}: Symbol {_symbol} assigned (vertical wall).");
+                    break;
+
+                case TileTyp.WallCornerBottomLeft:
+                    _symbol = _deps.Symbol.WallCornerBottomLeftSymbol;
+                    _deps.Diagnostic.AddCheck($"{nameof(WallInstance)}.{nameof(AssignSymbol)}: Symbol {_symbol} assigned (bottom-left corner).");
+                    break;
+
+                case TileTyp.WallCornerBottomRight:
+                    _symbol = _deps.Symbol.WallCornerBottomRightSymbol;
+                    _deps.Diagnostic.AddCheck($"{nameof(WallInstance)}.{nameof(AssignSymbol)}: Symbol {_symbol} assigned (bottom-right corner).");
+                    break;
+
+                case TileTyp.WallCornerTopLeft:
+                    _symbol = _deps.Symbol.WallCornerTopLeftSymbol;
+                    _deps.Diagnostic.AddCheck($"{nameof(WallInstance)}.{nameof(AssignSymbol)}: Symbol {_symbol} assigned (top-left corner).");
+                    break;
+
+                case TileTyp.WallCornerTopRight:
+                    _symbol = _deps.Symbol.WallCornerTopRightSymbol;
+                    _deps.Diagnostic.AddCheck($"{nameof(WallInstance)}.{nameof(AssignSymbol)}: Symbol {_symbol} assigned (top-right corner).");
+                    break;
+
+                default:
+                    _symbol = _deps.Symbol.DeathSymbol;
+                    _deps.Diagnostic.AddWarning($"{nameof(WallInstance)}.{nameof(AssignSymbol)}: Invalid wall type provided — using fallback symbol.");
+                    break;
             }
         }
 
         /// <summary>
-        /// Initializes the wall instance by assigning both its type and position.
-        /// Automatically applies the appropriate symbol based on the type.
+        /// Initializes the wall instance by assigning its type and position.
         /// </summary>
-        /// <param name="typ">The type of wall (e.g., horizontal, vertical, or corner).</param>
-        /// <param name="position">The position of the wall on the game board, represented as (y, x) coordinates.</param>
+        /// <remarks>
+        /// Calls <see cref="AssignSymbol(TileTyp)"/> to set the correct visual representation,  
+        /// then assigns the wall’s grid coordinates and logs both steps in the diagnostics system.
+        /// </remarks>
+        /// <param name="typ">The type of wall (horizontal, vertical, or one of the corner types).</param>
+        /// <param name="position">The position of the wall on the game board as (y, x) coordinates.</param>
         public void Initialize(TileTyp typ, (int y, int x) position)
         {
-            _typ = typ;
-            AssignSymbol(_typ);
+            _type = typ;
+            AssignSymbol(_type);
             AssignPosition(position);
         }
 
         /// <summary>
-        /// Assigns a position to this wall element on the game board
-        /// and logs the position assignment.
+        /// Assigns the board position to this wall instance.
         /// </summary>
-        /// <param name="position">The new position of the wall, represented as (y, x) coordinates.</param>
+        /// <param name="position">The Y/X coordinates where this wall should be placed.</param>
+        /// <remarks>
+        /// This method only updates internal position data and logs the result.  
+        /// It does not modify the visual board array — this is handled by the <see cref="GameBoardManager"/>.
+        /// </remarks>
         public void AssignPosition((int y, int x) position)
         {
             _position = position;

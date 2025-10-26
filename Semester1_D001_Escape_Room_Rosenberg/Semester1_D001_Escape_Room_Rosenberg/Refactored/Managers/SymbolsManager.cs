@@ -85,7 +85,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         public char EmptySymbol { get => _emptySymbol; set => _emptySymbol = value; }
         public char OpenDoorVerticalSymbol { get => _openDoorVerticalSymbol; set => _openDoorVerticalSymbol = value; }
         public char ClosedDoorVerticalSymbol { get => _closedDoorVerticalSymbol; set => _closedDoorVerticalSymbol = value; }
-        public char OpenDoororizontalSymbol { get => _openDoorHorizontalSymbol; set => _openDoorHorizontalSymbol = value; }
+        public char OpenDoorHorizontalSymbol { get => _openDoorHorizontalSymbol; set => _openDoorHorizontalSymbol = value; }
         public char ClosedDoorHorizontalSymbol { get => _closedDoorHorizontalSymbol; set => _closedDoorHorizontalSymbol = value; }
         public char TimeWatchSymbol { get => _timeWatchSymbol; set => _timeWatchSymbol = value; }
         public char HearthSymbol { get => _hearthSymbol; set => _hearthSymbol = value; }

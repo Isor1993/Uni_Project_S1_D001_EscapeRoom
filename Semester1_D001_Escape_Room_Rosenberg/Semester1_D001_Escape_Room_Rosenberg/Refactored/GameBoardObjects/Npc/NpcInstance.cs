@@ -7,14 +7,17 @@ using Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers;
 namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc
 {
     /// <summary>
-    /// Represents an instantiated non-player character (NPC) within the game.
-    /// Holds references to its metadata, dialog, and reward data,
-    /// and manages its activation and interaction states during gameplay.
+    ///  Represents an instantiated non-player character (NPC) within the game world.
     /// </summary>
+    /// <remarks>
+    /// The <see cref="NpcInstance"/> class combines all relevant NPC data — metadata, dialogue, and rewards — 
+    /// and manages the NPC’s activation, interaction, and position states during gameplay.  
+    /// It interacts closely with the <see cref="NpcInstanceDependencies"/> for diagnostics and configuration.
+    /// </remarks>
     internal class NpcInstance
     {
         // === Dependencies ===
-        private readonly NpcInstanceDependencies _instanceDeps;
+        private readonly NpcInstanceDependencies _deps;
         private readonly NpcMetaData _meta;
         private readonly NpcDialogData _dialog;
         private readonly NpcRewardData _reward;
@@ -26,23 +29,25 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NpcInstance"/> class.
-        /// Sets up all required dependencies for NPC initialization,
-        /// initializes default state flags, and logs the creation event.
         /// </summary>
-        /// <param name="npcInstanceDependencies">
-        /// Reference to the <see cref="NpcInstanceDependencies"/> object that provides
-        /// the necessary managers and configuration data for NPC setup.
-        /// </param>
-        public NpcInstance(NpcInstanceDependencies npcInstanceDependencies,NpcMetaData npcMetaData,NpcDialogData npcDialogData,NpcRewardData npcRewardData)
+        /// <param name="npcInstanceDependencies">Injected dependencies required for initialization and diagnostics.</param>
+        /// <param name="npcMetaData">The <see cref="NpcMetaData"/> object containing basic information like name and position.</param>
+        /// <param name="npcDialogData">The <see cref="NpcDialogData"/> object containing the NPC’s dialogue and answer sets.</param>
+        /// <param name="npcRewardData">The <see cref="NpcRewardData"/> object defining the rewards associated with this NPC.</param>
+        /// <remarks>
+        /// Upon creation, the NPC is initialized as inactive and un-interacted, with its tile type set to <see cref="TileTyp.Npc"/>.  
+        /// A diagnostic entry is automatically logged confirming successful creation.
+        /// </remarks>
+        public NpcInstance(NpcInstanceDependencies npcInstanceDependencies, NpcMetaData npcMetaData, NpcDialogData npcDialogData, NpcRewardData npcRewardData)
         {
-            _instanceDeps=npcInstanceDependencies;  
-            _meta=npcMetaData;
-            _dialog=npcDialogData;
-            _reward=npcRewardData;
+            _deps = npcInstanceDependencies;
+            _meta = npcMetaData;
+            _dialog = npcDialogData;
+            _reward = npcRewardData;
             _isActive = false;
             _hasInteracted = false;
             _typ = TileTyp.Npc;
-            _instanceDeps.Diagnostic.AddCheck($"{nameof(NpcInstance)}: Instance successfully created.");
+            _deps.Diagnostic.AddCheck($"{nameof(NpcInstance)}: Instance successfully created.");
         }
 
         /// <summary>
@@ -73,48 +78,80 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc
         public bool HasInteracted => _hasInteracted;
 
         /// <summary>
-        /// Activates the NPC, marking it as currently active in the game world.
+        /// Activates the NPC, marking it as currently active within the game world.
         /// </summary>
+        /// <remarks>
+        /// Typically called when the player enters the NPC’s interaction range 
+        /// or when dialogue becomes available.
         public void Activate()
         {
             _isActive = true;
-            _instanceDeps.Diagnostic.AddCheck($"{nameof(NpcInstance)}: NPC {_meta.Name} activated.");
+            _deps.Diagnostic.AddCheck($"{nameof(NpcInstance)}: NPC {_meta.Name} activated.");
         }
 
         /// <summary>
         /// Deactivates the NPC, marking it as inactive in the game world.
         /// </summary>
+        /// <remarks>
+        /// Often used when the player moves away or the dialogue sequence ends.
+        /// </remarks>
         public void Deactivate()
         {
             _isActive = false;
-            _instanceDeps.Diagnostic.AddCheck($"{nameof(NpcInstance)}: NPC {_meta.Name} deactivated.");
+            _deps.Diagnostic.AddCheck($"{nameof(NpcInstance)}: NPC {_meta.Name} deactivated.");
         }
 
         /// <summary>
-        /// Marks the NPC as interacted with by the player.
+        /// Marks the NPC as having been interacted with by the player.
         /// </summary>
+        /// <remarks>
+        /// Used to prevent duplicate interactions or reward duplication after a dialogue event.
+        /// </remarks>
         public void MarkAsInteracted()
         {
             _hasInteracted = true;
-            _instanceDeps.Diagnostic.AddCheck($"{nameof(NpcInstance)}: NPC {_meta.Name} marked as interacted.");
+            _deps.Diagnostic.AddCheck($"{nameof(NpcInstance)}: NPC {_meta.Name} marked as interacted.");
         }
 
         /// <summary>
-        /// Resets the interaction state, marking the NPC as not yet interacted with.
+        /// Resets the interaction flag, marking the NPC as not yet interacted with.
         /// </summary>
+        /// <remarks>
+        /// This can be used during level resets or when replaying a scene 
+        /// to allow renewed interactions.
+        /// </remarks>
         public void MarkAsNotInteracted()
         {
             _hasInteracted = false;
-            _instanceDeps.Diagnostic.AddCheck($"{nameof(NpcInstance)}: NPC {_meta.Name} marked as not interacted.");
+            _deps.Diagnostic.AddCheck($"{nameof(NpcInstance)}: NPC {_meta.Name} marked as not interacted.");
         }
         /// <summary>
         /// Updates the NPC’s position on the game board.
         /// </summary>
-        /// <param name="position">The new position of the NPC, represented as (y, x) coordinates.</param>
-        public void AssignPosition((int y,int x)position)
+        /// <param name="position">The new position of the NPC, represented as (Y, X) coordinates.</param>
+        /// <remarks>
+        /// Internally calls <see cref="NpcMetaData.AssignPosition((int, int))"/> to update the metadata.  
+        /// This ensures the visual and logical position stay synchronized.
+        /// </remarks>
+        public void AssignPosition((int y, int x) position)
         {
             _meta.AssignPosition(position);
-            _instanceDeps.Diagnostic.AddCheck($"{nameof(NpcInstance)}: NPC {_meta.Name} position updated to {position}.");
+            _deps.Diagnostic.AddCheck($"{nameof(NpcInstance)}: NPC {_meta.Name} position updated to {position}.");
+        }
+
+        /// <summary>
+        /// Resets the NPC’s runtime state to its default configuration.
+        /// </summary>
+        /// <remarks>
+        /// Sets <see cref="_isActive"/> and <see cref="_hasInteracted"/> to <c>false</c>,  
+        /// effectively restoring the NPC to an untouched, inactive state.  
+        /// This is typically called when restarting a level or rebuilding the game board.
+        /// </remarks>
+        public void ResetState()
+        {
+            _isActive = false;
+            _hasInteracted = false;
+            _deps.Diagnostic.AddCheck($"{nameof(NpcInstance)}: NPC {_meta.Name} reset to default state.");
         }
     }
 }

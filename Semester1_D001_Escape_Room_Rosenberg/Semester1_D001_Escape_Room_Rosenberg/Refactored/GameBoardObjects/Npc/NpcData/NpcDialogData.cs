@@ -3,10 +3,13 @@
 namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc.NpcData
 {
     /// <summary>
-    /// Represents the dialog data of a non-player character (NPC).
-    /// Stores the NPC’s question, the correct answer, and all available answer options
-    /// used during player interaction or quiz-style conversations.
+    /// Represents the dialog configuration of a non-player character (NPC).
     /// </summary>
+    /// <remarks>
+    /// Stores the question, the correct answer, and possible answer sets.  
+    /// Each NPC can have one main question and multiple grouped answers (A, B, C) 
+    /// used for interactive or quiz-style conversations with the player.
+    /// </remarks>
     internal class NpcDialogData
     {
         // === Fields ===
@@ -17,9 +20,12 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc.N
         /// <summary>
         /// Initializes a new instance of the <see cref="NpcDialogData"/> class.
         /// </summary>
-        /// <param name="question">The main question presented by the NPC.</param>
+        /// <param name="question">The question posed by the NPC.</param>
         /// <param name="correctAnswer">The correct answer to the question.</param>
-        /// <param name="answerGroups">A list of possible answer sets, each containing three options (A, B, and C).</param>
+        /// <param name="answerGroups">A list of possible answer sets (A, B, C).</param>
+        /// <remarks>
+        /// Each answer group typically contains three options from which the player must select one.
+        /// </remarks>
         public NpcDialogData(string question, string correctAnswer, List<(string A, string B, string C)> answerGroups)
         {
             _question = question;
@@ -33,9 +39,11 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc.N
         public string Question => _question;
 
         /// <summary>
-        /// Gets the list of answer groups containing the NPC’s available choices.
-        /// Each tuple represents a group of three answer options (A, B, C).
+        /// Gets all answer groups available for the NPC’s question.
         /// </summary>
+        /// <remarks>
+        /// Each tuple represents a set of three multiple-choice options.
+        /// </remarks>
         public List<(string A, string B, string C)> AnswerGroups => _answerGroups;
 
         /// <summary>

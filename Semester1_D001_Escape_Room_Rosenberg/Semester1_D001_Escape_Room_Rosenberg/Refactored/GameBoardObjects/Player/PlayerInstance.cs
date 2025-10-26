@@ -11,9 +11,13 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Playe
 {
     /// <summary>
     /// Represents the player instance on the game board.
-    /// Stores the player’s position, symbol, and tile type,
-    /// and provides functionality to assign and initialize these values.
     /// </summary>
+    /// <remarks>
+    /// The <see cref="PlayerInstance"/> holds data such as position, symbol, lives, and alive status.  
+    /// It also provides methods to modify the player’s state during gameplay (e.g., taking damage or dying).  
+    /// Initialization and symbol assignment are handled via dependency injection through
+    /// <see cref="PlayerInstanceDependencies"/>.
+    /// </remarks>
     internal class PlayerInstance
     {
         // === Dependencies ===
@@ -22,25 +26,29 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Playe
         // === Fields ===
         private char _symbol;
         private (int y, int x) _position;
-        private TileTyp _typ;
-        private bool _isAlive=true;
-        private int _heart = 3;
+        private int _life;
+        private bool _isAlive;
+        private TileTyp _type;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PlayerInstance"/> class.
-        /// Sets up all required dependencies for player initialization,
-        /// assigns the default player symbol, and logs the creation event.
+        /// nitializes a new instance of the <see cref="PlayerInstance"/> class.
         /// </summary>
         /// <param name="playerInstanceDependencies">
-        /// Reference to the <see cref="PlayerInstanceDependencies"/> object that provides
-        /// the necessary managers and configuration data for player setup.
+        /// Provides references to the required systems for player initialization, 
+        /// such as <see cref="DiagnosticsManager"/> and <see cref="SymbolsManager"/>.
         /// </param>
+        /// <remarks>
+        /// When created, the player receives a default symbol, three lives, and a "alive" status.  
+        /// A log entry is added to diagnostics confirming successful initialization.
+        /// </remarks>
         public PlayerInstance(PlayerInstanceDependencies playerInstanceDependencies)
         {
             _deps = playerInstanceDependencies;
-            _typ = TileTyp.Player;
-            _symbol= _deps.Symbol.PlayerSymbol;            
-            _deps.Diagnostic.AddCheck($"{nameof(PlayerInstance)}: Default symbol {_symbol} - Player instance successfully created with default symbol");           
+            _type = TileTyp.Player;
+            _symbol = _deps.Symbol.PlayerSymbol;
+            _life = 3;
+            _isAlive = true;
+            _deps.Diagnostic.AddCheck($"{nameof(PlayerInstance)}: Default symbbol {_symbol}, typ {_type}, isAlive {_isAlive} and lifes {_life}  - Player instance successfully created with default symbol");
         }
 
         /// <summary>
@@ -49,13 +57,20 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Playe
         public char Symbol => _symbol;
 
         /// <summary>
-        /// 
+        /// Gets the number of remaining lives the player currently has.
         /// </summary>
-        public int Heart => _heart;
+        /// <remarks>
+        /// Initially set to <c>3</c>. Each time the player takes damage, this value decreases.
+        /// </remarks>
+        public int Heart => _life;
 
         /// <summary>
-        /// 
+        /// Indicates whether the player is still alive.
         /// </summary>
+        /// <remarks>
+        /// Returns <c>true</c> if the player has at least one remaining life;  
+        /// set to <c>false</c> when all lives are lost.
+        /// </remarks>
         public bool IsAlive => _isAlive;
         /// <summary>
         /// Gets the current position of the player on the game board,
@@ -66,7 +81,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Playe
         /// <summary>
         /// Gets the tile type assigned to this object (always <see cref="TileTyp.Player"/>).
         /// </summary>
-        public TileTyp Typ => _typ;
+        public TileTyp Typ => _type;
 
         /// <summary>
         /// Assigns a new visual symbol to the player and logs the update.
@@ -89,28 +104,41 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Playe
         }
 
         /// <summary>
-        /// Initializes the player instance by assigning a specific position on the game board.
+        /// Initializes the player by assigning a starting position on the game board.
         /// </summary>
-        /// <param name="position">The player’s starting position, represented as (y, x) coordinates.</param>
+        /// <param name="position">The player’s initial grid coordinates as (Y, X).</param>
+        /// <remarks>
+        /// Typically called when the player is spawned or when the level starts.
+        /// </remarks>
         public void Initialize((int y, int x) position)
         {
             AssignPosition(position);
         }
 
         /// <summary>
-        /// 
+        /// Sets the player's status to "dead".
         /// </summary>
-        public void isDead()
+        /// <remarks>
+        /// This method is typically triggered when the player's life count reaches zero.  
+        /// The state change is logged for debugging and gameplay validation.
+        /// </remarks>
+        public void SetDead()
         {
-            _isAlive = false ; 
+            _isAlive = false;
+            _deps.Diagnostic.AddCheck($"{nameof(PlayerInstance)}.{nameof(SetDead)}: Player has died.");
         }
 
         /// <summary>
-        /// 
+        /// Decreases the player's life count by one.
         /// </summary>
-        public void loseHearth()
+        /// <remarks>
+        /// When the player loses all lives, <see cref="SetDead()"/> should be called afterward  
+        /// to update the alive status. Each decrement is logged for validation.
+        /// </remarks>
+        public void loseLife()
         {
-            _heart = -1;
+            _life -= 1;
+            _deps.Diagnostic.AddCheck($"{nameof(PlayerInstance)}.{nameof(loseLife)}: Player lost one life. Remaining lives: {_life}.");
         }
     }
 }

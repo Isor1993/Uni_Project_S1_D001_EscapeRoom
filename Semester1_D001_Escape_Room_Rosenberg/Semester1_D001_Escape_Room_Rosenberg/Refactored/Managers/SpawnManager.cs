@@ -183,7 +183,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
             DoorInstance doorInstance = new DoorInstance(_deps.DoorInstance);
 
             doorInstance.Initialize(_deps.Random.RandomPositionFromList(_wallPositions));
-            _deps.GameBoard.PlaceTileTypOnBoard(TileTyp.Door, doorInstance.Position);
+            _deps.GameBoard.SetTile(TileTyp.Door, doorInstance.Position);
             _deps.GameObject.RegisterObject(doorInstance.Position, doorInstance);
             _wallPositions.Remove(doorInstance.Position);
 
@@ -211,7 +211,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
             PlayerInstance playerInstance = new PlayerInstance(_deps.PlayerInstance);
 
             playerInstance.Initialize(result.position);
-            _deps.GameBoard.PlaceTileTypOnBoard(TileTyp.Player, result.position);
+            _deps.GameBoard.SetTile(TileTyp.Player, result.position);
             _deps.GameObject.RegisterObject(result.position, playerInstance);
             _emptyPositions.Remove(result.position);
 
@@ -252,7 +252,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
                 KeyFragmentInstance keyFragmentInstance = new KeyFragmentInstance(_deps.KeyFragmentInstance);
 
                 keyFragmentInstance.Initialize(result.position);
-                _deps.GameBoard.PlaceTileTypOnBoard(TileTyp.Key, result.position);
+                _deps.GameBoard.SetTile(TileTyp.Key, result.position);
                 _deps.GameObject.RegisterObject(result.position, keyFragmentInstance);
                 _emptyPositions.Remove(result.position);
 
@@ -284,7 +284,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
                 }
 
                 npc.AssignPosition(result.position);
-                _deps.GameBoard.PlaceTileTypOnBoard(TileTyp.Npc, result.position);
+                _deps.GameBoard.SetTile(TileTyp.Npc, result.position);
                 _deps.GameObject.RegisterObject(result.position, npc);
                 _emptyPositions.Remove(result.position);
 

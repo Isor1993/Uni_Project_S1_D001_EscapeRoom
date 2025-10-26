@@ -1,4 +1,5 @@
 ﻿using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc;
+using Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,27 +9,28 @@ using System.Threading.Tasks;
 namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies
 {
     /// <summary>
-    /// Defines all required dependencies for the <see cref="NpcManager"/> class.
-    /// Provides access to the <see cref="PrintManager"/> for console output,
-    /// the <see cref="DiagnosticsManager"/> for logging and validation,
-    /// and the <see cref="NpcDataLoader"/> for loading NPC-related data.
+    /// Provides all required dependencies for the <see cref="NpcManager"/> system.
     /// </summary>
-    /// <param name="Print">
-    /// Reference to the <see cref="PrintManager"/> responsible for displaying
-    /// NPC-related information and debug output on the console.
+    /// <remarks>
+    /// This dependency record bundles together the <see cref="NpcDataLoader"/>, 
+    /// <see cref="DiagnosticsManager"/>, and <see cref="SymbolsManager"/> 
+    /// to ensure unified access to data loading, diagnostics logging, 
+    /// and symbol management during NPC initialization and runtime.
+    /// </remarks>
+    /// <param name="NpcDataLoader">
+    /// Reference to the <see cref="NpcDataLoader"/> responsible for reading and parsing NPC data files.
     /// </param>
     /// <param name="Diagnostic">
-    /// Reference to the <see cref="DiagnosticsManager"/> used for tracking logs,
-    /// warnings, and diagnostic checks during NPC operations.
+    /// Reference to the <see cref="DiagnosticsManager"/> used for logging system events and validations.
     /// </param>
-    /// <param name="NpcDataLoader">
-    /// Reference to the <see cref="NpcDataLoader"/> responsible for reading and
-    /// providing NPC data such as dialogues, rewards, and metadata.
+    /// <param name="Symbol">
+    /// Reference to the <see cref="SymbolsManager"/> that manages the visual symbols 
+    /// associated with NPCs and their UI representations.
     /// </param>
     internal sealed record NpcManagerDependencies
     (
-        PrintManager Print,
+        NpcDataLoader NpcDataLoader,
         DiagnosticsManager Diagnostic,
-        NpcDataLoader NpcDataLoader
+        SymbolsManager Symbol
     );
 }

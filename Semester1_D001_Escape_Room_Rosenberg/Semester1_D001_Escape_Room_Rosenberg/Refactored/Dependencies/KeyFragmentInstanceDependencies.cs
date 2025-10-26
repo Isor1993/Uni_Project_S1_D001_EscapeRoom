@@ -8,17 +8,18 @@ using System.Threading.Tasks;
 namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies
 {
     /// <summary>
-    /// Defines all required dependencies for the <see cref="KeyFragmentInstance"/> class.
-    /// Provides access to the symbol management and diagnostic systems used for
-    /// initializing and monitoring key fragment instances on the game board.
+    ///Provides all required dependencies for initializing and managing a <see cref="KeyFragmentInstance"/>.
     /// </summary>
+    /// <remarks>
+    /// This dependency record bundles together the <see cref="SymbolsManager"/> and the 
+    /// <see cref="DiagnosticsManager"/> to allow consistent visual representation and 
+    /// diagnostic logging for key fragment objects within the game board.
+    /// </remarks>
     /// <param name="Symbol">
-    /// Reference to the <see cref="Symbol"/> that provides the visual symbol
-    /// representing the key fragment within the board layout.
+    /// Reference to the <see cref="SymbolsManager"/> providing access to all key fragment symbols.
     /// </param>
     /// <param name="Diagnostic">
-    /// Reference to the <see cref="Diagnostic"/> responsible for logging
-    /// initialization checks, warnings, and validation messages related to key fragments.
+    /// Reference to the <see cref="DiagnosticsManager"/> used for validation and event logging.
     /// </param>
     internal sealed record KeyFragmentInstanceDependencies
     (

@@ -43,11 +43,14 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc
         /// A list of <see cref="NpcRawData"/> objects representing all successfully loaded NPCs.
         /// Returns an empty list if an exception occurs during loading.
         /// </returns>
-        public List<NpcRawData> LoadNpcDataFromFile(string filePath)
+        public List<NpcRawData> LoadNpcDataFromFile()
         {
             List<NpcRawData> npcRawList = new List<NpcRawData>();
             try
             {
+                // Path for txt file in project
+                string filePath = "npc_questions.txt";
+
                 foreach (string line in File.ReadAllLines(filePath))
                 {
                     // Skip empty or whitespace-only lines.
@@ -60,13 +63,13 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc
                     // Validate that the line contains all 7 required parts.
                     if (parts.Length < 7)
                     {
-                       _deps.Diagnostic.AddWarning($"{nameof(NpcDataLoader)}.{nameof(LoadNpcDataFromFile)}: Incomplete line {line} skipped ");
+                        _deps.Diagnostic.AddWarning($"{nameof(NpcDataLoader)}.{nameof(LoadNpcDataFromFile)}: Incomplete line {line} skipped ");
                         continue;
                     }
 
                     // === Create raw NPC data objects ===
                     // The meta includes name, position, and automatically assigns the symbol from the SymbolsManager.
-                    NpcMetaData npcMeta = new NpcMetaData(_deps.Symbol,parts[0], (0, 0) );
+                    NpcMetaData npcMeta = new NpcMetaData(_deps.Symbol, parts[0], (0, 0));
                     // The dialog includes a question, correct answer, and three possible answer options.
                     NpcDialogData npcDialog = new NpcDialogData(parts[1], parts[2], new List<(string A, string B, string C)> { (parts[2], parts[3], parts[4]) });
                     // Parse reward-related values.
@@ -81,7 +84,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc
                     // The Reward includes key fragments and points.
                     NpcRewardData npcReward = new NpcRewardData(keyFragments, rewardPoints);
                     // === Combine into a single NpcRawData record ===
-                    NpcRawData npcRaw = new NpcRawData(npcMeta,npcDialog,npcReward);
+                    NpcRawData npcRaw = new NpcRawData(npcMeta, npcDialog, npcReward);
                     // Add the NPC object to the list.
                     npcRawList.Add(npcRaw);
                 }
