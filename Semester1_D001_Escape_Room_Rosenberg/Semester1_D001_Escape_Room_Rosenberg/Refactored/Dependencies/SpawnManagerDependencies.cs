@@ -9,55 +9,26 @@ using Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers;
 namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies
 {
     /// <summary>
-    /// Defines all required dependencies for the <see cref="SpawnManager"/> class.
-    /// Provides centralized access to all core managers, instance dependencies,
-    /// and helper components involved in the spawning process of the game board.
+    /// Provides all required dependencies for the <see cref="SpawnManager"/>.
     /// </summary>
-    /// <param name="Rule">
-    /// Reference to the <see cref="Rule"/> responsible for validating spawn rules
-    /// and checking positional availability on the board.
-    /// </param>
-    /// <param name="Diagnostic">
-    /// Reference to the <see cref="Diagnostic"/> used for logging checks,
-    /// warnings, and error messages during spawn operations.
-    /// </param>
-    /// <param name="Random">
-    /// Reference to the <see cref="Random"/> responsible for generating random positions
-    /// and random element selections during spawning.
-    /// </param>
-    /// <param name="GameBoard">
-    /// Reference to the <see cref="GameBoard"/> handling board-related updates and data access.
-    /// </param>
-    /// <param name="Symbol">
-    /// Reference to the <see cref="Symbol"/> that provides all visual and symbolic representations
-    /// for tiles, NPCs, and items.
-    /// </param>
-    /// <param name="DoorInstance">
-    /// Reference to the <see cref="DoorInstance"/> that defines the managers and data
-    /// required for initializing and spawning door instances.
-    /// </param>
-    /// <param name="KeyFragmentInstance">
-    /// Reference to the <see cref="KeyFragmentInstance"/> providing managers and symbols
-    /// used when spawning key fragment objects.
-    /// </param>
-    /// <param name="NpcInstance">
-    /// Reference to the <see cref="NpcInstance"/> used for setting up and initializing NPC instances.
-    /// </param>
-    /// <param name="PlayerInstance">
-    /// Reference to the <see cref="PlayerInstance"/> providing managers and configuration data
-    /// for player initialization and spawning.
-    /// </param>
-    /// <param name="WallInstance">
-    /// Reference to the <see cref="WallInstance"/> that defines dependencies used for
-    /// building and managing wall elements.
-    /// </param>
-    /// <param name="Npc">
-    /// Reference to the <see cref="Npc"/> responsible for controlling and managing all NPC-related logic.
-    /// </param>
-    /// <param name="GameObject">
-    /// Reference to the <see cref="GameObject"/> used for tracking, registering,
-    /// and retrieving objects placed on the board.
-    /// </param>
+    /// <remarks>
+    /// This record acts as a dependency injection container for all systems  
+    /// that the <see cref="SpawnManager"/> requires to perform object placement.  
+    /// It includes references to rule validation, diagnostics logging, random generation,  
+    /// board management, and all object-specific instance dependencies.
+    /// </remarks>
+    /// <param name="Rule">Reference to the <see cref="RulesManager"/> used for spawn validation.</param>
+    /// <param name="Diagnostic">Reference to the <see cref="DiagnosticsManager"/> used for event logging.</param>
+    /// <param name="Random">Reference to the <see cref="RandomManager"/> used for position randomization.</param>
+    /// <param name="GameBoard">Reference to the <see cref="GameBoardManager"/> managing board layout and size.</param>
+    /// <param name="Symbol">Reference to the <see cref="SymbolsManager"/> providing all object symbols.</param>
+    /// <param name="DoorInstance">Dependencies for creating and initializing <see cref="DoorInstance"/> objects.</param>
+    /// <param name="KeyFragmentInstance">Dependencies for creating and initializing <see cref="KeyFragmentInstance"/> objects.</param>
+    /// <param name="NpcInstance">Dependencies for creating and initializing <see cref="NpcInstance"/> objects.</param>
+    /// <param name="PlayerInstance">Dependencies for creating and initializing <see cref="PlayerInstance"/> objects.</param>
+    /// <param name="WallInstance">Dependencies for creating and initializing <see cref="WallInstance"/> objects.</param>
+    /// <param name="Npc">Reference to the <see cref="NpcManager"/> containing all available NPCs for spawning.</param>
+    /// <param name="GameObject">Reference to the <see cref="GameObjectManager"/> used to register spawned objects on the board.</param>
     internal sealed record SpawnManagerDependencies
     (
         RulesManager Rule,

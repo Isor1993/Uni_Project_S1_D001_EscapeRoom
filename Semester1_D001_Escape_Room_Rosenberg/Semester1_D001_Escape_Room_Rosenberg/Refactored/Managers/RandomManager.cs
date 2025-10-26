@@ -33,6 +33,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         {
             _random = new Random();
             _deps = diagnosticsManager;
+            _deps.AddCheck($"{nameof(RandomManager)}: Initialized successfully.");
         }
 
         /// <summary>

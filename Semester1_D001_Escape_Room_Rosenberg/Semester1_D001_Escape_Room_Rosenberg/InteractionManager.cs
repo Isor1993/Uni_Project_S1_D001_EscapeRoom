@@ -37,7 +37,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         public InteractionManager(InteractionManagerDependencies interactionManagerDependencies)
         {
             _deps = interactionManagerDependencies;
-            _deps.Diagnostic.AddCheck($"{nameof(InteractionManager)} successfully initialized.");
+            _deps.Diagnostic.AddCheck($"{nameof(InteractionManager)}: Initialized successfully.");
         }
 
         public void HandleNpc((int y, int x) targetPosition)
@@ -62,24 +62,17 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         {
             // === RETRIEVE KEY OBJECT FROM POSITION ===
             KeyFragmentInstance? key = _deps.GameObject.GetObject<KeyFragmentInstance>(targetPosition);
-
-            // === VALIDATION: OBJECT EXISTS ===
+                   
             if (key == null)
             {
                 _deps.Diagnostic.AddError($"{nameof(InteractionManager)}: No key object found at ({targetPosition.y},{targetPosition.x}).");
                 return;
             }
-
-            // === UPDATE INVENTORY WITH KEY VALUE ===
+           
             _deps.Inventory.AddKeyFragment(key.Amount);
-
-            // === REMOVE OBJECT SAFELY THROUGH GAMEOBJECT MANAGER ===
+          
             _deps.GameObject.RemoveObject(key.Position);
-
-            // === UPDATE GAME BOARD TILE TO EMPTY ===
-            _deps.GameObject.UpdateBoard(TileTyp.Empty,key.Position);
-
-            // === DIAGNOSTIC LOG: SUCCESSFUL PICKUP ===
+         
             _deps.Diagnostic.AddCheck($"{nameof(InteractionManager)}.{nameof(HandleKey)}: Picked up key at ({targetPosition.y},{targetPosition.x}).");
         }
 
@@ -88,15 +81,13 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         {
             // === RETRIEVE DOOR OBJECT FROM POSITION ===
             DoorInstance? door = _deps.GameObject.GetObject<DoorInstance>(targetPosition);
-
-            // === VALIDATION: OBJECT EXISTS ===
+          
             if (door == null)
             {
                 _deps.Diagnostic.AddError($"{nameof(InteractionManager)}.{nameof(HandleDoor)}: No door object found at ({targetPosition.y},{targetPosition.x}).");
                 return;
             }
-
-            
+                        
             int playerKeys = _deps.Inventory.KeyFragment;
             int requiredKeys = _deps.Level.RequiredKeys; 
 
@@ -107,13 +98,10 @@ namespace Semester1_D001_Escape_Room_Rosenberg
                 return;
             }
 
-            // === OPEN DOOR: REMOVE DOOR OBJECT AND UPDATE BOARD ===
-
-
-            _deps.Door.OpenDoor();           
+            _deps.Door.OpenDoor(_deps.GameBoard.ArraySizeY,_deps.GameBoard.ArraySizeX);  
+            
             _deps.Level.NewLevel(_deps.Inventory.Score);
-
-            // === LOG SUCCESS ===
+        
             _deps.Diagnostic.AddCheck($"{nameof(InteractionManager)}.{nameof(HandleDoor)}: Door opened at ({targetPosition.y},{targetPosition.x}). Used {requiredKeys} key fragments.");
             //TODO new Lvl generating
 

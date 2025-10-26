@@ -26,8 +26,8 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         public RulesManager(RulesManagerDependencies rulesManagerDependencies)
         {
             _deps = rulesManagerDependencies;
+            _deps.Diagnostic.AddCheck($"{nameof(RulesManager)}: Initialized successfully.");
         }
-
 
         /// <summary>
         /// Checks whether a given position on the game board is free and suitable for spawning.
@@ -42,7 +42,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         /// </returns>
         public bool IsPositionFreeForSpawn((int y, int x) position)
         {
-            if(_deps.GameBoard.GameBoardArray==null)
+            if (_deps.GameBoard.GameBoardArray == null)
             {
                 _deps.Diagnostic.AddCheck($"{nameof(RulesManager)}.{nameof(IsPositionFreeForSpawn)}: GameboardArray is null");
                 return false;
@@ -71,16 +71,18 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
                         return false;
                     }
                 }
-            }           
+            }
             return true;
         }
 
-
-
-       
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="targetposition"></param>
+        /// <returns></returns>
         public bool IsMoveAllowed((int y, int x) targetposition)
         {
-            if(_deps.GameBoard.GameBoardArray==null)
+            if (_deps.GameBoard.GameBoardArray == null)
             {
 
                 _deps.Diagnostic.AddError($"{nameof(RulesManager)}.{nameof(IsMoveAllowed)}: GameboardArray is null");
@@ -88,38 +90,38 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 
             }
             TileTyp typ = _deps.GameBoard.GameBoardArray[targetposition.y, targetposition.x];
-           
-            switch( typ)
+
+            switch (typ)
             {
                 case TileTyp.Key:
                     return true;
 
                 case TileTyp.Empty:
-                    return true;                    
+                    return true;
 
                 default:
                     _deps.Diagnostic.AddWarning($"{nameof(RulesManager)}.{nameof(IsMoveAllowed)}: All others posibillities are false");
-
                     return false;
             }
-            
         }
 
+        //TODO mögliche Methoden die man braucht für interaction
+        public void IsDoorOpenable()
+        {
 
+        }
 
+        //TODO mögliche Methoden die man braucht für interaction
+        public void IsNpcInteractable()
+        {
 
+        }
 
+        //TODO mögliche Methoden die man braucht für interaction
+        public void IsInsideBounds((int y, int x) position)
+        {
 
-
-
-
-
-
-
-
-
-
-
-
+        }
     }
 }
+

@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualBasic;
+using Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Door;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Key;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc;
@@ -25,26 +26,25 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
     internal class GameObjectManager
     {
         // === Dependencies ===
-        private readonly DiagnosticsManager _diagnostic;
-        private readonly GameBoardManager _gameBoard;
+        private readonly GameObjectManagerDependencies _deps;
 
         // === Fields ===
         private readonly Dictionary<(int y, int x), object> _objectOnBoard = new();
 
         /// <summary>
-        ///Initializes a new instance of the <see cref="GameObjectManager"/> class.
+        /// Initializes a new instance of the <see cref="GameObjectManager"/> class.
         /// </summary>
-        /// <param name="diagnosticsManager">
-        /// Reference to the <see cref="DiagnosticsManager"/> used for logging checks, warnings, and errors.
+        /// <param name="gameObjectManagerDependencies">
+        /// Provides the required references for managing the board and diagnostic logging.
         /// </param>
-        /// <param name="gameBoardManager">
-        /// Provides access to the <see cref="GameBoardManager"/> for synchronizing tile states.
-        /// </param>
-        public GameObjectManager(DiagnosticsManager diagnosticsManager, GameBoardManager gameBoardManager)
+        /// <remarks>
+        /// When created, the manager is ready to register and synchronize board objects immediately.  
+        /// A diagnostic confirmation message is logged upon instantiation.
+        /// </remarks>
+        public GameObjectManager(GameObjectManagerDependencies gameObjectManagerDependencies)
         {
-            _diagnostic = diagnosticsManager;
-            _gameBoard = gameBoardManager;
-            _diagnostic.AddCheck($"{nameof(GameObjectManager)}: Instance successfully created.");
+            _deps = gameObjectManagerDependencies;
+            _deps.Diagnostic.AddCheck($"{nameof(GameObjectManager)}: Initialized successfully.");
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         {
             if (boardObject == null)
             {
-                _diagnostic.AddError($"{nameof(GameObjectManager)}.{nameof(RegisterObject)}: Tried to register a null object at {position}.");
+                _deps.Diagnostic.AddError($"{nameof(GameObjectManager)}.{nameof(RegisterObject)}: Tried to register a null object at {position}.");
                 return;
             }
 
@@ -121,20 +121,20 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 
                         default:
                             type = TileTyp.None;
-                            _diagnostic.AddError($"{nameof(GameObjectManager)}.{nameof(RegisterObject)}:No TileTyp wall found regristerted as None");
+                            _deps.Diagnostic.AddError($"{nameof(GameObjectManager)}.{nameof(RegisterObject)}:No TileTyp wall found regristerted as None");
                             break;
                     }
                     break;
 
                 default:
                     type = TileTyp.None;
-                    _diagnostic.AddError($"{nameof(GameObjectManager)}.{nameof(RegisterObject)}: No TileTyp found registerted as None");
+                    _deps.Diagnostic.AddError($"{nameof(GameObjectManager)}.{nameof(RegisterObject)}: No TileTyp found registerted as None");
                     break;
             }
 
-            _gameBoard.SetTile(position, type);
+            _deps.GameBoard.SetTile(position, type);
 
-            _diagnostic.AddCheck($"{nameof(GameObjectManager)}: Registered {boardObject.GetType().Name} at {position}.");
+            _deps.Diagnostic.AddCheck($"{nameof(GameObjectManager)}: Registered {boardObject.GetType().Name} at {position}.");
         }
 
         /// <summary>
@@ -147,12 +147,12 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         {
             if (_objectOnBoard.Remove(position))
             {
-                _gameBoard.SetTileToEmpty(position);
-                _diagnostic.AddCheck($"{nameof(GameObjectManager)}: Removed object at {position}.");
+                _deps.GameBoard.SetTileToEmpty(position);
+                _deps.Diagnostic.AddCheck($"{nameof(GameObjectManager)}: Removed object at {position}.");
             }
             else
             {
-                _diagnostic.AddWarning($"{nameof(GameObjectManager)}: Tried to remove object at {position}, but none was found.");
+                _deps.Diagnostic.AddWarning($"{nameof(GameObjectManager)}: Tried to remove object at {position}, but none was found.");
             }
         }
 
@@ -168,11 +168,11 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 
             if (!success || boardObject == null)
             {
-                _diagnostic.AddWarning($"{nameof(GameObjectManager)}.{nameof(TryGetObject)}: No object found at {position}.");
+                _deps.Diagnostic.AddWarning($"{nameof(GameObjectManager)}.{nameof(TryGetObject)}: No object found at {position}.");
             }
             else
             {
-                _diagnostic.AddCheck($"{nameof(GameObjectManager)}.{nameof(TryGetObject)}: Found {boardObject.GetType().Name} at {position}.");
+                _deps.Diagnostic.AddCheck($"{nameof(GameObjectManager)}.{nameof(TryGetObject)}: Found {boardObject.GetType().Name} at {position}.");
             }
 
             return success;
@@ -194,7 +194,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
             {
                 return instance;
             }
-            _diagnostic.AddWarning($"{nameof(GameObjectManager)}.{nameof(GetObject)}: No object found or wrong type at {position}.");
+            _deps.Diagnostic.AddWarning($"{nameof(GameObjectManager)}.{nameof(GetObject)}: No object found or wrong type at {position}.");
             return null;
         }
 
@@ -208,7 +208,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         public void ClearAll()
         {
             _objectOnBoard.Clear();
-            _diagnostic.AddCheck($"{nameof(GameObjectManager)}: Cleared all registered objects.");
+            _deps.Diagnostic.AddCheck($"{nameof(GameObjectManager)}: Cleared all registered objects.");
         }
 
         /// <summary>
@@ -233,7 +233,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         /// <param name="typ">The new <see cref="TileTyp"/> to assign to this position.</param>
         public void UpdateBoard((int y, int x) position, TileTyp typ)
         {
-            _gameBoard.SetTile(position, typ);
+            _deps.GameBoard.SetTile(position, typ);
         }
 
         /// <summary>
@@ -252,17 +252,17 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         {
             if (!_objectOnBoard.TryGetValue(oldPosition, out object? boardObject))
             {
-                _diagnostic.AddError($"{nameof(GameObjectManager)}.{nameof(MovePlayer)}: No Object (player) found at {oldPosition}.");
+                _deps.Diagnostic.AddError($"{nameof(GameObjectManager)}.{nameof(MovePlayer)}: No Object (player) found at {oldPosition}.");
                 return false;
             }
 
             if (_objectOnBoard.ContainsKey(newPosition))
             {
-                _diagnostic.AddWarning($"{nameof(GameObjectManager)}.{nameof(MovePlayer)}: Target position {newPosition} already occupied.");
+                _deps.Diagnostic.AddWarning($"{nameof(GameObjectManager)}.{nameof(MovePlayer)}: Target position {newPosition} already occupied.");
                 return false;
             }
 
-            RemoveObject(oldPosition);            
+            RemoveObject(oldPosition);
 
             RegisterObject(newPosition, boardObject);
             return true;

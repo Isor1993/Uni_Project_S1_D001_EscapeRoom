@@ -58,6 +58,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         public UIManager(UIManagerDependencies uIManagerDependencies)
         {
             _deps = uIManagerDependencies;
+            _deps.Diagnostic.AddCheck($"{nameof(UIManager)}: Initialized successfully.");
         }
 
         /// <summary>

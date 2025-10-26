@@ -23,15 +23,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         public LevelManager(LevelManagerDependencies levelManagerDependencies)
         {
             _deps = levelManagerDependencies;
-
-            if (levelManagerDependencies == null)
-            {
-
-                _deps.Diagnostic.AddError($"{nameof(LevelManager)}: Dependencies missing.");
-               
-            }
-
-            _deps.Diagnostic.AddCheck($"{nameof(LevelManager)} successfully initialized.");
+            _deps.Diagnostic.AddCheck($"{nameof(LevelManager)}: Initialized successfully.");
         }
 
         public int RequiredKeys => _requiredKeys;

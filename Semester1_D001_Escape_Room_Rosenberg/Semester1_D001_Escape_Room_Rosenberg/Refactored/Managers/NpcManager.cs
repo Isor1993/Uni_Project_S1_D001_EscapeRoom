@@ -1,6 +1,7 @@
 ﻿using Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc.NpcData;
+using Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers;
 using System;
 
 namespace Semester1_D001_Escape_Room_Rosenberg.Refactored
@@ -35,6 +36,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored
         public NpcManager(NpcManagerDependencies npcManagerDependencies)
         {
             _deps = npcManagerDependencies;
+            _deps.Diagnostic.AddCheck($"{nameof(NpcManager)}: Initialized successfully.");
         }
 
         /// <summary>

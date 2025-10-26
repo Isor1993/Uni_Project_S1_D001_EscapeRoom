@@ -174,7 +174,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Door
         /// This method ensures the door is visually aligned and properly initialized before rendering on the board.  
         /// It also registers the initial diagnostics entry for traceability.
         /// </remarks>
-        public void Initialize((int y, int x) position, int arraySizeX, int arraySizeY)
+        public void Initialize((int y, int x) position, int arraySizeY, int arraySizeX)
         {
             AssignPosition(position);
             AssignDoorSymbol(arraySizeY, arraySizeX);
