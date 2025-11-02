@@ -48,7 +48,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
                 return false;
             }
             // Retrieve the game board.
-            TileTyp[,] board = _deps.GameBoard.GameBoardArray;
+            TileType[,] board = _deps.GameBoard.GameBoardArray;
             int height = board.GetLength(0);
             int width = board.GetLength(1);
 
@@ -62,10 +62,10 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
                         continue;
 
                     //  Prevent spawning near any interactive object
-                    if (board[y, x] == TileTyp.Door ||
-                        board[y, x] == TileTyp.Player ||
-                        board[y, x] == TileTyp.Npc ||
-                        board[y, x] == TileTyp.Key)
+                    if (board[y, x] == TileType.Door ||
+                        board[y, x] == TileType.Player ||
+                        board[y, x] == TileType.Npc ||
+                        board[y, x] == TileType.Key)
                     {
                         _deps.Diagnostic.AddWarning($"{nameof(RulesManager)}.{nameof(IsPositionFreeForSpawn)}:  Position {position} rejected — too close to an active object {board[y, x]}.");
                         return false;
@@ -89,14 +89,14 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
                 return false;
 
             }
-            TileTyp typ = _deps.GameBoard.GameBoardArray[targetposition.y, targetposition.x];
+            TileType typ = _deps.GameBoard.GameBoardArray[targetposition.y, targetposition.x];
 
             switch (typ)
             {
-                case TileTyp.Key:
+                case TileType.Key:
                     return true;
 
-                case TileTyp.Empty:
+                case TileType.Empty:
                     return true;
 
                 default:

@@ -23,7 +23,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Key
         private char _symbol;
         private (int y, int x) _position;
         private int _amount;
-        private TileTyp _type;
+        private TileType _type;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="KeyFragmentInstance"/> class.
@@ -34,7 +34,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Key
         /// </param>
         /// <remarks>
         /// When created, the instance automatically assigns its default symbol from the
-        /// <see cref="SymbolsManager"/>, sets its type to <see cref="TileTyp.Key"/>,  
+        /// <see cref="SymbolsManager"/>, sets its type to <see cref="TileType.Key"/>,  
         /// and initializes its quantity to 1.
         /// </remarks>
         public KeyFragmentInstance(KeyFragmentInstanceDependencies keyFragmentInstanceDependencies)
@@ -42,7 +42,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Key
             _deps = keyFragmentInstanceDependencies;
             _symbol = _deps.Symbol.KeyFragmentSymbol;
             _amount = 1;
-            _type = TileTyp.Key;
+            _type = TileType.Key;
             _deps.Diagnostic.AddCheck($"{nameof(KeyFragmentInstance)}: Default symbol {_symbol} and ammount {_amount} - Keyfragment assigned at start.");
         }
 
@@ -56,9 +56,9 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Key
         public int Amount => _amount;
 
         /// <summary>
-        /// Gets the tile type assigned to this key fragment (typically <see cref="TileTyp.Key"/>).
+        /// Gets the tile type assigned to this key fragment (typically <see cref="TileType.Key"/>).
         /// </summary>
-        public TileTyp Typ => _type;
+        public TileType Typ => _type;
 
         /// <summary>
         /// Gets the character symbol representing this object on the game board.

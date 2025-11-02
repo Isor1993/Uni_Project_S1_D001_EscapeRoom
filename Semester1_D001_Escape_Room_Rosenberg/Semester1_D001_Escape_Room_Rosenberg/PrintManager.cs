@@ -1,4 +1,11 @@
-﻿using System;
+﻿using Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies;
+using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Door;
+using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Key;
+using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc;
+using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Player;
+using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Wall;
+using Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,8 +16,22 @@ namespace Semester1_D001_Escape_Room_Rosenberg
 {
     internal class PrintManager
     {
+
+        // === Dependencies ===
+        private readonly PrintManagerDependencies _deps;
+
+        // === Fields ===
+       
         // 2 HUD-Zeilen + 1 Trennlinie
-        public const int BoardTopOffset = 3; 
+        public const int BOARD_TOP_OFFSET = 3;
+       
+
+
+        public PrintManager(PrintManagerDependencies printManagerDependencies)
+        {
+            _deps = printManagerDependencies;
+        }
+
 
         /// <summary>
         /// Read-only list for error messages
@@ -25,6 +46,14 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         /// </summary>
         public string arraySizeXQuestion = "How long should the game board be?";
         public string arraySizeYQuestion = "How wide should the game board be?";
+
+      
+        public void PrintTile((int y,int x)position,char symbol)
+        {
+
+            Console.SetCursorPosition(position.x, position.y);
+            Console.Write(symbol);
+        }
 
         /// <summary>
         /// Method for printing a string message
@@ -89,37 +118,63 @@ namespace Semester1_D001_Escape_Room_Rosenberg
                 { PrintLine("Invalid input! Please enter only whole numbers!"); }
             }
         }
-        #region DEBUG METHODS
-        // Used for debugging 2D board layouts
-        //TODO Delete later
         /// <summary>
-        /// Prints a 2D character array to the console (for testing/debugging purposes)
+        /// Prints the current game board based on the objects stored in the GameObjectManager.
         /// </summary>
-        /// <param name="Array"></param>
-        public void PrintArray(char[,] Array)
+        public void PrintBoard()
         {
+            // Access managers via dependencies
+            
+            int height = _deps.GameBoard.ArraySizeY;
+            int width = _deps.GameBoard.ArraySizeX;
 
-            // Iterate through the first dimension (rows)
-            for (int y = 0; y < Array.GetLength(0); y++)
+            // Optional: clear console or reset cursor
+            
+            for (int y = 0; y < height; y++)
             {
-               // Console.Write(Array[y, ]);
-                Console.SetCursorPosition(0, y + BoardTopOffset);
-                // Iterate through the second dimension (columns)
-                for (int x = 0; x < Array.GetLength(1); x++)
+                Console.SetCursorPosition(Program.CursorPosX, y + Program.CursorPosYGamBoardStart);
+
+                for (int x = 0; x < width; x++)
                 {
-                    Console.Write(Array[y, x]);
+                    // 1️⃣ Versuche, ein Objekt an der Position zu finden
+                    if (_deps.GameObject.TryGetObject((y, x), out var obj))
+                    {
+                        switch (obj)
+                        {
+                            case PlayerInstance player:
+                                Console.Write(player.Symbol);
+                                break;
+                            case DoorInstance door:
+                                Console.Write(door.Symbol);
+                                break;
+                            case NpcInstance npc:
+                                Console.Write(npc.Meta.Symbol);
+                                break;
+                            case KeyFragmentInstance key:
+                                Console.Write(key.Symbol);
+                                break;
+                            case WallInstance wall:
+                                Console.Write(wall.Symbol);
+                                break;
+                            default:
+                                Console.Write(_deps.Symbol.EmptySymbol);
+                                break;
+                        }
+                    }
+                    // 2️⃣ Wenn kein Objekt vorhanden → Empty-Tile
+                    else
+                    {
+                        TileType tile =_deps.GameBoard.GetTileTyp((y, x));
+                        Console.Write(tile == TileType.Empty ? _deps.Symbol.EmptySymbol : _deps.Symbol.DeathSymbol);
+                    }
                 }
                 Console.WriteLine();
             }
 
+            Console.ResetColor();
+            _deps.Diagnostic.AddCheck($"{nameof(GameBoardManager)}.{nameof(PrintBoard)}: Board successfully printed.");
         }
-        // Public void PrintArray(char[,] Array) { ... }
-        #endregion
 
-
-        public void PrintUIHud()
-        {
-
-        }
+        
     }
 }

@@ -14,8 +14,8 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies
     /// <param name="Diagnostic"></param>
     /// <param name="GameBoard"></param>
     internal sealed record RulesManagerDependencies
-        (
-        DiagnosticsManager Diagnostic,        
+    (
+        DiagnosticsManager Diagnostic,
         GameBoardManager GameBoard
-        );
+    );
 }

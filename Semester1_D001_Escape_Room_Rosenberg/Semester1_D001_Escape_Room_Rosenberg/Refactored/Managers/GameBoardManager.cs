@@ -15,11 +15,11 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
     /// Defines all available tile types used to build the game board.
     /// </summary>
     /// <remarks>
-    /// Each <see cref="TileTyp"/> represents a specific element that can appear on the board, 
+    /// Each <see cref="TileType"/> represents a specific element that can appear on the board, 
     /// such as walls, doors, NPCs, or items.  
     /// The enumeration is used by the <see cref="GameBoardManager"/> to store and update board state.
     /// </remarks>
-    enum TileTyp
+    enum TileType
     {
         None = 0,
         Empty,
@@ -47,12 +47,12 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
     internal class GameBoardManager
     {
         // === Dependencies ===
-        private readonly GameBoardBuilderDependencies _deps;
+        private readonly GameBoardManagerDependencies _deps;
 
         // === Fields ===
         private int _arraySizeY;
         private int _arraySizeX;
-        private TileTyp[,]? _gameBoardArray;
+        private TileType[,]? _gameBoardArray;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GameBoardManager"/> class with dependency injection.
@@ -61,16 +61,16 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         /// Provides access to diagnostics, print utilities, and the game object system
         /// for building and validating the board.
         /// </param>
-        public GameBoardManager(GameBoardBuilderDependencies gameBoardBuilderDependencies)
+        public GameBoardManager(GameBoardManagerDependencies gameBoardBuilderDependencies)
         {
             _deps = gameBoardBuilderDependencies;
-            _deps.Diagnostic.AddCheck($"{nameof(GameBoardManager)}: successfully loaded");
+            _deps.Diagnostics.AddCheck($"{nameof(GameBoardManager)}: successfully loaded");
         }
 
         /// <summary>
         /// Gets the underlying 2D array representing the game board.
         /// </summary>
-        public TileTyp[,]? GameBoardArray => _gameBoardArray;
+        public TileType[,]? GameBoardArray => _gameBoardArray;
 
         /// <summary>
         /// Gets the horizontal size (X dimension) of the board.
@@ -94,16 +94,16 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
             // If a previous board exists, warn that it will be overwritten.
             if (_gameBoardArray != null)
             {
-                _deps.Diagnostic.AddWarning($"{nameof(GameBoardManager)}.{nameof(DecideArraySize)}: GameBoardArray was recreated.");
+                _deps.Diagnostics.AddWarning($"{nameof(GameBoardManager)}.{nameof(DecideArraySize)}: GameBoardArray was recreated.");
             }
-
+            
             // Ask for dimensions within predefined limits.
-            _arraySizeX = _deps.Print.AskForIntInRange("How wide should the game board be?", 30, 120);
-            _arraySizeY = _deps.Print.AskForIntInRange("How high should the game board be?", 15, 20);
+            _arraySizeX = Program.ArraySizeX;
+            _arraySizeY = Program.ArraySizeY;
 
             // Initialize a new 2D array based on user input.
-            _gameBoardArray = new TileTyp[_arraySizeY, _arraySizeX];
-            _deps.Diagnostic.AddCheck($"{nameof(GameBoardManager)}.{nameof(DecideArraySize)}: Board successfully initialized ({_arraySizeX}x{_arraySizeY}).");
+            _gameBoardArray = new TileType[_arraySizeY, _arraySizeX];
+            _deps.Diagnostics.AddCheck($"{nameof(GameBoardManager)}.{nameof(DecideArraySize)}: Board successfully initialized ({_arraySizeX}x{_arraySizeY}).");
         }
 
         /// <summary>
@@ -118,14 +118,14 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
             // Check if the board exists and recreate before trying to fill it.
             if (_gameBoardArray == null)
             {
-                _deps.Diagnostic.AddError($"{nameof(GameBoardManager)}.{nameof(FillWallTypesToBoard)}: Cannot fill walls. Board has not been initialized.");
-                _gameBoardArray = new TileTyp[_arraySizeY, _arraySizeX];
+                _deps.Diagnostics.AddError($"{nameof(GameBoardManager)}.{nameof(FillWallTypesToBoard)}: Cannot fill walls. Board has not been initialized.");
+                _gameBoardArray = new TileType[_arraySizeY, _arraySizeX];
             }
 
             // Optional: warn if it’s already filled with data (not empty anymore)
-            if (_gameBoardArray[0, 0] != TileTyp.None)
+            if (_gameBoardArray[0, 0] != TileType.None)
             {
-                _deps.Diagnostic.AddWarning($"{nameof(GameBoardManager)}.{nameof(FillWallTypesToBoard)}: Existing board data will be overwritten.");
+                _deps.Diagnostics.AddWarning($"{nameof(GameBoardManager)}.{nameof(FillWallTypesToBoard)}: Existing board data will be overwritten.");
             }
             // Iterate through all rows.
             for (int y = 0; y < _arraySizeY; y++)
@@ -136,23 +136,20 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
                     // Assign horizontal walls at the top and bottom.
                     if (y == 0 || y == _arraySizeY - 1)
                     {
-                        //TODO löschen wenn funktioniert :_gameBoardArray[y, x] = TileTyp.WallHorizontal;
-                        WallInstance wall = new WallInstance(_deps.WallInstanceDeps);
-                        wall.Initialize(TileTyp.WallHorizontal, (y, x));
-                        _deps.GameObject.RegisterObject((y, x), wall);
+                        _gameBoardArray[y, x] = TileType.WallHorizontal;
+                       
+                        
                     }
                     // Assign vertical walls on the left and right edges.
                     else if (x == 0 || x == _arraySizeX - 1)
                     {
-                        //TODO löschen wenn funktioniert : _gameBoardArray[y, x] = TileTyp.WallVertical;
-                        WallInstance wall = new WallInstance(_deps.WallInstanceDeps);
-                        wall.Initialize(TileTyp.WallVertical, (y, x));
-                        _deps.GameObject.RegisterObject((y, x), wall);
+                         _gameBoardArray[y, x] = TileType.WallVertical;
+                        
                     }
                     // Everything else is empty space.
                     else
                     {
-                        _gameBoardArray[y, x] = TileTyp.Empty;
+                        _gameBoardArray[y, x] = TileType.Empty;
                     }
                 }
             }
@@ -168,73 +165,44 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         /// the actual update process to <see cref="UpdateCorner((int y, int x), TileTyp)"/>.  
         /// Each corner tile is replaced by its respective wall corner type:
         /// <list type="bullet">
-        /// <item><description>Top-Left → <see cref="TileTyp.WallCornerTopLeft"/></description></item>
-        /// <item><description>Top-Right → <see cref="TileTyp.WallCornerTopRight"/></description></item>
-        /// <item><description>Bottom-Left → <see cref="TileTyp.WallCornerBottomLeft"/></description></item>
-        /// <item><description>Bottom-Right → <see cref="TileTyp.WallCornerBottomRight"/></description></item>
+        /// <item><description>Top-Left → <see cref="TileType.WallCornerTopLeft"/></description></item>
+        /// <item><description>Top-Right → <see cref="TileType.WallCornerTopRight"/></description></item>
+        /// <item><description>Bottom-Left → <see cref="TileType.WallCornerBottomLeft"/></description></item>
+        /// <item><description>Bottom-Right → <see cref="TileType.WallCornerBottomRight"/></description></item>
         /// </list>
         /// This ensures visual consistency and structural closure of the game board perimeter.
         /// </remarks>
         private void SetCorners()
         {
-            UpdateCorner((0, 0), TileTyp.WallCornerTopLeft);
-            UpdateCorner((0, _arraySizeX - 1), TileTyp.WallCornerTopRight);
-            UpdateCorner((_arraySizeY - 1, 0), TileTyp.WallCornerBottomLeft);
-            UpdateCorner((_arraySizeY - 1, _arraySizeX - 1), TileTyp.WallCornerBottomRight);
-        }
-
-        /// <summary>
-        /// Updates a specific board corner tile with the corresponding wall corner type.
-        /// </summary>
-        /// <remarks>
-        /// This method verifies that the <see cref="_gameBoardArray"/> is initialized and that 
-        /// a <see cref="WallInstance"/> exists at the specified position.  
-        /// If found, it re-initializes the wall with the given corner type and updates the tile entry.  
-        /// If no valid wall is present, an error is logged to the diagnostics system.
-        /// </remarks>
-        /// <param name="position">
-        /// The Y/X grid position of the corner tile to update.
-        /// </param>
-        /// <param name="newType">
-        /// The <see cref="TileTyp"/> that represents the new wall corner type to assign.
-        /// </param>
-        private void UpdateCorner((int y, int x) position, TileTyp newType)
-        {
             if (_gameBoardArray == null)
             {
-                _deps.Diagnostic.AddError($"{nameof(GameBoardManager)}.{nameof(UpdateCorner)}: GameBoardArray is null!");
-                return;
+                _deps.Diagnostics.AddError($"{nameof(GameBoardManager)}.{nameof(FillWallTypesToBoard)}: Cannot fill walls. Board has not been initialized.");
+                _gameBoardArray = new TileType[_arraySizeY, _arraySizeX];
             }
-            if (_deps.GameObject.TryGetObject(position, out object? obj) && obj is WallInstance wall)
-            {
-                wall.Initialize(newType, position);
-                SetTile(position, newType);
-                //TODO löschen wenn funktioniert : _gameBoardArray[position.y, position.x] = newType;
-                _deps.Diagnostic.AddCheck($"{nameof(GameBoardManager)}: Updated existing wall at {position} to {newType}.");
-            }
-            else
-            {
-                _deps.Diagnostic.AddError($"{nameof(GameBoardManager)}: No existing wall found at {position} to convert to corner.");
-            }
-        }
+
+            _gameBoardArray[0, 0] = TileType.WallCornerTopLeft;
+            _gameBoardArray[0, _arraySizeX - 1] = TileType.WallCornerTopRight;
+            _gameBoardArray[_arraySizeY - 1, 0] = TileType.WallCornerBottomLeft;
+            _gameBoardArray[_arraySizeY - 1, _arraySizeX - 1] = TileType.WallCornerBottomRight;            
+        }       
 
         /// <summary>
-        /// Assigns a specific <see cref="TileTyp"/> to a given board position.
+        /// Assigns a specific <see cref="TileType"/> to a given board position.
         /// </summary>
         /// <param name="position">The Y/X grid position of the target tile.</param>
         /// <param name="tileTyp">The new tile type to assign.</param>
-        public void SetTile((int y, int x) position, TileTyp tileTyp)
+        public void SetTile((int y, int x) position, TileType tileTyp)
         {
             if (_gameBoardArray == null)
             {
-                _deps.Diagnostic.AddError($"{nameof(GameBoardManager)}.{nameof(SetTile)}:GameBoardArray is null!");
+                _deps.Diagnostics.AddError($"{nameof(GameBoardManager)}.{nameof(SetTile)}:GameBoardArray is null!");
 
                 return;
             }
 
             if (!IsInBounds(position))
             {
-                _deps.Diagnostic.AddWarning($"{nameof(GameBoardManager)}.{nameof(SetTile)}: Position {position} out of bounds.");
+                _deps.Diagnostics.AddWarning($"{nameof(GameBoardManager)}.{nameof(SetTile)}: Position {position} out of bounds.");
                 return;
             }
             _gameBoardArray[position.y, position.x] = tileTyp;
@@ -244,15 +212,15 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         /// Retrieves the tile type from a specific board position.
         /// </summary>
         /// <param name="position">The Y/X grid position of the tile.</param>
-        /// <returns>The <see cref="TileTyp"/> at the given position.</returns>
-        public TileTyp GetTileTyp((int y, int x) position)
+        /// <returns>The <see cref="TileType"/> at the given position.</returns>
+        public TileType GetTileTyp((int y, int x) position)
         {
             if (_gameBoardArray == null)
             {
 
-                _deps.Diagnostic.AddError($"{nameof(GameBoardManager)}.{nameof(GetTileTyp)}: GameBoardArray is null");
+                _deps.Diagnostics.AddError($"{nameof(GameBoardManager)}.{nameof(GetTileTyp)}: GameBoardArray is null");
 
-                return TileTyp.None;
+                return TileType.None;
             }
             return _gameBoardArray[position.y, position.x];
 
@@ -265,9 +233,9 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         /// <param name="position">The target grid position.</param>
         /// <param name="tile">Outputs the found tile type.</param>
         /// <returns><c>true</c> if the position is valid and contains a tile; otherwise, <c>false</c>.</returns>
-        public bool TryGetTile((int y, int x) position, out TileTyp tile)
+        public bool TryGetTile((int y, int x) position, out TileType tile)
         {
-            tile = TileTyp.None;
+            tile = TileType.None;
 
             if (_gameBoardArray == null || !IsInBounds(position))
                 return false;
@@ -282,7 +250,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         /// <param name="position">The target Y/X grid position.</param>
         public void SetTileToEmpty((int y, int x) position)
         {
-            SetTile(position, TileTyp.Empty);
+            SetTile(position, TileType.Empty);
         }
 
         /// <summary>
@@ -301,6 +269,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         /// </summary>
         public void InitializeBoard()
         {
+            DecideArraySize();
             FillWallTypesToBoard();
         }
     }

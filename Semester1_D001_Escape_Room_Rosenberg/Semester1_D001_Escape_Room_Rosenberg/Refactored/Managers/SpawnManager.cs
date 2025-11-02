@@ -57,6 +57,10 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         /// </summary>
         public List<(int y, int x)> WallPosition => _wallPositions;
 
+        public  (int y, int x) ApplyHudOffset((int y, int x) pos)
+        {
+            return (pos.y + Program.CursorPosYGamBoardStart, pos.x);
+        }
         /// <summary>
         /// Gets all currently empty board positions available for object spawning.
         /// </summary>
@@ -116,18 +120,18 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
                 return;
             }
 
-            TileTyp[,] board = _deps.GameBoard.GameBoardArray;
+            TileType[,] board = _deps.GameBoard.GameBoardArray;
 
             for (int y = 0; y < board.GetLength(0); y++)
             {
                 for (int x = 0; x < board.GetLength(1); x++)
                 {
-                    TileTyp tile = board[y, x];
-                    if (tile == TileTyp.WallHorizontal || tile == TileTyp.WallVertical)
+                    TileType tile = board[y, x];
+                    if (tile == TileType.WallHorizontal || tile == TileType.WallVertical)
                     {
                         _wallPositions.Add((y, x));
                     }
-                    else if (tile == TileTyp.Empty)
+                    else if (tile == TileType.Empty)
                     {
                         _emptyPositions.Add((y, x));
                     }
@@ -145,15 +149,28 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         /// </remarks>
         private void SpawnDoor()
         {
-            if (_deps.DoorInstance == null)
+            if (_deps.DoorInstanceDeps == null)
             {
                 _deps.Diagnostic.AddError($"{nameof(SpawnManager)}.{nameof(SpawnDoor)}: No doorInstance found");
                 return;
             }
 
-            DoorInstance doorInstance = new DoorInstance(_deps.DoorInstance);
+            DoorInstance doorInstance = new DoorInstance(_deps.DoorInstanceDeps);
+            if (_deps.WallInstanceDeps == null)
+            {
+                _deps.Diagnostic.AddError($"{nameof(SpawnManager)}.{nameof(SpawnWalls)}: No WallInstanceDeps provided.");
+                return;
+            }
 
-            doorInstance.Initialize(_deps.Random.RandomPositionFromList(_wallPositions), _deps.GameBoard.ArraySizeY, _deps.GameBoard.ArraySizeX);
+            if (_wallPositions.Count == 0)
+            {
+                _deps.Diagnostic.AddError($"{nameof(SpawnManager)}.{nameof(SpawnDoor)}: No wall positions available.");
+                return;
+            }
+
+            
+
+            doorInstance.Initialize(_deps.Random.RandomPositionFromList(_wallPositions));
 
             RegisterAndPlaceObject(doorInstance.Position, doorInstance);
 
@@ -172,7 +189,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         /// </remarks>
         private void SpawnPlayer()
         {
-            if (_deps.PlayerInstance == null)
+            if (_deps.PlayerInstanceDeps == null)
             {
                 _deps.Diagnostic.AddError($"{nameof(SpawnManager)}.{nameof(SpawnPlayer)}: No playerInstance found");
                 return;
@@ -184,7 +201,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
             {
                 return;
             }
-            PlayerInstance playerInstance = new PlayerInstance(_deps.PlayerInstance);
+            PlayerInstance playerInstance = new PlayerInstance(_deps.PlayerInstanceDeps,"Joschi");
 
             playerInstance.Initialize(result.position);
 
@@ -203,7 +220,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         {
             for (int i = 0; i < amount; i++)
             {
-                if (_deps.KeyFragmentInstance == null)
+                if (_deps.KeyFragmentInstancedeps == null)
                 {
                     _deps.Diagnostic.AddError($"{nameof(SpawnManager)}.{nameof(SpawnKeyFragment)}: No keyFragmentInstance found");
                     return;
@@ -215,7 +232,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
                 {
                     return;
                 }
-                KeyFragmentInstance keyFragmentInstance = new KeyFragmentInstance(_deps.KeyFragmentInstance);
+                KeyFragmentInstance keyFragmentInstance = new KeyFragmentInstance(_deps.KeyFragmentInstancedeps);
 
                 keyFragmentInstance.Initialize(result.position);
 
@@ -261,6 +278,85 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        public void SpawnWalls()
+        {
+            // Check if the board exists and recreate before trying to fill it.
+            if (_deps.GameBoard.GameBoardArray == null)
+            {
+                _deps.Diagnostic.AddError($"{nameof(SpawnManager)}.{nameof(SpawnWalls)}: Cannot fill walls. Board has not been initialized.");
+                return; 
+            }
+            if (_deps.WallInstanceDeps == null)
+            {
+                _deps.Diagnostic.AddError($"{nameof(SpawnManager)}.{nameof(SpawnWalls)}: No WallInstanceDeps provided.");
+                return;
+            }
+            // Iterate through all rows.
+            for (int y = 0; y < _deps.GameBoard.ArraySizeY; y++)
+            {
+                // Iterate through all columns.
+                for (int x = 0; x < _deps.GameBoard.ArraySizeX; x++)
+                {
+                    // Assign horizontal walls at the top and bottom.
+                    if (y == 0 || y == _deps.GameBoard.ArraySizeY - 1)
+                    {
+                        
+                        WallInstance wall = new WallInstance(_deps.WallInstanceDeps);
+                        wall.Initialize(TileType.WallHorizontal, (y, x));
+                        _deps.GameObject.RegisterObject((y, x), wall);
+                    }
+                    // Assign vertical walls on the left and right edges.
+                    else if (x == 0 || x == _deps.GameBoard.ArraySizeX - 1)
+                    {
+                        
+                        WallInstance wall = new WallInstance(_deps.WallInstanceDeps);
+                        wall.Initialize(TileType.WallVertical, (y, x));
+                        _deps.GameObject.RegisterObject((y, x), wall);
+                    }                    
+                }
+            }
+            SetCornersForGameObject();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private void SetCornersForGameObject()
+        {
+            UpdateCorner((0, 0), TileType.WallCornerTopLeft);
+            UpdateCorner((0, _deps.GameBoard.ArraySizeX - 1), TileType.WallCornerTopRight);
+            UpdateCorner((_deps.GameBoard.ArraySizeY - 1, 0), TileType.WallCornerBottomLeft);
+            UpdateCorner((_deps.GameBoard.ArraySizeY - 1, _deps.GameBoard.ArraySizeX - 1), TileType.WallCornerBottomRight);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="position"></param>
+        /// <param name="newType"></param>
+        private void UpdateCorner((int y, int x) position, TileType newType)
+        {
+            if (_deps.GameBoard.GameBoardArray == null)
+            {
+                _deps.Diagnostic.AddError($"{nameof(SpawnManager)}.{nameof(UpdateCorner)}: GameBoardArray is null!");
+                return;
+            }
+            if (_deps.GameObject.TryGetObject(position, out object? obj) && obj is WallInstance wall)
+            {
+                wall.Initialize(newType, position);
+                _deps.GameBoard.SetTile(position, newType);
+                
+                _deps.Diagnostic.AddCheck($"{nameof(SpawnManager)}: Updated existing wall at {position} to {newType}.");
+            }
+            else
+            {
+                _deps.Diagnostic.AddError($"{nameof(SpawnManager)}: No existing wall found at {position} to convert to corner.");
+            }
+        }
+
+        /// <summary>
         /// Spawns all interactive entities: door, player, NPCs, and key fragments.
         /// </summary>
         /// <param name="npcAmount">The number of NPCs to spawn.</param>
@@ -280,6 +376,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
             SpawnPlayer();
             SpawnNpc(npcAmount);
             SpawnKeyFragment(keyAmount);
+            SpawnWalls();
         }
 
         /// <summary>

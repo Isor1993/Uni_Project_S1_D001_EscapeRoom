@@ -25,7 +25,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc
         // === Fields ===
         private bool _isActive;
         private bool _hasInteracted;
-        private TileTyp _typ;
+        private TileType _typ;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NpcInstance"/> class.
@@ -35,7 +35,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc
         /// <param name="npcDialogData">The <see cref="NpcDialogData"/> object containing the NPC’s dialogue and answer sets.</param>
         /// <param name="npcRewardData">The <see cref="NpcRewardData"/> object defining the rewards associated with this NPC.</param>
         /// <remarks>
-        /// Upon creation, the NPC is initialized as inactive and un-interacted, with its tile type set to <see cref="TileTyp.Npc"/>.  
+        /// Upon creation, the NPC is initialized as inactive and un-interacted, with its tile type set to <see cref="TileType.Npc"/>.  
         /// A diagnostic entry is automatically logged confirming successful creation.
         /// </remarks>
         public NpcInstance(NpcInstanceDependencies npcInstanceDependencies, NpcMetaData npcMetaData, NpcDialogData npcDialogData, NpcRewardData npcRewardData)
@@ -46,14 +46,15 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc
             _reward = npcRewardData;
             _isActive = false;
             _hasInteracted = false;
-            _typ = TileTyp.Npc;
+            
+            _typ = TileType.Npc;
             _deps.Diagnostic.AddCheck($"{nameof(NpcInstance)}: Instance successfully created.");
         }
 
         /// <summary>
-        /// Gets the tile type assigned to this NPC (typically <see cref="TileTyp.Npc"/>).
+        /// Gets the tile type assigned to this NPC (typically <see cref="TileType.Npc"/>).
         /// </summary>
-        public TileTyp Typ => _typ;
+        public TileType Typ => _typ;
 
         /// <summary>
         /// Gets the metadata information for this NPC.

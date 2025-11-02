@@ -1,5 +1,0 @@
-Mira;What lies behind the sealed door?;The Crystal Key;An old curse;Nothing at all;1;150
-Runo;Which symbol marks the sacred wall?;The Eye;The Flame;The Hand;1;50
-Lira;What connects all chambers of the tower?;The Hidden Mechanism;The Forgotten King;The Red Stairs;2;200
-Orin;Which item can open the ancient gate?;Golden Gear;Iron Hammer;Silver Coin;2;120
-Nyn;Who was the first keeper of the tower?;Ardyn the Wise;Serra the Bold;Kain the Silent;1;111;

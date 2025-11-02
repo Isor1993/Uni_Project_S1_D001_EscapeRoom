@@ -26,13 +26,13 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         /// Initializes a new instance of the <see cref="RandomManager"/> class,
         /// creating a new random generator and binding the provided diagnostics manager.
         /// </summary>
-        /// <param name="diagnosticsManager">
+        /// <param name="Diagnostics">
         /// The diagnostics system used to report randomization-related checks or warnings.
         /// </param>      
-        public RandomManager(DiagnosticsManager diagnosticsManager)
+        public RandomManager(DiagnosticsManager Diagnostics)
         {
             _random = new Random();
-            _deps = diagnosticsManager;
+            _deps = Diagnostics;
             _deps.AddCheck($"{nameof(RandomManager)}: Initialized successfully.");
         }
 

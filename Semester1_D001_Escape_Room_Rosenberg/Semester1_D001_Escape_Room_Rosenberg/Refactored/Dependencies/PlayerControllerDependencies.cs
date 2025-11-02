@@ -1,4 +1,5 @@
-﻿using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Player;
+﻿using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Key;
+using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Player;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers;
 using System;
 using System.Collections.Generic;
@@ -34,9 +35,12 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies
     internal sealed record PlayerControllerDependencies
     (
         GameBoardManager GameBoard,
-        RulesManager Rule,
-        PlayerInstance Player,
+        RulesManager Rule,        
         DiagnosticsManager Diagnostic,
-        InteractionManager Interaction
+        InteractionManager Interaction,
+        PrintManager Print,
+        SymbolsManager Symbol,
+        GameObjectManager GameObject
+     
     );
 }

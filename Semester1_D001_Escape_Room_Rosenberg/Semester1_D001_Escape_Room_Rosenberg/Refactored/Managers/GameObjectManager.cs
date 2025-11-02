@@ -30,6 +30,13 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 
         // === Fields ===
         private readonly Dictionary<(int y, int x), object> _objectOnBoard = new();
+        // === Cached single instances ===
+        private PlayerInstance? _playerInstance;
+        private DoorInstance? _doorInstance;
+
+        public PlayerInstance Player => _playerInstance;
+
+        public DoorInstance Door => _doorInstance;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GameObjectManager"/> class.
@@ -51,7 +58,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         /// Registers a new game object at the specified grid position.
         /// </summary>
         /// <remarks>
-        /// This method determines the <see cref="TileTyp"/> of the object based on its type 
+        /// This method determines the <see cref="TileType"/> of the object based on its type 
         /// (e.g., <see cref="NpcInstance"/>, <see cref="DoorInstance"/>, <see cref="KeyFragmentInstance"/>, etc.)  
         /// and updates both the internal object dictionary and the visual board array accordingly.  
         /// Logs all operations and error cases through the diagnostics system.
@@ -72,62 +79,64 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 
             _objectOnBoard[position] = boardObject;
 
-            TileTyp type = TileTyp.None;
+            TileType type = TileType.None;
 
             switch (boardObject)
             {
-                case PlayerInstance:
-                    type = TileTyp.Player;
+                case PlayerInstance player:
+                    type = TileType.Player;
+                    _playerInstance = player;
                     break;
 
-                case DoorInstance:
-                    type = TileTyp.Door;
+                case DoorInstance door:
+                    type = TileType.Door;
+                    _doorInstance = door;
                     break;
 
-                case NpcInstance:
-                    type = TileTyp.Npc;
+                case NpcInstance :
+                    type = TileType.Npc;                    
                     break;
 
-                case KeyFragmentInstance:
-                    type = TileTyp.Key;
+                case KeyFragmentInstance :
+                    type = TileType.Key;                   
                     break;
 
                 case WallInstance wall:
                     switch (wall.Typ)
                     {
-                        case TileTyp.WallHorizontal:
-                            type = TileTyp.WallHorizontal;
+                        case TileType.WallHorizontal:
+                            type = TileType.WallHorizontal;
                             break;
 
-                        case TileTyp.WallVertical:
-                            type = TileTyp.WallVertical;
+                        case TileType.WallVertical:
+                            type = TileType.WallVertical;
                             break;
 
-                        case TileTyp.WallCornerTopLeft:
-                            type = TileTyp.WallCornerTopLeft;
+                        case TileType.WallCornerTopLeft:
+                            type = TileType.WallCornerTopLeft;
                             break;
 
-                        case TileTyp.WallCornerTopRight:
-                            type = TileTyp.WallCornerTopRight;
+                        case TileType.WallCornerTopRight:
+                            type = TileType.WallCornerTopRight;
                             break;
 
-                        case TileTyp.WallCornerBottomLeft:
-                            type = TileTyp.WallCornerBottomLeft;
+                        case TileType.WallCornerBottomLeft:
+                            type = TileType.WallCornerBottomLeft;
                             break;
 
-                        case TileTyp.WallCornerBottomRight:
-                            type = TileTyp.WallCornerBottomRight;
+                        case TileType.WallCornerBottomRight:
+                            type = TileType.WallCornerBottomRight;
                             break;
 
                         default:
-                            type = TileTyp.None;
+                            type = TileType.None;
                             _deps.Diagnostic.AddError($"{nameof(GameObjectManager)}.{nameof(RegisterObject)}:No TileTyp wall found regristerted as None");
                             break;
                     }
                     break;
 
                 default:
-                    type = TileTyp.None;
+                    type = TileType.None;
                     _deps.Diagnostic.AddError($"{nameof(GameObjectManager)}.{nameof(RegisterObject)}: No TileTyp found registerted as None");
                     break;
             }
@@ -147,7 +156,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         {
             if (_objectOnBoard.Remove(position))
             {
-                _deps.GameBoard.SetTileToEmpty(position);
+                _deps.GameBoard.SetTileToEmpty(position);                
                 _deps.Diagnostic.AddCheck($"{nameof(GameObjectManager)}: Removed object at {position}.");
             }
             else
@@ -227,13 +236,13 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         }
 
         /// <summary>
-        /// Updates the board tile at the given position to match the provided <see cref="TileTyp"/>.
+        /// Updates the board tile at the given position to match the provided <see cref="TileType"/>.
         /// </summary>
         /// <param name="position">The (y, x) grid position to update.</param>
-        /// <param name="typ">The new <see cref="TileTyp"/> to assign to this position.</param>
-        public void UpdateBoard((int y, int x) position, TileTyp typ)
+        /// <param name="typ">The new <see cref="TileType"/> to assign to this position.</param>
+        public void UpdateBoard((int y, int x) position, TileType typ)
         {
-            _deps.GameBoard.SetTile(position, typ);
+            _deps.GameBoard.SetTile(position, typ);            
         }
 
         /// <summary>
@@ -258,14 +267,82 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 
             if (_objectOnBoard.ContainsKey(newPosition))
             {
+                
                 _deps.Diagnostic.AddWarning($"{nameof(GameObjectManager)}.{nameof(MovePlayer)}: Target position {newPosition} already occupied.");
                 return false;
             }
 
-            RemoveObject(oldPosition);
+            RemoveObject(oldPosition);            
 
             RegisterObject(newPosition, boardObject);
             return true;
         }
+
+        /// <summary>
+        /// Searches the provided board dictionary for a <see cref="PlayerInstance"/> 
+        /// and returns it if found.
+        /// </summary>
+        /// <param name="boardObject">
+        /// The dictionary containing all objects placed on the game board.
+        /// The key represents a 2D coordinate tuple (y, x),
+        /// and the value represents the stored object 
+        /// (e.g., PlayerInstance, DoorInstance, WallInstance, etc.).
+        /// </param>
+        /// <param name="playerPosition">
+        /// Outputs the position of the found <see cref="PlayerInstance"/> as (y, x).
+        /// If no player is found, the returned position will be (1, 1).
+        /// </param>
+        /// <returns>
+        /// The located <see cref="PlayerInstance"/>, or <c>null</c> 
+        /// if no player object exists within the board dictionary.
+        /// </returns>
+        public PlayerInstance? GetPlayerInstance(out (int y,int x)playerPosition)
+        {
+            foreach(KeyValuePair<(int y,int x),object>entry in _objectOnBoard)
+            {
+                if (entry.Value is PlayerInstance player)
+                {
+                    playerPosition = entry.Key;
+                    return player;
+                }
+            }
+            playerPosition = (1, 1);
+            _deps.Diagnostic.AddWarning($"{nameof(GameObjectManager)}.{nameof(GetPlayerInstance)}: No PlayerInstance found in boardObject. Player position deafault is {playerPosition}");
+            return null;
+        }
+
+        /// <summary>
+        /// Searches the internal board dictionary for a <see cref="PlayerInstance"/> 
+        /// and returns it if found.
+        /// </summary>
+        /// <returns>
+        /// The located <see cref="PlayerInstance"/>, or <c>null</c> 
+        /// if no player object exists within the board.
+        /// </returns>
+        public PlayerInstance? GetPlayerInstance()
+        {
+            return GetPlayerInstance(out _);
+        }
+
+        public DoorInstance? GetDoorInstance(out (int y, int x) doorPosition)
+        {
+            foreach (KeyValuePair<(int y, int x), object> entry in _objectOnBoard)
+            {
+                if (entry.Value is DoorInstance door)
+                {
+                    doorPosition = entry.Key;
+                    return door;
+                }
+            }
+            doorPosition = (1, 1);
+            _deps.Diagnostic.AddWarning($"{nameof(GameObjectManager)}.{nameof(GetDoorInstance)}: No DoorInstance found in boardObject. Door position deafault is {doorPosition}");
+            return null;
+        }
+
+        public DoorInstance? GetDoorInstance()
+        {
+            return GetDoorInstance(out _);
+        }
+
     }
 }

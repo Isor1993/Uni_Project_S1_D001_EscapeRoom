@@ -25,22 +25,38 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         /// Adds an exception message to the error log.
         /// </summary>
         /// <param name="message">The message describing the exception.</param>
-        public void AddException(string message) => _exception.Add($"[Exception] {message}");
+        public void AddException(string message)
+        {
+            string timestamp = DateTime.Now.ToString("HH:mm:ss.fff");
+            _exception.Add($"[{timestamp}] [EXCEPTION] {message}");
+        }
         /// <summary>
         /// Adds an error message to the error log.
         /// </summary>
         /// <param name="message">The message describing the error.</param>
-        public void AddError(string message) => _errors.Add($"[ERROR] {message}");
+        public void AddError(string message)
+        {
+            string timestamp = DateTime.Now.ToString("HH:mm:ss.fff");
+            _errors.Add($"[{timestamp}] [ERROR] {message}");
+        }
         /// <summary>
         /// Adds a warning message to the warning log.
         /// </summary>
         /// <param name="message">The message describing the warning.</param>
-        public void AddWarning(string message) => _warnings.Add($"[WARNING] {message}");
+        public void AddWarning(string message)
+        {
+            string timestamp = DateTime.Now.ToString("HH:mm:ss.fff");
+            _warnings.Add($"[{timestamp}] [WARNING] {message}");
+        }
         /// <summary>
         /// Adds a check message to the system check log.
         /// </summary>
         /// <param name="message">The message describing the successful or verified check.</param>
-        public void AddCheck(string message) => _checks.Add($"[CHECK] {message}");
+        public void AddCheck(string message)
+        {
+            string timestamp = DateTime.Now.ToString("HH:mm:ss.fff");
+            _checks.Add($"[{timestamp}] [CHECK] {message}");
+        }
 
         /// <summary>
         /// Prints all collected diagnostics to the console using the PrinterManager.
@@ -101,6 +117,43 @@ namespace Semester1_D001_Escape_Room_Rosenberg
             _warnings.Clear();
             _checks.Clear();
             _exception.Clear();
+        }
+
+        /// <summary>
+        /// Prints all logs (errors, warnings, checks, exceptions)
+        /// in true chronological order based on their timestamp prefix.
+        /// </summary>
+        public void PrintChronologicalLogs()
+        {
+            // Combine all log lists temporarily
+            var combined = new List<string>();
+            combined.AddRange(_errors);
+            combined.AddRange(_warnings);
+            combined.AddRange(_checks);
+            combined.AddRange(_exception);
+
+            // Sort logs by their timestamp substring — assumes format "[HH:mm:ss.fff]"
+            var sorted = combined
+                .OrderBy(log =>
+                {
+                    try
+                    {
+                        string timePart = log.Substring(1, 12); // "HH:mm:ss.fff"
+                        return DateTime.ParseExact(timePart, "HH:mm:ss.fff", null);
+                    }
+                    catch
+                    {
+                        // Fallback for malformed logs
+                        return DateTime.MinValue;
+                    }
+                })
+                .ToList();
+
+            // Print the sorted result
+            Console.WriteLine("=== Chronological Log Output ===");
+            foreach (var log in sorted)
+                Console.WriteLine(log);
+            Console.WriteLine("=== End of Chronological Output ===");
         }
     }
 }

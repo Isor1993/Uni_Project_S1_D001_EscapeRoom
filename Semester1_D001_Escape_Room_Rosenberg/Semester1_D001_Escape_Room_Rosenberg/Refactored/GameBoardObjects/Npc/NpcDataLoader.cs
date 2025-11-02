@@ -49,7 +49,13 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc
             try
             {
                 // Path for txt file in project
-                string filePath = "npc_questions.txt";
+                string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Refactored", "GameBoardObjects", "Npc", "NpcData", "npc_questions.txt");
+
+                if (!File.Exists(filePath))
+                {
+                    _deps.Diagnostic.AddWarning($"{nameof(NpcDataLoader)}: File not found at {filePath}. Loading skipped.");
+                    return new List<NpcRawData>();
+                }
 
                 foreach (string line in File.ReadAllLines(filePath))
                 {

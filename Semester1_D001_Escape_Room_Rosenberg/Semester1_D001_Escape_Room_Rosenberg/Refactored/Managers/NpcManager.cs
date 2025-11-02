@@ -57,7 +57,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored
         /// </list>
         /// After loading, a diagnostic entry logs the total number of NPCs initialized.
         /// </remarks>
-        public void LoadAllNpcData(string filePath)
+        public void LoadAllNpcData()
         {
 
             List<NpcRawData> rawDataList = _deps.NpcDataLoader.LoadNpcDataFromFile();
@@ -68,7 +68,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored
             {
                 NpcInstanceDependencies npcInstanceDeps = new NpcInstanceDependencies(_deps.Diagnostic, _deps.Symbol);
 
-                NpcInstance npc = new NpcInstance(npcInstanceDeps, rawData.Meta, rawData.Dialog, rawData.Reward);
+                NpcInstance npc = new NpcInstance(npcInstanceDeps, rawData.Meta, rawData.Dialog, rawData.Reward);               
 
                 _npcList.Add(npc);
             }

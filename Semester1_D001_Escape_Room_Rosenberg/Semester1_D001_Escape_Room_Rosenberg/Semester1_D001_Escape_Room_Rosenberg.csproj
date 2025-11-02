@@ -14,12 +14,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Refactored\GameBoardObjects\Npc\NpcData\npc_questions.txt.txt" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Refactored\GameBoardObjects\Npc\NpcData\npc_questions.txt.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <Content Include="Refactored\GameBoardObjects\Npc\NpcData\npc_questions.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 

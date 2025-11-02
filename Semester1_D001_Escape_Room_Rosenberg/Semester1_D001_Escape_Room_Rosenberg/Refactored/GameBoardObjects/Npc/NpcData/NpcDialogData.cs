@@ -50,5 +50,6 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc.N
         /// Gets the correct answer for the NPC’s question.
         /// </summary>
         public string CorrectAnswer => _correctAnswer;
+                
     }
 }

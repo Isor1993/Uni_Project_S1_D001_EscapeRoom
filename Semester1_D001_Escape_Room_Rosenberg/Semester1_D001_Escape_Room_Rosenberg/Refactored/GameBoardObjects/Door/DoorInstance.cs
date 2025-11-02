@@ -27,7 +27,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Door
         private char _symbol;
         private (int y, int x) _position;
         private bool _isOpen;
-        private TileTyp _type;
+        private TileType _type;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DoorInstance"/> class.
@@ -40,14 +40,14 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Door
         {
             _deps = doorInstanceDependencies;
             _isOpen = false;
-            _type = TileTyp.Door;
+            _type = TileType.Door;
             _deps.Diagnostic.AddCheck($"{nameof(DoorInstance)}: Instance successfully created.");
         }
 
         /// <summary>
         /// Gets the tile type assigned to this door instance.
         /// </summary>
-        public TileTyp Typ => _type;
+        public TileType Typ => _type;
 
         /// <summary>
         /// Gets the current position of the door on the game board as (Y, X) coordinates.
@@ -83,10 +83,10 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Door
         /// After closing, the door symbol is reassigned based on its orientation (horizontal or vertical).  
         /// Logs both the visual update and state transition in diagnostics.
         /// </remarks>
-        public void CloseDoor(int arraySizeY, int arraySizeX)
+        public void CloseDoor()
         {
             _isOpen = false;
-            AssignDoorSymbol(arraySizeY, arraySizeX);
+            AssignDoorSymbol();
             _deps.Diagnostic.AddCheck($"{nameof(DoorInstance)}.{nameof(CloseDoor)}:  Door closed successfully.");
 
         }
@@ -100,10 +100,10 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Door
         /// The door symbol is automatically chosen from <see cref="SymbolsManager"/> 
         /// based on whether the door is located on a vertical or horizontal wall edge.
         /// </remarks>
-        public void OpenDoor(int arraySizeY, int arraySizeX)
+        public void OpenDoor()
         {
             _isOpen = true;
-            AssignDoorSymbol(arraySizeY, arraySizeX);
+            AssignDoorSymbol();
             _deps.Diagnostic.AddCheck($"{nameof(DoorInstance)}.{nameof(OpenDoor)}:  Door opened successfully.");
         }
 
@@ -118,51 +118,32 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Door
         /// If the door is positioned incorrectly (not on a valid wall edge),  
         /// a warning is logged and a fallback symbol is used.
         /// </remarks>
-        public void AssignDoorSymbol(int arraySizeY, int arraySizeX)
+        public void AssignDoorSymbol()
         {
 
             if (_isOpen)
             {
-
-                if (_position.x == 0 || _position.x == arraySizeX - 1)
-                {
+                if (_position.x == 0)
                     _symbol = _deps.Symbol.OpenDoorVerticalSymbol;
-                    _deps.Diagnostic.AddCheck($"{nameof(DoorInstance)}.{nameof(AssignDoorSymbol)}: Symbol{_symbol} - Door symbol successfully assigned");
-                }
-                else if (_position.y == 0 || _position.y == arraySizeY - 1)
-                {
+                else if (_position.y == 0)
                     _symbol = _deps.Symbol.OpenDoorHorizontalSymbol;
-                    _deps.Diagnostic.AddCheck($"{nameof(DoorInstance)}.{nameof(AssignDoorSymbol)}: Symbol{_symbol} - Door symbol successfully assigned");
-                }
-
                 else
-                {
-                    _deps.Diagnostic.AddWarning($"{nameof(DoorInstance)}.{nameof(AssignDoorSymbol)}: Invalid door position {_position} — fallback symbol used.");
                     _symbol = _deps.Symbol.DeathSymbol;
-                }
             }
-
             else
             {
-                if (_position.x == 0 || _position.x == arraySizeX - 1)
-                {
+                if (_position.x == 0)
                     _symbol = _deps.Symbol.ClosedDoorVerticalSymbol;
-                    _deps.Diagnostic.AddCheck($"{nameof(DoorInstance)}.{nameof(AssignDoorSymbol)}: Symbol{_symbol} - Door symbol successfully assigned");
-                }
-                else if (_position.y == 0 || _position.y == arraySizeY - 1)
-                {
+                else if (_position.y == 0)
                     _symbol = _deps.Symbol.ClosedDoorHorizontalSymbol;
-                    _deps.Diagnostic.AddCheck($"{nameof(DoorInstance)}.{nameof(AssignDoorSymbol)}: Symbol{_symbol} - Door symbol successfully assigned");
-                }
-
                 else
-                {
-                    _deps.Diagnostic.AddWarning($"{nameof(DoorInstance)}.{nameof(AssignDoorSymbol)}: Invalid door position {_position} — fallback symbol used.");
                     _symbol = _deps.Symbol.DeathSymbol;
-                }
             }
 
+            _deps.Diagnostic.AddCheck($"{nameof(DoorInstance)}.{nameof(AssignDoorSymbol)}: Symbol {_symbol} assigned for door at {_position}");
         }
+
+        
 
         /// <summary>
         /// Initializes the door instance with its board position and automatically assigns the correct symbol.
@@ -174,10 +155,10 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Door
         /// This method ensures the door is visually aligned and properly initialized before rendering on the board.  
         /// It also registers the initial diagnostics entry for traceability.
         /// </remarks>
-        public void Initialize((int y, int x) position, int arraySizeY, int arraySizeX)
+        public void Initialize((int y, int x)position)
         {
             AssignPosition(position);
-            AssignDoorSymbol(arraySizeY, arraySizeX);
+            AssignDoorSymbol();
         }
     }
 }

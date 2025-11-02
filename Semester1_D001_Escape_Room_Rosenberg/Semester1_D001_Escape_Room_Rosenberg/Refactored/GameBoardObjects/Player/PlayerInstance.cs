@@ -28,7 +28,8 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Playe
         private (int y, int x) _position;
         private int _life;
         private bool _isAlive;
-        private TileTyp _type;
+        private TileType _type;
+        
 
         /// <summary>
         /// nitializes a new instance of the <see cref="PlayerInstance"/> class.
@@ -41,16 +42,21 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Playe
         /// When created, the player receives a default symbol, three lives, and a "alive" status.  
         /// A log entry is added to diagnostics confirming successful initialization.
         /// </remarks>
-        public PlayerInstance(PlayerInstanceDependencies playerInstanceDependencies)
+        public PlayerInstance(PlayerInstanceDependencies playerInstanceDependencies,string name)
         {
             _deps = playerInstanceDependencies;
-            _type = TileTyp.Player;
+            _type = TileType.Player;
             _symbol = _deps.Symbol.PlayerSymbol;
             _life = 3;
+            Name = name;
             _isAlive = true;
             _deps.Diagnostic.AddCheck($"{nameof(PlayerInstance)}: Default symbbol {_symbol}, typ {_type}, isAlive {_isAlive} and lifes {_life}  - Player instance successfully created with default symbol");
         }
 
+        /// <summary>
+        /// Gets the player's display name used for HUD and diagnostics.
+        /// </summary>        
+        public string Name { get; private set ; }
         /// <summary>
         /// Gets the character symbol representing the player on the game board.
         /// </summary>
@@ -79,9 +85,9 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Playe
         public (int y, int x) Position => _position;
 
         /// <summary>
-        /// Gets the tile type assigned to this object (always <see cref="TileTyp.Player"/>).
+        /// Gets the tile type assigned to this object (always <see cref="TileType.Player"/>).
         /// </summary>
-        public TileTyp Typ => _type;
+        public TileType Typ => _type;
 
         /// <summary>
         /// Assigns a new visual symbol to the player and logs the update.
@@ -135,10 +141,20 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Playe
         /// When the player loses all lives, <see cref="SetDead()"/> should be called afterward  
         /// to update the alive status. Each decrement is logged for validation.
         /// </remarks>
-        public void loseLife()
+        public void LoseLife()
         {
             _life -= 1;
-            _deps.Diagnostic.AddCheck($"{nameof(PlayerInstance)}.{nameof(loseLife)}: Player lost one life. Remaining lives: {_life}.");
+            _deps.Diagnostic.AddCheck($"{nameof(PlayerInstance)}.{nameof(LoseLife)}: Player lost one life. Remaining lives: {_life}.");
+        }
+
+        /// <summary>
+        /// Updates the player's display name.
+        /// </summary>
+        /// <param name="newName">The new name to assign to the player.</param>
+        public void SetName(string newName)
+        {
+            Name = newName;
+            _deps.Diagnostic.AddCheck($"{nameof(PlayerInstance)}: Player name changed to '{newName}'.");
         }
     }
 }

@@ -1,4 +1,6 @@
 ﻿using Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies;
+using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Key;
+using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Player;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -9,39 +11,45 @@ using System.Threading.Tasks;
 namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 {
     /// <summary>
-    /// Handles player movement and interactions based on keyboard input.
+    ///  Handles all player-related input, movement, and interaction logic within the game board.
     /// </summary>
     /// <remarks>
-    /// The <see cref="PlayerController"/> translates keyboard commands into in-game actions.  
-    /// It validates player movement using <see cref="RulesManager"/>, updates player position,  
-    /// and manages interactions through the <see cref="InteractionManager"/>.  
-    /// Additionally, it logs all relevant actions to <see cref="DiagnosticsManager"/> for debugging.
+    /// The <see cref="PlayerController"/> interprets keyboard input, validates movement permissions,  
+    /// and triggers interactions via the <see cref="InteractionManager"/>.  
+    /// It also updates the player position visually using the <see cref="PrintManager"/>  
+    /// and logs all actions via the <see cref="DiagnosticsManager"/>.
     /// </remarks>
     internal class PlayerController
     {
         // === Dependencies ===
         private readonly PlayerControllerDependencies _deps;
+        private readonly PlayerInstance? _player;
 
         // === Fields ===
-
+        
         private PlayerActions _lastMoveDirection;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PlayerController"/> class.
+        /// <Initializes a new instance of the <see cref="PlayerController"/> class.
         /// </summary>
         /// <param name="playerControllerDependencies">
-        /// Provides references to core managers required for player control,  
-        /// including the <see cref="GameBoardManager"/>, <see cref="RulesManager"/>,  
-        /// <see cref="InteractionManager"/>, and <see cref="DiagnosticsManager"/>.
+        /// Dependency container providing access to managers for diagnostics, interaction,  
+        /// printing, game board management, and player data.
         /// </param>
         public PlayerController(PlayerControllerDependencies playerControllerDependencies)
         {
             _deps = playerControllerDependencies;
             _deps.Diagnostic.AddCheck($"{nameof(PlayerController)}: Initialized successfully.");
+            _player = _deps.GameObject.Player;
+            if (_player==null)
+            {
+
+                _deps.Diagnostic.AddError($"{nameof(PlayerController)}: PlayerInstance is null");
+                return;
+            }
         }
 
         /// <summary>
-        /// Defines all possible actions the player can perform via keyboard input.
+        /// Defines the available player actions recognized by the input system.
         /// </summary>
         private enum PlayerActions
         {
@@ -55,17 +63,14 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         }
 
         /// <summary>
-        /// Gets the current position of the player on the game board.
+        /// Gets the current player position on the game board.
         /// </summary>
-        public (int y, int x) PlayerPosition => _deps.Player.Position;
+        public (int y, int x) PlayerPosition => _player.Position;
 
         /// <summary>
-        /// Sets the player’s initial position and resets movement direction tracking.
+        /// Connects the player position from the <see cref="PlayerInstance"/>  
+        /// and initializes the movement state.
         /// </summary>
-        /// <remarks>
-        /// Typically called once after spawning or level start.  
-        /// Ensures that movement and interaction states are properly initialized.
-        /// </remarks>
         public void SetStartPosition()
         {
             _lastMoveDirection = PlayerActions.None;
@@ -75,11 +80,12 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         }
 
         /// <summary>
-        /// Determines the intended player action based on the given keyboard input.
+        /// Maps a pressed keyboard key to a corresponding player action.
         /// </summary>
-        /// <param name="key">The <see cref="ConsoleKey"/> pressed by the user.</param>
+        /// <param name="key">The input key received from the console.</param>
         /// <returns>
-        /// Returns a <see cref="PlayerActions"/> enum representing the intended movement or interaction.
+        /// Returns the mapped <see cref="PlayerActions"/> value based on the pressed key.  
+        /// If no valid key is detected, <see cref="PlayerActions.None"/> is returned.
         /// </returns>
         private PlayerActions GetMoveDirection(ConsoleKey key)
         {
@@ -111,37 +117,28 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         }
 
         /// <summary>
-        /// Moves the player or triggers interactions depending on keyboard input.
+        /// Handles player movement and interaction logic based on key input.
         /// </summary>
-        /// <param name="key">The <see cref="ConsoleKey"/> representing the player’s action input.</param>
-        /// <remarks>
-        /// - Validates all required dependencies before processing movement.  
-        /// - Prevents moves into invalid tiles by checking <see cref="RulesManager.IsMoveAllowed((int, int))"/>.  
-        /// - Automatically triggers interactions via <see cref="InteractionManager"/> when encountering non-empty tiles.  
-        /// - Logs every action, including blocked moves and invalid input, for debugging purposes.
-        /// </remarks>
+        /// <param name="key">
+        /// The <see cref="ConsoleKey"/> input to process.  
+        /// Valid values include WASD, arrow keys, E/Enter for interaction, and Escape for quitting.
+        /// </param>
         public void MovePlayer(ConsoleKey key)
         {
-            if (_deps.Player == null)
+            if (_player == null)
             {
                 _deps.Diagnostic.AddError($"{nameof(PlayerController)}: Player reference missing!");
                 return;
             }
-            else if (_deps.GameBoard.GameBoardArray == null)
+            else if (_deps.GameBoard == null||_deps.GameBoard.GameBoardArray == null)
             {
                 _deps.Diagnostic.AddError($"{nameof(PlayerController)}: GameBoardArray reference missing!");
                 return;
 
-            }
-            else if (_deps.GameBoard == null)
-            {
-                _deps.Diagnostic.AddError($"{nameof(PlayerController)}: GameBoard reference missing!");
-                return;
-
-            }
+            }           
 
             PlayerActions moveDirection = GetMoveDirection(key);
-            (int y, int x) newPosition = _deps.Player.Position;
+            (int y, int x) newPosition = _player.Position;
 
             switch (moveDirection)
             {
@@ -163,26 +160,12 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
                     break;
 
                 case PlayerActions.Interact:
-                    if (_lastMoveDirection == PlayerActions.None)
-                    {
-                        _deps.Diagnostic.AddWarning($"{nameof(PlayerController)}: Cannot interact – no last movement direction set.");
-                        return;
-                    }
-                    (int y, int x) interactPos = _deps.Player.Position;
-                    switch (_lastMoveDirection)
-                    {
-                        case PlayerActions.Up: interactPos.y--; break;
-                        case PlayerActions.Down: interactPos.y++; break;
-                        case PlayerActions.Left: interactPos.x--; break;
-                        case PlayerActions.Right: interactPos.x++; break;
-                    }
-
-                    _deps.Interaction.InteractionHandler(interactPos);
-                    _deps.Diagnostic.AddCheck($"{nameof(PlayerController)}: Manual interaction triggered at ({interactPos.y},{interactPos.x}).");
+                    HandleManualInteraction();
                     return;
 
-                case PlayerActions.Quit:
+                case PlayerActions.Quit:                    
                     _deps.Diagnostic.AddCheck($"{nameof(PlayerController)}: Quit command issued.");
+                    Environment.Exit(0);
                     return;
 
                 default:
@@ -197,14 +180,46 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
                 return;
             }
 
-            TileTyp tile = _deps.GameBoard.GetTileTyp(newPosition);
-            if (tile != TileTyp.Empty)
+            KeyFragmentInstance? targetObject = _deps.GameObject.GetObject<KeyFragmentInstance>(newPosition);
+
+            if (targetObject != null)
             {
                 _deps.Interaction.InteractionHandler(newPosition);
+                _deps.Diagnostic.AddCheck($"{nameof(PlayerController)}: Key found at {newPosition}.");
+            }            
+
+            _deps.GameObject.MovePlayer(PlayerPosition, newPosition);
+
+            _deps.Print.PrintTile(PlayerPosition, _deps.Symbol.EmptySymbol);
+
+            _player.AssignPosition(newPosition);
+
+            _deps.Print.PrintTile(newPosition, _player.Symbol);
+
+            _deps.Diagnostic.AddCheck($"{nameof(PlayerController)}: Player moved to ({newPosition.y},{newPosition.x}).");
+        }
+
+        /// <summary>
+        /// Handles player-triggered manual interaction in the direction of the last movement.
+        /// </summary>
+        private void HandleManualInteraction()
+        {
+            if (_lastMoveDirection == PlayerActions.None)
+            {
+                _deps.Diagnostic.AddWarning($"{nameof(PlayerController)}: Cannot interact – no last movement direction set.");
+                return;
+            }
+            (int y, int x) interactPos = _player.Position;
+            switch (_lastMoveDirection)
+            {
+                case PlayerActions.Up: interactPos.y--; break;
+                case PlayerActions.Down: interactPos.y++; break;
+                case PlayerActions.Left: interactPos.x--; break;
+                case PlayerActions.Right: interactPos.x++; break;
             }
 
-            _deps.Player.AssignPosition(newPosition);
-            _deps.Diagnostic.AddCheck($"{nameof(PlayerController)}: Player moved to ({newPosition.y},{newPosition.x}).");
+            _deps.Interaction.InteractionHandler(interactPos);
+            _deps.Diagnostic.AddCheck($"{nameof(PlayerController)}: Manual interaction triggered at ({interactPos.y},{interactPos.x}).");
         }
     }
 }

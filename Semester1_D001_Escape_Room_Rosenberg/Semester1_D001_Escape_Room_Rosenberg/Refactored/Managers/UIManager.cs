@@ -1,4 +1,6 @@
 ﻿using Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies;
+using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Door;
+using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Player;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Tracing;
@@ -13,13 +15,14 @@ using System.Threading.Tasks;
 namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 {
     /// <summary>
+    /// TODO Wegen Zeitproblemen nicht komplet optimiert. gegen fehler sichern von zu langen strings in hud. Fillbuttomhud zu viele parameter
     /// Central UI controller responsible for composing and rendering all Heads-Up Display (HUD) elements.
     /// </summary>
     /// <remarks>
-    /// The <see cref="UIManager"/> handles both the top and bottom HUD sections that provide 
-    /// real-time feedback, system messages, and NPC dialogue boxes within the Escape Room game.  
-    /// It manages text alignment, symbol-based rendering, and layout consistency 
-    /// using the dependency configuration provided by <see cref="UIManagerDependencies"/>.
+    /// The <see cref="UIManager"/> handles both the top and bottom HUD sections that display  
+    /// player stats, system messages, NPC dialogues, and interactive answer options.  
+    /// It ensures visual consistency across variable board sizes using proportional symbol layouts  
+    /// and offers several helper methods for building text-aligned HUD frames dynamically.
     /// </remarks>
     internal class UIManager
     {
@@ -36,25 +39,13 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         private string _bottomHudLine_7 = string.Empty;
         private string _bottomHudLine_8 = string.Empty;
         private string _bottomHudLine_9 = string.Empty;
-
+        
         private readonly List<string> _npcMessages = new List<string>();
-        private DateTime _startTime;
-
-
-        //TODO Später in richtige klasse machen
-        string _playerName = "Joschi";
-        int _lives = 3;
-        int _keys = 3;
-        bool _isDoorOpen = false;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="UIManager"/> class with dependency injection.
+        /// Initializes a new instance of the <see cref="UIManager"/> class.
         /// </summary>
-        /// <param name="uIManagerDependencies">
-        /// Provides references to all external managers and services required by the UI system, 
-        /// such as <see cref="GameBoardManager"/>, <see cref="SymbolsManager"/>, 
-        /// <see cref="PrintManager"/>, and <see cref="RandomManager"/>.
-        /// </param>
+        /// <param name="uIManagerDependencies">Provides access to all required managers and configuration symbols.</param>
         public UIManager(UIManagerDependencies uIManagerDependencies)
         {
             _deps = uIManagerDependencies;
@@ -62,69 +53,12 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         }
 
         /// <summary>
-        /// Initializes the internal list of NPC messages with predefined sample entries.  
-        /// Used for testing and placeholder dialogues until dynamic loading is implemented.
+        /// Builds and prints the top HUD section displaying player stats and score.
         /// </summary>
         /// <remarks>
-        /// Currently adds one sample question for demonstration purposes.  
-        /// This will later be replaced by dynamic data from an external source.
+        /// Includes safety validation and renders a separator line for visual structure.
         /// </remarks>
-        public void InitializeNpcMessages()
-        {
-            // Eine Test-Quizfrage (genau 72 Zeichen)
-            _npcMessages.Add("Wie viele Speicherbits hat ein Byte und welche Werte kann es darstellen?");
-
-            // Optional: weitere vorbefüllte Fragen kannst du hier anhängen
-            // _npcMessages.Add("...");
-        }
-
-        /// <summary>
-        /// Retrieves a random message from the NPC message list.
-        /// </summary>
-        /// <remarks>
-        /// If the list is empty, a fallback message ("Keine Fragen verfügbar.") is returned.  
-        /// Uses the injected <see cref="RandomManager"/> for consistent seeded randomness.
-        /// </remarks>
-        /// <returns>
-        /// A randomly selected NPC message string.
-        /// </returns>
-        public string GetRandomNpcMessage()
-        {
-            if (_npcMessages.Count == 0)
-                return "Keine Fragen verfügbar.";
-
-            // Variante A (reines C# / Console):
-
-            int idx = _deps.Random.Random.Next(0, _npcMessages.Count); // obere Grenze EXKLUSIV → kein Count-1 nötig
-            return _npcMessages[idx];
-
-            // Variante B (Unity):
-            // int idx = UnityEngine.Random.Range(0, _npcMessages.Count); // int: obere Grenze EXKLUSIV
-
-            // return _npcMessages[idx];
-        }
-
-        /// <summary>
-        /// Starts or resets the internal gameplay timer for HUD display purposes.
-        /// </summary>
-        /// <remarks>
-        /// Captures the current system time. The elapsed duration is later shown
-        /// in the top HUD through <see cref="BuildTopHud"/>.
-        /// </remarks>
-        public void StartTimer()
-        {
-            _startTime = DateTime.Now;
-        }
-
-        /// <summary>
-        /// Builds and displays the top Heads-Up Display (HUD) section of the Escape Room game.
-        /// </summary>
-        /// <remarks>
-        /// The top HUD provides key runtime information such as elapsed time, player name, 
-        /// current level, remaining lives, collected keys, and door status. 
-        /// It is printed directly to the console using the configured <see cref="PrintManager"/>.
-        /// </remarks>
-        private void BuildTopHud()
+        public void BuildTopHud()
         {
             // === SAFETY CHECK ===
             // Ensures that the game board and its array are initialized before attempting to build the HUD.
@@ -134,70 +68,93 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
                 return;
             }
             // === INITIALIZATION ===
-            // Retrieve the maximum board width for proper HUD alignment.
-            int boardWidth = _deps.GameBoard.GameBoardArray.GetLength(1);
-            // Calculate elapsed time since the start of the game.
-            TimeSpan elapsed = DateTime.Now - _startTime;
+            // Retrieve the maximum board width for proper HUD alignment.            
+            UpdateTopHudLine_1();
+            UpdateTopHudLine_2();
 
-            // === TIME AND LEVEL DISPLAY ===
-            // Format the elapsed time using the configured time symbol.
-            string timeString = $"{_deps.Symbol.TimeWatchSymbol} {elapsed.Minutes:D2}:{elapsed.Seconds:D2}";
-
-            // Create a consistent layout with fixed width for balanced alignment.
-            string namePart = $"{_deps.Symbol.PlayerSymbol} {_playerName}";
-            string lvlPart = $"Lvl = {Program.CurrentLevel}";
-            string timePart = timeString;
-
-            // === FIRST ROW OUTPUT ===
-            // Display the player name, current level, and elapsed time.
-            Console.SetCursorPosition(0, 0);
-            Console.Write(BuildCentredLine(namePart, lvlPart, timePart, boardWidth));
-
-            // === SECOND ROW OUTPUT ===
-            // Display remaining lives, key fragments, and door state (open/closed).
-            string liveString = $"{_deps.Symbol.HearthSymbol}  x{_lives}";
-            string keyString = $"{_deps.Symbol.KeyFragmentSymbol}  x{_keys}";
-            string doorString = _isDoorOpen ? $"{_deps.Symbol.OpenDoorVerticalSymbol} = Open" : $"{_deps.Symbol.ClosedDoorVerticalSymbol} = Closed";
-
-            // === SCOND ROW OUTPUT ===
-            // Print the second row to the console.
-            Console.SetCursorPosition(0, 1);
-            Console.Write(BuildCentredLine(liveString, doorString, keyString, boardWidth));
 
             // === SEPARATOR LINE ===
             // Draws a visual divider beneath the HUD.
-            Console.SetCursorPosition(0, 2);
-            Console.WriteLine(new string('─', boardWidth));
+            Console.SetCursorPosition(Program.CursorPosX, Program.CursorPosYTopHud_3);
+            Console.WriteLine(new string('─', _deps.GameBoard.ArraySizeX));
         }
 
         /// <summary>
-        /// Builds a fully centered HUD line by aligning a left, middle, and right zone
-        /// within a defined maximum line width.
+        /// Updates and renders the first line of the top HUD (Player name, level, score).
         /// </summary>
-        /// <remarks>
-        /// This method dynamically positions the middle section (<paramref name="midZone"/>)  
-        /// so that it appears horizontally centered between the left and right zones 
-        /// based on the specified total line width.  
-        /// It automatically calculates and inserts appropriate spacing on both sides 
-        /// to maintain symmetrical alignment across the entire line.  
-        /// This function is particularly useful for layouting HUD headers, dividers, 
-        /// or informational text rows that require central alignment between static elements.
-        /// </remarks>
-        /// <param name="leftZone">
-        /// The text or symbol block displayed on the left side of the line.
-        /// </param>
-        /// <param name="midZone">
-        /// The central text or content block to be horizontally centered.
-        /// </param>
-        /// <param name="rightZone">
-        /// The text or symbol block displayed on the right side of the line.
-        /// </param>
-        /// <param name="lineMaxLength">
-        /// The total width (in characters) available for the line construction.
-        /// </param>
-        /// <returns>
-        /// A formatted string combining all three zones with automatically balanced spacing.
-        /// </returns>
+        public void UpdateTopHudLine_1()
+        {
+            if(_deps.GameObject==null)
+            {
+
+            }
+
+            PlayerInstance? player = _deps.GameObject?.Player;
+            if (player == null)
+            {
+
+                _deps.Diagnostic.AddError($"{nameof(UIManager)}.{nameof(UpdateTopHudLine_1)}: Playerinstance is null");
+                return;
+            }
+
+            // Calculate elapsed time since the start of the game.
+            int score = _deps.Inventory.Score;
+
+            // === TIME AND LEVEL DISPLAY ===
+            // Format the elapsed time using the configured time symbol.
+            string scoreString = $"Score: {score} ";
+
+            // Create a consistent layout with fixed width for balanced alignment.
+            string namePart = $"{_deps.Symbol.PlayerSymbol} {player?.Name}";
+            string lvlPart = $"Lvl = {_deps.Level.CurrentLvl}";
+            string scorePart = scoreString;
+
+            // === FIRST ROW OUTPUT ===
+            // Display the player name, current level, and elapsed time.
+            Console.SetCursorPosition(Program.CursorPosX, Program.CursorPosYTopHudStart);
+            Console.Write(BuildCentredLine(namePart, lvlPart, scorePart, _deps.GameBoard.ArraySizeX));
+        }
+
+        /// <summary>
+        /// Updates and renders the second line of the top HUD (Lives, Door state, Key fragments).
+        /// </summary>
+        public void UpdateTopHudLine_2()
+        {
+            DoorInstance? door = _deps.GameObject?.Door;
+            if (door == null)
+            {
+
+                _deps.Diagnostic.AddError($"{nameof(UIManager)}.{nameof(UpdateTopHudLine_2)}: DoorInstance is null");
+                return;
+            }
+            PlayerInstance? player = _deps.GameObject?.Player;
+            if (player == null)
+            {
+
+                _deps.Diagnostic.AddError($"{nameof(UIManager)}.{nameof(UpdateTopHudLine_2)}: PlayerInstance is null");
+                return;
+            }
+            // === SECOND ROW OUTPUT ===
+            // Display remaining lives, key fragments, and door state (open/closed).
+            string liveString = $"{_deps.Symbol.HearthSymbol}  x{player?.Heart}";
+            string keyString = $"{_deps.Symbol.KeyFragmentSymbol}  x{_deps.Inventory.KeyFragment}";
+            string doorString = door.IsOpen ? $"{_deps.Symbol.OpenDoorVerticalSymbol} = Open" : $"{_deps.Symbol.ClosedDoorVerticalSymbol} = Closed";
+
+            // === SCOND ROW OUTPUT ===
+            // Print the second row to the console.
+            Console.SetCursorPosition(Program.CursorPosX, Program.CursorPosYTopHud_2);
+            Console.Write(BuildCentredLine(liveString, doorString, keyString, _deps.GameBoard.ArraySizeX));
+
+        }
+
+        /// <summary>
+        /// Builds a single horizontally aligned HUD line with three centered text zones.
+        /// </summary>
+        /// <param name="leftZone">Text to display on the left side.</param>
+        /// <param name="midZone">Text centered in the middle.</param>
+        /// <param name="rightZone">Text aligned to the right.</param>
+        /// <param name="lineMaxLength">Total line width for alignment calculation.</param>
+        /// <returns>A fully composed, space-balanced HUD line.</returns>
         public string BuildCentredLine(string leftZone, string midZone, string rightZone, int lineMaxLength)
         {
             // === CALCULATE MIDZONE START POSITION ===
@@ -226,18 +183,8 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         }
 
         /// <summary>
-        /// Builds the first connecting line of the bottom Heads-Up Display (HUD),
-        /// forming the upper frame border for the bottom HUD section.
+        /// Builds the top frame line of the bottom HUD dialogue box.
         /// </summary>
-        /// <remarks>
-        /// This method generates the top connection line of the bottom HUD frame using 
-        /// predefined wall and corner symbols from the <see cref="_deps.Symbol"/> configuration.  
-        /// It combines left and right corner symbols, a horizontal wall segment, and a middle divider 
-        /// to ensure that the HUD frame remains visually symmetrical and aligned with the current game board width.
-        /// </remarks>
-        /// <returns>
-        /// A formatted string representing the top boundary line of the bottom HUD frame.
-        /// </returns>
         private string BuildBottomHudLine_1()
         {
             // === INITIAL SETUP ===
@@ -268,33 +215,17 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 
 
         /// <summary>
-        /// Builds the second line of the bottom Heads-Up Display (HUD),
-        /// displaying the NPC name on the left and the NPC dialogue message on the right.
+        /// Builds the second line of the bottom HUD that displays the NPC name and info box.
         /// </summary>
-        /// <remarks>
-        /// This method constructs the second bottom HUD line used for NPC interactions.  
-        /// It displays the NPC name on the left and the dialogue message on the right,
-        /// separated by a vertical divider symbol.  
-        /// The function includes validation for null references and string overflow, ensuring that
-        /// layout symmetry and console alignment remain intact during rendering.
-        /// </remarks>
-        /// <param name="npcName">
-        /// The left-aligned text section, representing the NPC's display name.
-        /// </param>
-        /// <param name="infoBox">
-        /// The right-aligned text section, containing the infobox dialogue or message content.
-        /// </param>
-        /// <returns>
-        /// A formatted string representing the complete second line of the bottom HUD,
-        /// properly spaced and aligned within the frame.
-        /// </returns>
-        private string BuildBottomHudLine_2(string npcName, string infoBox)
+        /// <param name="messangerName">The name of the NPC or message sender.</param>
+        /// <param name="infoBox">The information box text, such as item or key info.</param>
+        private string BuildBottomHudLine_2(string messangerName, string infoBox)
         {
             // === INITIAL SETUP ===
             int lineMaxLength = _deps.GameBoard.ArraySizeX;
             char verticalHudSymbol = _deps.Symbol.WallVerticalSymbol;
 
-            string leftZone = npcName;
+            string leftZone = messangerName;
             string rightZone = infoBox;
 
             const int SYMBOL_OFFSET = 1;
@@ -347,18 +278,8 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         }
 
         /// <summary>
-        /// Builds the third connecting line of the bottom Heads-Up Display (HUD),
-        /// representing the lower divider between the HUD frame and the NPC dialogue area.
+        /// Builds the third bottom HUD line, serving as the horizontal separator.
         /// </summary>
-        /// <remarks>
-        /// This method constructs the bottom connecting line of the HUD frame using predefined wall and corner symbols 
-        /// from the <see cref="_deps.Symbol"/> configuration.  
-        /// It combines left and right connection corners, a horizontal wall segment, and a middle connector symbol 
-        /// to maintain a consistent visual alignment with the top HUD borders.
-        /// </remarks>
-        /// <returns>
-        /// A formatted string representing the bottom connecting divider line of the HUD frame.
-        /// </returns>
         private string BuildBottomHudLine_3()
         {
             // === INITIAL SETUP ===            
@@ -390,22 +311,9 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         }
 
         /// <summary>
-        /// Builds the fourth line of the bottom Heads-Up Display (HUD),
-        /// displaying the first row of NPC dialogue text within the message frame.
+        /// Builds one of the NPC message lines for the bottom HUD dialogue box.
         /// </summary>
-        /// <remarks>
-        /// This method constructs a single HUD text line that displays an NPC message 
-        /// inside a bordered frame.  
-        /// It aligns the text between two vertical wall symbols and automatically adjusts 
-        /// spacing based on the message length and HUD width.  
-        /// Used as the first visible dialogue row in the NPC message box.
-        /// </remarks>
-        /// <param name="npcMessagePart">
-        /// The text part content to be displayed in the first line of the NPC dialogue section.
-        /// </param>
-        /// <returns>
-        /// A formatted string representing the first dialogue line framed with vertical HUD borders.
-        /// </returns>
+        /// <param name="npcMessagePart">The message text to render within the dialogue frame.</param>
         private string BuildBottomHudLine_4(string npcMessagePart)
         {
 
@@ -433,22 +341,9 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         }
 
         /// <summary>
-        /// Builds the fifth line of the bottom Heads-Up Display (HUD),
-        /// displaying the second row of NPC dialogue text within the message frame.
+        /// Builds one of the NPC message lines for the bottom HUD dialogue box.
         /// </summary>
-        /// <remarks>
-        /// This method constructs the second visible dialogue line for NPC messages inside the HUD box.  
-        /// It mirrors the layout of <see cref="BuildBottomHudLine_4"/> to maintain consistent text alignment 
-        /// and spacing across multi-line dialogues.  
-        /// The message is framed between two vertical wall symbols and padded dynamically 
-        /// according to the total HUD width and text length.
-        /// </remarks>
-        /// <param name="npcMessagePart">
-        /// The text content to be displayed in the second line of the NPC dialogue section.
-        /// </param>
-        /// <returns>
-        /// A formatted string representing the second dialogue line framed with vertical HUD borders.
-        /// </returns>
+        /// <param name="npcMessagePart">The message text to render within the dialogue frame.</param>
         private string BuildBottomHudLine_5(string npcMessagePart)
         {
             // === INITIAL SETUP ===
@@ -475,22 +370,9 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         }
 
         /// <summary>
-        /// Builds the sixth line of the bottom Heads-Up Display (HUD),
-        /// displaying the third row of NPC dialogue text within the message frame.
+        /// Builds one of the NPC message lines for the bottom HUD dialogue box.
         /// </summary>
-        /// <remarks>
-        /// This method constructs the third visible dialogue line for NPC messages inside the HUD box.  
-        /// It mirrors the structure of <see cref="BuildBottomHudLine_4"/> and <see cref="BuildBottomHudLine_5"/>,
-        /// ensuring that multi-line dialogue text remains visually consistent and properly aligned.  
-        /// The message is centered between two vertical wall symbols and dynamically spaced 
-        /// according to the total HUD width and text length.
-        /// </remarks>
-        /// <param name="npcMessagePart">
-        /// The text content to be displayed in the third line of the NPC dialogue section.
-        /// </param>
-        /// <returns>
-        /// A formatted string representing the third dialogue line framed with vertical HUD borders.
-        /// </returns>
+        /// <param name="npcMessagePart">The message text to render within the dialogue frame.</param>
         private string BuildBottomHudLine_6(string npcMessagePart)
         {
             // === INITIAL SETUP ===
@@ -516,19 +398,8 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         }
 
         /// <summary>
-        /// Builds the seventh and final line of the bottom Heads-Up Display (HUD),
-        /// closing the dialogue frame with a lower border divider.
+        /// Builds the horizontal divider line separating dialogue text from the answer section.
         /// </summary>
-        /// <remarks>
-        /// This method constructs the closing divider line at the bottom of the HUD dialogue frame.  
-        /// It combines left and right connector symbols with a continuous horizontal wall segment, 
-        /// visually completing the HUD’s bordered layout.  
-        /// The structure ensures alignment with the upper HUD frame lines and maintains consistent width 
-        /// across the entire dialogue box.
-        /// </remarks>
-        /// <returns>
-        /// A formatted string representing the closing divider line of the bottom HUD frame.
-        /// </returns>
         private string BuildBottomHudLine_7()
         {
             // === INITIAL SETUP ===
@@ -553,50 +424,39 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
             return line;
         }
 
-        //TODO noch bauen richtig aktuell nur rahmen hier kommen 3 antworten rein
         /// <summary>
-        /// Builds the eighth line of the bottom Heads-Up Display (HUD),
-        /// currently serving as a placeholder row for future player input or NPC responses.
+        /// Maximal 10 Zeichen pro Antwort bei arraygröße.x 45
         /// </summary>
-        /// <remarks>
-        /// This version only renders an empty framed line.  
-        /// In future iterations, this will host selectable answer options or dialogue input fields.
-        /// </remarks>
-        /// <returns>
-        /// A framed but currently empty line string within the HUD structure.
-        /// </returns>
-        private string BuildBottomHudLine_8()
+        /// Builds the NPC answer selection line with randomized answer order.
+        /// </summary>
+        /// <param name="answer_1"></param>
+        /// <param name="answer_2"></param>
+        /// <param name="answer_3"></param>
+        /// <returns></returns>
+        private string BuildBottomHudLineAnswer_8(string answer_1, string answer_2, string answer_3)
         {
             // === INITIAL SETUP ===
             char SideSymbol = _deps.Symbol.WallVerticalSymbol;
             int lineMaxLength = _deps.GameBoard.ArraySizeX;
-            const int SYMBOL_OFFSET = 1;
+            List<string> answers = new List<string> { answer_1, answer_2, answer_3 };
+            answers = _deps.Random.GetRandomElements(answers, answers.Count);
 
-            // === INITIALIZE LINE ===
-            string line = string.Empty;
+            // === INITIALIZE LINE ===            
 
-            line += SideSymbol
-                + new string(' ', lineMaxLength - SYMBOL_OFFSET * 2)
-                + SideSymbol;
+            string line = BuildCentredLine("[1] " + answers[0], "[2] " + answers[1], "[3] " + answers[2], lineMaxLength);
+            if (line.Length > _deps.GameBoard.ArraySizeX)
+            {
+                _deps.Diagnostic.AddWarning($"{nameof(UIManager)}.{nameof(BuildBottomHudLineAnswer_8)}: Answers too long ({line.Length}/{_deps.GameBoard.ArraySizeX}). Line was reset.");
+                return line = BuildCentredLine(string.Empty, string.Empty, string.Empty, _deps.GameBoard.ArraySizeX);
+            }
 
 
             return line;
         }
 
         /// <summary>
-        /// Builds the ninth and final structural line of the bottom Heads-Up Display (HUD),
-        /// forming the absolute bottom border of the dialogue frame.
+        /// Builds the closing bottom frame line for the HUD dialogue box.
         /// </summary>
-        /// <remarks>
-        /// This method constructs the closing bottom boundary of the HUD frame using predefined wall corner 
-        /// and horizontal symbols from the <see cref="_deps.Symbol"/> configuration.  
-        /// It connects the left and right bottom corners with a continuous horizontal wall segment, 
-        /// visually completing the HUD enclosure and ensuring perfect alignment with the game board width.  
-        /// This line marks the final structural element in the bottom HUD rendering sequence.
-        /// </remarks>
-        /// <returns>
-        /// A formatted string representing the complete bottom boundary line of the HUD frame.
-        /// </returns>
         private string BuildBottomHudLine_9()
         {
             // === INITIAL SETUP ===
@@ -619,9 +479,24 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
             return line;
         }
 
-
+        /// <summary>
+        /// Splits a long NPC message string into multiple lines, ensuring each line fits within a specified width limit.
+        /// </summary>
+        /// <param name="npcMessage">
+        /// The original text message spoken by the NPC.  
+        /// It can include spaces, punctuation, and multiple words that need to be formatted for HUD display.
+        /// </param>
+        /// <param name="maxWidth">
+        /// The maximum number of characters allowed per line, typically derived from the HUD or board width.
+        /// </param>
+        /// <returns>
+        /// Returns a <see cref="List{T}"/> of formatted message lines,  
+        /// where each string fits within the maximum width constraint without breaking words.
+        /// </returns>
         public List<string> CutNpcMessageIntoLines(string npcMessage, int maxWidth)
         {
+            const int SYMBOL_OFFSET = 2;
+            maxWidth -= SYMBOL_OFFSET;
             // === INITIALIZE STORAGE ===
             // Create a list to store the formatted message lines.
             List<string> lines = new List<string>();
@@ -651,12 +526,23 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 
                 // === APPEND WORD TO LINE ===
                 currentLine += word;
+
+                if (currentLine.Length > maxWidth)
+                {
+                    string truncated = currentLine.Substring(0, maxWidth - 4) + "…";
+                    lines.Add(truncated);
+                    currentLine = string.Empty;
+                }
             }
 
             // === FINALIZE ===
             // Add the last line if any content remains.
             if (currentLine.Length > 0)
             {
+                if (currentLine.Length > maxWidth)
+                {
+                    currentLine = currentLine.Substring(0, maxWidth - 4) + "…";
+                }
                 lines.Add(currentLine);
             }
 
@@ -665,31 +551,35 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         }
 
         /// <summary>
-        /// Fills and prepares all bottom Heads-Up Display (HUD) lines with NPC and message data,
-        /// dynamically composing the entire dialogue box content.
+        /// Constructs and fills the entire bottom HUD section, including the dialogue box,  
+        /// NPC name, info box, message text, and randomized answer options.
         /// </summary>
-        /// <remarks>
-        /// This method initializes and assembles all nine bottom HUD lines to form the complete NPC dialogue frame.  
-        /// It generates header, divider, and text sections by invoking the respective `BuildBottomHudLine_X()` methods 
-        /// and injects NPC name, message text, and additional info symbols into their corresponding HUD segments.  
-        /// The text is automatically split into multiple rows using <see cref="CutNpcMessageIntoLines"/> 
-        /// to ensure optimal fit within the available HUD width.  
-        /// This function handles data binding and sequence composition but does not render the HUD itself 
-        /// (see <see cref="PrintHud"/> for the output process).
-        /// </remarks>
         /// <param name="messangerName">
-        /// The NPC name displayed in the upper-left section of the HUD.
+        /// The name of the NPC or entity sending the message, displayed in the top-left of the dialogue box.
         /// </param>
         /// <param name="infoBoxstring">
-        /// The descriptive info string combined with symbol data (e.g. “Keys: x2” or “Hearts: x3”).
+        /// The base text content for the info box (e.g., “Key”, “Item”), combined with the visual symbol and quantity.
+        /// </param>
+        /// <param name="message">
+        /// The dialogue or message text displayed inside the HUD message area.  
+        /// This text will automatically wrap into multiple lines depending on width.
         /// </param>
         /// <param name="symbol">
-        /// The symbol character representing the item or info type displayed in the info box.
+        /// The visual symbol (e.g., key icon, item icon) displayed next to the info box text.
         /// </param>
         /// <param name="count">
-        /// The numerical value displayed next to the symbol (e.g. collected keys or items).
+        /// The quantity of the symbol item, typically used to display counts like “x3” or “x5”.
         /// </param>
-        public void FillUpBottomHud(string messangerName, string infoBoxstring,string message, char symbol, int count)
+        /// <param name="answer_1">
+        /// The first dialogue answer option displayed below the message text.
+        /// </param>
+        /// <param name="answer_2">
+        /// The second dialogue answer option displayed below the message text.
+        /// </param>
+        /// <param name="answer_3">
+        /// The third dialogue answer option displayed below the message text.
+        /// </param>
+        public void FillUpBottomHud(string messangerName, string infoBoxstring, string message, char symbol, int count, string answer_1, string answer_2, string answer_3)
         {
             if (_deps.GameBoard == null || _deps.GameBoard.GameBoardArray == null)
             {
@@ -699,16 +589,13 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 
             // === INITIAL SETUP ===
             // Construct the info box string and define layout parameters.
+            // no saftey if count is too high
             string infoBoxSymbol = $"{symbol} x{count}";
             string infoBox = infoBoxstring + infoBoxSymbol;
 
             const int SYMBOL_OFFSET = 1;
 
             int innerWidth = _deps.GameBoard.ArraySizeX - SYMBOL_OFFSET * 2;
-            // === TEST MESSAGE SETUP ===
-            //TODO ersetzen später npc messages
-            // Initialize message data for temporary visualization.
-            InitializeNpcMessages();
 
             // Cut the random NPC message into multiple lines based on the available HUD width.            
             List<string> cutTextLines = CutNpcMessageIntoLines(message, innerWidth);
@@ -723,23 +610,52 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
             _bottomHudLine_5 = BuildBottomHudLine_5(cutTextLines.Count > 1 ? cutTextLines[1] : "");
             _bottomHudLine_6 = BuildBottomHudLine_6(cutTextLines.Count > 2 ? cutTextLines[2] : "");
             _bottomHudLine_7 = BuildBottomHudLine_7();
-            _bottomHudLine_8 = BuildBottomHudLine_8();
+            _bottomHudLine_8 = BuildBottomHudLineAnswer_8(answer_1, answer_2, answer_3);
+            _bottomHudLine_9 = BuildBottomHudLine_9();
+        }
+
+
+        public void FillUpBottomHud(string messangerName, string infoBoxstring, string message, char symbol, string answer_1, string answer_2, string answer_3)
+        {
+            if (_deps.GameBoard == null || _deps.GameBoard.GameBoardArray == null)
+            {
+                _deps.Diagnostic.AddError($"{nameof(UIManager)}.{nameof(FillUpBottomHud)}: Missing GameBoard reference.");
+                return;
+            }
+
+            // === INITIAL SETUP ===
+            // Construct the info box string and define layout parameters.
+            string infoBoxSymbol = $"{symbol}";
+            string infoBox = infoBoxstring + infoBoxSymbol;
+
+            const int SYMBOL_OFFSET = 1;
+
+            int innerWidth = _deps.GameBoard.ArraySizeX - SYMBOL_OFFSET * 2;
+
+            // Cut the random NPC message into multiple lines based on the available HUD width.            
+            List<string> cutTextLines = CutNpcMessageIntoLines(message, innerWidth);
+
+
+            // === BUILD HUD STRUCTURE ===
+            // Compose the full HUD from top to bottom using dedicated build methods.
+            _bottomHudLine_1 = BuildBottomHudLine_1();
+            _bottomHudLine_2 = BuildBottomHudLine_2(messangerName, infoBox);
+            _bottomHudLine_3 = BuildBottomHudLine_3();
+            _bottomHudLine_4 = BuildBottomHudLine_4(cutTextLines.Count > 0 ? cutTextLines[0] : "");
+            _bottomHudLine_5 = BuildBottomHudLine_5(cutTextLines.Count > 1 ? cutTextLines[1] : "");
+            _bottomHudLine_6 = BuildBottomHudLine_6(cutTextLines.Count > 2 ? cutTextLines[2] : "");
+            _bottomHudLine_7 = BuildBottomHudLine_7();
+            _bottomHudLine_8 = BuildBottomHudLineAnswer_8(answer_1, answer_2, answer_3);
             _bottomHudLine_9 = BuildBottomHudLine_9();
         }
 
         /// <summary>
-        /// Renders the complete bottom Heads-Up Display (HUD) in the console output,
-        /// printing all pre-built HUD lines sequentially to form the full dialogue frame.
+        /// Prints all lines of the bottom HUD to the console output.
         /// </summary>
-        /// <remarks>
-        /// This method outputs each preconstructed line of the bottom HUD to the console in the correct order,  
-        /// visually forming the full multi-line dialogue box used for NPC interactions.  
-        /// The printed structure includes upper connectors, dialogue rows, divider lines, and the final boundary line.  
-        /// Each line is assumed to be previously built and stored in its corresponding `_bottomHudLine_X` variable.  
-        /// This method does not perform any layout calculations; it only handles the final rendering sequence.
-        /// </remarks>
-        public void PrintHud()
+        public void PrintBottomHud()
         {
+            int hudY = Program.CursorPosYBottomHudStart;
+            Console.SetCursorPosition(Program.CursorPosX, hudY);
             Console.WriteLine(_bottomHudLine_1);
             Console.WriteLine(_bottomHudLine_2);
             Console.WriteLine(_bottomHudLine_3);
@@ -749,6 +665,33 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
             Console.WriteLine(_bottomHudLine_7);
             Console.WriteLine(_bottomHudLine_8);
             Console.WriteLine(_bottomHudLine_9);
+            _deps.Diagnostic.AddCheck($"{nameof(UIManager)}.{nameof(PrintBottomHud)}: Bottom HUD drawn at Y={Program.CursorPosYBottomHudStart}.");
+        }
+
+        public void BuildEmptyBottomHud()
+        {
+            if (_deps.GameBoard == null || _deps.GameBoard.GameBoardArray == null)
+            {
+                _deps.Diagnostic.AddError($"{nameof(UIManager)}.{nameof(BuildEmptyBottomHud)}: Missing GameBoard reference.");
+                return;
+            }
+
+            int width = _deps.GameBoard.ArraySizeX;
+
+            _bottomHudLine_1 = BuildBottomHudLine_1();
+            _bottomHudLine_2 = BuildBottomHudLine_2(string.Empty, string.Empty);
+            _bottomHudLine_3 = BuildBottomHudLine_3();
+            _bottomHudLine_4 = BuildBottomHudLine_4(string.Empty);
+            _bottomHudLine_5 = BuildBottomHudLine_5(string.Empty);
+            _bottomHudLine_6 = BuildBottomHudLine_6(string.Empty);
+            _bottomHudLine_7 = BuildBottomHudLine_7();
+
+            // Antworten-Zeile bewusst LEER (keine [1][2][3])
+            _bottomHudLine_8 = BuildCentredLine(string.Empty, string.Empty, string.Empty, width);
+
+            _bottomHudLine_9 = BuildBottomHudLine_9();
+
+            _deps.Diagnostic.AddCheck($"{nameof(UIManager)}.{nameof(BuildEmptyBottomHud)}: Empty bottom HUD built.");
         }
     }
 }
