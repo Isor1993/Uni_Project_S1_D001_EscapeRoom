@@ -372,11 +372,11 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         public void SpawnAll(int npcAmount, int keyAmount)
         {
             CollectSpawnPositions();
+            SpawnWalls();
             SpawnDoor();
             SpawnPlayer();
             SpawnNpc(npcAmount);
             SpawnKeyFragment(keyAmount);
-            SpawnWalls();
         }
 
         /// <summary>

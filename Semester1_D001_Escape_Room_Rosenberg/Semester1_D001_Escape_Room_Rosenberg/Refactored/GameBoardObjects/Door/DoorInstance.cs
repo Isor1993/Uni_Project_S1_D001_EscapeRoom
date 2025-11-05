@@ -120,30 +120,34 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Door
         /// </remarks>
         public void AssignDoorSymbol()
         {
+            bool isTop = _position.y == 0;
+            bool isBottom = _position.y == Program.ArraySizeY - 1;
+            bool isLeft = _position.x == 0;
+            bool isRight = _position.x == Program.ArraySizeX - 1;
 
             if (_isOpen)
             {
-                if (_position.x == 0)
+                if (isLeft || isRight)
                     _symbol = _deps.Symbol.OpenDoorVerticalSymbol;
-                else if (_position.y == 0)
+                else if (isTop || isBottom)
                     _symbol = _deps.Symbol.OpenDoorHorizontalSymbol;
                 else
-                    _symbol = _deps.Symbol.DeathSymbol;
+                    _symbol = _deps.Symbol.DeathSymbol; // Fallback
             }
             else
             {
-                if (_position.x == 0)
+                if (isLeft || isRight)
                     _symbol = _deps.Symbol.ClosedDoorVerticalSymbol;
-                else if (_position.y == 0)
+                else if (isTop || isBottom)
                     _symbol = _deps.Symbol.ClosedDoorHorizontalSymbol;
                 else
-                    _symbol = _deps.Symbol.DeathSymbol;
+                    _symbol = _deps.Symbol.DeathSymbol; // Fallback
             }
 
             _deps.Diagnostic.AddCheck($"{nameof(DoorInstance)}.{nameof(AssignDoorSymbol)}: Symbol {_symbol} assigned for door at {_position}");
         }
 
-        
+
 
         /// <summary>
         /// Initializes the door instance with its board position and automatically assigns the correct symbol.

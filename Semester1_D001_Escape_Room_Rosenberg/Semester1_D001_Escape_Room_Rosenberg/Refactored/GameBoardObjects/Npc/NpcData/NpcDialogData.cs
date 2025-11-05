@@ -14,7 +14,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc.N
     {
         // === Fields ===
         private readonly string _question;
-        private readonly string _correctAnswer;
+        private string _correctAnswer;
         private readonly List<(string A, string B, string C)> _answerGroups = new();
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc.N
         /// <summary>
         /// Gets the correct answer for the NPC’s question.
         /// </summary>
-        public string CorrectAnswer => _correctAnswer;
+        public string CorrectAnswer {get=> _correctAnswer;set=> _correctAnswer=value;}
                 
     }
 }

@@ -15,19 +15,27 @@ namespace Semester1_D001_Escape_Room_Rosenberg
 
         // === CURSOR- UND HUD-KOORDINATEN ===
         public const int CursorPosX = 0;
-        public const int CursorPosYTopHudStart = 0;
-        public const int CursorPosYTopHud_2 = 1;
-        public const int CursorPosYTopHud_3 = 2;
-        public const int CursorPosYGamBoardStart = 3;
+        public const int CursorPosYGamBoardStart = 0;
 
         // Dynamische Property: abhängig von ArraySizeY
         public static int CursorPosYBottomHudStart => ArraySizeY + 3;
+        public static int CursorPosYTopHudStart => ArraySizeY;
+        public static int CursorPosYTopHud_2 => ArraySizeY + 1;
+        public static int CursorPosYTopHud_3 => ArraySizeY + 2;
+
 
         // === BOARD-GRÖSSE ===
         private static int _arraySizeY;
         private static int _arraySizeX;
+        // Fields
+        private static int _newArraySizeX;
+        private static int _npcAmount = 5;
+        private static int _keyAmount = 3;
 
+        public static int NpcAmount { get => _npcAmount; set => _npcAmount = value; }
+        public static int KeyAmount { get => _keyAmount; set => _keyAmount = value; }
         public static int ArraySizeY { get => _arraySizeY; set => _arraySizeY = value; }
+        public static int NewArraySizeX { get => _newArraySizeX; set => _newArraySizeX = value; }
         public static int ArraySizeX { get => _arraySizeX; set => _arraySizeX = value; }
 
         // === LEVEL ===
@@ -80,9 +88,10 @@ namespace Semester1_D001_Escape_Room_Rosenberg
             // === Interaction MANAGER ===
             UIManager ui = new UIManager(new UIManagerDependencies(gameBoard, diagnostics, symbols, print, random, inventory, gameObject, level));
             InteractionManager interaction = new InteractionManager(new InteractionManagerDependencies(
-              diagnostics, gameBoard, gameObject, rules, inventory, ui, npcManager, symbols, level, print
+              diagnostics, gameBoard, gameObject, rules, inventory, ui, npcManager, symbols, level, print, random
 
            ));
+
 
 
             // === INITIAL WORLD SETUP ===
@@ -98,7 +107,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg
             npcManager.LoadAllNpcData();
 
             // 4️ Welt befüllen (Spawns)
-            spawn.SpawnAll(npcAmount: 5, keyAmount: 3);
+            spawn.SpawnAll(_npcAmount, _keyAmount);
 
             // 5️ Ausgabe vorbereiten
             print.PrintBoard();
@@ -116,8 +125,8 @@ namespace Semester1_D001_Escape_Room_Rosenberg
 
             // 8️ Abschlusslog & Diagnoseausgabe
 
-           // diagnostics.AddCheck("=== World setup complete ===");
-           // diagnostics.PrintChronologicalLogs();
+            // diagnostics.AddCheck("=== World setup complete ===");
+            // diagnostics.PrintChronologicalLogs();
 
             //TODO player.SetName("Player");
 
@@ -153,8 +162,40 @@ namespace Semester1_D001_Escape_Room_Rosenberg
                 {
                     diagnostics.AddCheck("=== World setup complete ===");
                     diagnostics.PrintChronologicalLogs();
+                }
+                if (key == ConsoleKey.K)
+                {
+                    inventory.AddKeyFragment(100);
+                    Console.WriteLine("key added");
+                }
+                if (NewArraySizeX >= 120)
+                { break; }
+                if ( level.IsNextLvl)
+                {
+                    diagnostics.AddCheck("=== Starting world setup NEW LEVEL ===");
 
-                                    }
+                    // 1️ Spielfeldgröße zuerst bestimmen
+                    DecideArraySize(15,NewArraySizeX);
+
+                    // 2️ Board initialisieren
+                    gameBoard.InitializeBoard();
+
+                    // 3️ NPC-Daten laden
+                    npcManager.LoadAllNpcData();
+
+                    // 4️ Welt befüllen (Spawns)
+                    spawn.SpawnAll(_npcAmount, _keyAmount);
+
+                    // 5️ Ausgabe vorbereiten
+                    print.PrintBoard();
+
+                    // 6️ HUD aufbauen
+                    ui.BuildTopHud();
+                    ui.BuildEmptyBottomHud();
+                    ui.PrintBottomHud();
+                    level.IsNextLvl= false;
+
+                }
             }
             Console.WriteLine("\n[Program] Game ended. Press any key to close.");
             Console.ReadKey(true);
@@ -168,6 +209,12 @@ namespace Semester1_D001_Escape_Room_Rosenberg
             _arraySizeX = print.AskForIntInRange("How wide should the game board be?", 45, 120);
             _arraySizeY = print.AskForIntInRange("How high should the game board be?", 15, 20);
 
+        }
+
+        static void DecideArraySize(int arraySizeY, int arraySizeX)
+        {
+            _arraySizeX = arraySizeX;
+            _arraySizeY = arraySizeY;
         }
     }
 }

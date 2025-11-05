@@ -4,6 +4,7 @@ using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Key;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Player;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers;
+using System.Reflection.Metadata.Ecma335;
 
 namespace Semester1_D001_Escape_Room_Rosenberg
 {
@@ -23,14 +24,14 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         // === Fields ===
 
         // === Handle Key ===
-        private string _keyMessage = " You collected a key fragment";
-        private string _keyInfobox = "Key fragment";
+        private string _keyMessage = " You collected a Key Fragment";
+        private string _keyInfobox = "Key Fragment ";
         private string _system = "System";
 
         // === Handle Door ===
 
-        private string _doorNotOpenMessage = "You need more Keys";
-        private string _doorNotOpenInfobox = "Required Keys";
+        private string _doorNotOpenMessage = "You need more Key Fragments";
+        private string _doorNotOpenInfobox = "Required Key Fragments ";
         private string _doorOpenMessage = " Door is open now. You won the Level";
         private string _doorOpenInfobox = "Door is open";
 
@@ -59,19 +60,26 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         /// </returns>
         private bool PlayerChooseAnswer(string answer_1, string answer_2, string answer_3, string correctAnswer)
         {
-            char input = Console.ReadKey(true).KeyChar;
             string chosen = string.Empty;
-            switch (input)
+            while(true)
             {
-                case '1':
-                    chosen = answer_1;
-                    break;
-                case '2':
-                    chosen = answer_2;
-                    break;
-                case '3':
-                    chosen = answer_3;
-                    break;
+            char input = Console.ReadKey(true).KeyChar;
+                switch (input)
+                {
+                    case '1':
+                        chosen = answer_1;
+                        break;
+                    case '2':
+                        chosen = answer_2;
+                        break;
+                    case '3':
+                        chosen = answer_3;
+                        break;
+                    default:
+                        continue;
+
+                }
+                break;
             }
             bool correct = chosen == correctAnswer;
             return correct;
@@ -113,21 +121,26 @@ namespace Semester1_D001_Escape_Room_Rosenberg
             }
 
             // TODO Audio Npc Greeting
-            Console.Beep(500, 250);
-            Console.Beep(400, 300);
+            Console.Beep(400, 250);
+            Console.Beep(450, 300);
 
             if (!npc.HasInteracted)
             {
-
                 npc.MarkAsInteracted();
 
                 (string answer_1, string answer_2, string answer_3) = npc.Dialog.AnswerGroups[0];
 
-                _deps.UI.FillUpBottomHud(npc.Meta.Name, "", npc.Dialog.Question, _deps.Symbol.KeyFragmentSymbol, npc.Reward.KeyFragment, answer_1, answer_2, answer_3);
+                npc.Dialog.CorrectAnswer = answer_1;
+
+                List<string> answers = new List<string> { answer_1, answer_2, answer_3 };
+
+                answers = _deps.Random.GetRandomElements(answers, answers.Count);
+
+                _deps.UI.FillUpBottomHud(npc.Meta.Name, "", npc.Dialog.Question, _deps.Symbol.KeyFragmentSymbol, npc.Reward.KeyFragment, answers[0], answers[1], answers[2]);
 
                 _deps.UI.PrintBottomHud();
 
-                bool correct = PlayerChooseAnswer(answer_1, answer_2, answer_3, npc.Dialog.CorrectAnswer);
+                bool correct = PlayerChooseAnswer(answers[0], answers[1], answers[2], npc.Dialog.CorrectAnswer);
 
 
                 if (correct)
@@ -138,7 +151,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg
 
                     _deps.UI.BuildTopHud();
 
-                    _deps.UI.FillUpBottomHud(_system, "You received", "Your last answer was correct!", _deps.Symbol.KeyFragmentSymbol, npc.Reward.KeyFragment, "", "", "");
+                    _deps.UI.FillUpBottomHud(_system, "You received ", "Your last answer was correct!", _deps.Symbol.KeyFragmentSymbol, npc.Reward.KeyFragment, "", "", "");
 
                     _deps.UI.PrintBottomHud();
 
@@ -152,7 +165,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg
 
                     _deps.UI.BuildTopHud();
 
-                    _deps.UI.FillUpBottomHud(_system, "You lost", "Your last answer was wrong!", _deps.Symbol.HearthSymbol, 1, "", "", "");
+                    _deps.UI.FillUpBottomHud(_system, "You lost ", "Your last answer was wrong!", _deps.Symbol.HearthSymbol, 1, "", "", "");
 
                     _deps.UI.PrintBottomHud();
 

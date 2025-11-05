@@ -73,6 +73,9 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies
         NpcManager Npc,
         SymbolsManager Symbol,
         LevelManager Level,               
-        PrintManager Print        
+        PrintManager Print,
+        RandomManager Random
+
+        
     );
 }

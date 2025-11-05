@@ -94,9 +94,10 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
                 _deps.AddWarning($"{nameof(RandomManager)}.{nameof(GetRandomElements)}: Source list is empty.");
             }
 
-            if (amount >= list!.Count)
+            if (list == null || list.Count == 0)
             {
-                return new List<T>(list);
+                _deps.AddWarning($"{nameof(RandomManager)}.{nameof(GetRandomElements)}: Source list is empty.");
+                return new List<T>();
             }
 
             var shuffled=new List<T> (list);
@@ -106,6 +107,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
                int j = _random.Next(i + 1);
                 (shuffled[i], shuffled[j]) = (shuffled[j], shuffled[i]);
             }
+            _deps.AddException($"{nameof(RandomManager)}.{nameof(GetRandomElements)}: Result = {string.Join(", ", shuffled)}");
 
             return shuffled.GetRange(0, amount);
         }

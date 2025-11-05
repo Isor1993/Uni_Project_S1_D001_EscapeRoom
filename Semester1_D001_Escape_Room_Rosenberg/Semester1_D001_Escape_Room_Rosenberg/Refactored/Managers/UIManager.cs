@@ -283,8 +283,8 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         private string BuildBottomHudLine_3()
         {
             // === INITIAL SETUP ===            
-            char leftConnectSymbol = _deps.Symbol.WallCornerBottomLeftSymbol;
-            char rightConnectSymbol = _deps.Symbol.WallCornerBottomRightSymbol;
+            char leftConnectSymbol = _deps.Symbol.WallTRightSymbol;
+            char rightConnectSymbol = _deps.Symbol.WallTLeftSymbol;
             char TopSymbol = _deps.Symbol.WallHorizontalSymbol;
             char midTUpSymbol = _deps.Symbol.WallTUpSymbol;
 
@@ -436,22 +436,28 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         private string BuildBottomHudLineAnswer_8(string answer_1, string answer_2, string answer_3)
         {
             // === INITIAL SETUP ===
+            const int SYMBOL_OFFSET = 2;
             char SideSymbol = _deps.Symbol.WallVerticalSymbol;
             int lineMaxLength = _deps.GameBoard.ArraySizeX;
-            List<string> answers = new List<string> { answer_1, answer_2, answer_3 };
-            answers = _deps.Random.GetRandomElements(answers, answers.Count);
+            //List<string> answers = new List<string> { answer_1, answer_2, answer_3 };
+
+
+            //answers = _deps.Random.GetRandomElements(answers, answers.Count);
 
             // === INITIALIZE LINE ===            
 
-            string line = BuildCentredLine("[1] " + answers[0], "[2] " + answers[1], "[3] " + answers[2], lineMaxLength);
-            if (line.Length > _deps.GameBoard.ArraySizeX)
+            string coreLine = BuildCentredLine("[1] " + answer_1, "[2] " + answer_2, "[3] " + answer_3 , lineMaxLength-SYMBOL_OFFSET);
+
+            string fullLine = $"{SideSymbol}{coreLine}{SideSymbol}";
+
+            if (fullLine.Length > _deps.GameBoard.ArraySizeX)
             {
-                _deps.Diagnostic.AddWarning($"{nameof(UIManager)}.{nameof(BuildBottomHudLineAnswer_8)}: Answers too long ({line.Length}/{_deps.GameBoard.ArraySizeX}). Line was reset.");
-                return line = BuildCentredLine(string.Empty, string.Empty, string.Empty, _deps.GameBoard.ArraySizeX);
+                _deps.Diagnostic.AddWarning($"{nameof(UIManager)}.{nameof(BuildBottomHudLineAnswer_8)}: Answers too long ({fullLine.Length}/{_deps.GameBoard.ArraySizeX}). Line was reset.");
+                return fullLine = BuildCentredLine(string.Empty, string.Empty, string.Empty, _deps.GameBoard.ArraySizeX);
             }
 
 
-            return line;
+            return fullLine;
         }
 
         /// <summary>
@@ -687,7 +693,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
             _bottomHudLine_7 = BuildBottomHudLine_7();
 
             // Antworten-Zeile bewusst LEER (keine [1][2][3])
-            _bottomHudLine_8 = BuildCentredLine(string.Empty, string.Empty, string.Empty, width);
+            _bottomHudLine_8 = BuildBottomHudLineAnswer_8(string.Empty, string.Empty, string.Empty);
 
             _bottomHudLine_9 = BuildBottomHudLine_9();
 

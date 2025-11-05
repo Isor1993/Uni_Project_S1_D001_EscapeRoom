@@ -91,6 +91,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         /// </remarks>
         public void DecideArraySize()
         {
+            _gameBoardArray = null;
             // If a previous board exists, warn that it will be overwritten.
             if (_gameBoardArray != null)
             {

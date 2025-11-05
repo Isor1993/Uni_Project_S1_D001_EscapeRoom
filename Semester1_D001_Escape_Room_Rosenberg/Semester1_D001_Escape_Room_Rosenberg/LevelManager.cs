@@ -15,9 +15,9 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         private readonly LevelManagerDependencies _deps;
 
         // === Internal State ===
-        private int _currentLevel = 1;
-        private int _score;
+        private int _currentLevel = 1;    
         private int _requiredKeys = 5;
+        private bool _isNextLvl=false;
 
         // === Constructor ===
         public LevelManager(LevelManagerDependencies levelManagerDependencies)
@@ -28,12 +28,10 @@ namespace Semester1_D001_Escape_Room_Rosenberg
 
         public int RequiredKeys => _requiredKeys;
         public int CurrentLvl => _currentLevel;
-        public int Score => _score;
+        public bool IsNextLvl { get => _isNextLvl;set => _isNextLvl = value; }
+      
 
-        public void AddScore(int ammount)
-        {
-            _score += ammount;
-        }
+      
 
         public void AddLvl()
         {
@@ -43,7 +41,13 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         public void NewLevel(int inventoryScore)
         {
             _requiredKeys += 3;
-            AddScore(inventoryScore);
+            AddLvl();
+            Program.NewArraySizeX += 3;
+            Program.NpcAmount += 3;
+            Program.KeyAmount += 3;
+            _isNextLvl= true;
+            Console.Clear();
+
         }
         /*
             // === Initialize a specific level ===
