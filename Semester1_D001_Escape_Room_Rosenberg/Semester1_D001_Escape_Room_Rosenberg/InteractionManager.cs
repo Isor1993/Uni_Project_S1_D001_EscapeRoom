@@ -19,7 +19,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg
     internal class InteractionManager
     {
         // === Dependencies ===
-        readonly InteractionManagerDependencies _deps;
+        private InteractionManagerDependencies _deps;
 
         // === Fields ===
 
@@ -344,6 +344,11 @@ namespace Semester1_D001_Escape_Room_Rosenberg
                     _deps.Diagnostic.AddCheck($"{nameof(InteractionManager)}.{nameof(InteractionHandler)}: No interaction at ({targetPosition.y},{targetPosition.x}) [{tile}].");
                     break;
             }
+        }
+        public void UpdateDependencies(InteractionManagerDependencies newDeps)
+        {
+            _deps = newDeps;
+            _deps.Diagnostic.AddCheck($"{nameof(InteractionManager)}: Dependencies updated.");
         }
     }
 }

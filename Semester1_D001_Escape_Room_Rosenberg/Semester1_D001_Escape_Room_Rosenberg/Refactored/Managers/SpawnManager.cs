@@ -30,7 +30,9 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
     {
         // === Dependencies ===
 
-        private readonly SpawnManagerDependencies _deps;
+        private SpawnManagerDependencies _deps;
+
+        private PlayerInstance? _playerInstance;
 
         // === Fields ===
         private List<(int y, int x)> _wallPositions = new();
@@ -52,12 +54,14 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 
         }
 
+        public PlayerInstance GetPlayer => _playerInstance;
+
         /// <summary>
         /// Gets all current wall positions detected on the board.
         /// </summary>
         public List<(int y, int x)> WallPosition => _wallPositions;
 
-        public  (int y, int x) ApplyHudOffset((int y, int x) pos)
+        public (int y, int x) ApplyHudOffset((int y, int x) pos)
         {
             return (pos.y + Program.CursorPosYGamBoardStart, pos.x);
         }
@@ -67,7 +71,11 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         public List<(int y, int x)> EmptyPositions => _emptyPositions;
 
 
-
+        public void ClearAll()
+        {
+            WallPosition.Clear();
+            EmptyPositions.Clear();
+        }
         /// <summary>
         /// Attempts to find a valid spawn position from a list of candidates.
         /// </summary>
@@ -168,7 +176,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
                 return;
             }
 
-            
+
 
             doorInstance.Initialize(_deps.Random.RandomPositionFromList(_wallPositions));
 
@@ -201,11 +209,35 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
             {
                 return;
             }
-            PlayerInstance playerInstance = new PlayerInstance(_deps.PlayerInstanceDeps,"Joschi");
+            _playerInstance = new PlayerInstance(_deps.PlayerInstanceDeps, "Joschi");
 
-            playerInstance.Initialize(result.position);
+            _playerInstance.Initialize(result.position);
 
-            RegisterAndPlaceObject(result.position, playerInstance);
+            RegisterAndPlaceObject(result.position, _playerInstance);
+
+            _emptyPositions.Remove(result.position);
+
+            _deps.Diagnostic.AddCheck($"{nameof(SpawnManager)}.{nameof(SpawnPlayer)}: Player placed successfully at {result.position}.");
+        }
+        private void SpawnPlayerNewLVL()
+        {
+            if (_deps.PlayerInstanceDeps == null)
+            {
+                _deps.Diagnostic.AddError($"{nameof(SpawnManager)}.{nameof(SpawnPlayer)}: No playerInstance found");
+                return;
+            }
+
+            (bool success, (int y, int x) position) result = TryFindFreeSpawnPosition(_emptyPositions);
+
+            if (!result.success)
+            {
+                return;
+            }
+            
+            
+            Program.PlayerInstance.Initialize(result.position);
+
+            RegisterAndPlaceObject(result.position, Program.PlayerInstance);
 
             _emptyPositions.Remove(result.position);
 
@@ -286,7 +318,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
             if (_deps.GameBoard.GameBoardArray == null)
             {
                 _deps.Diagnostic.AddError($"{nameof(SpawnManager)}.{nameof(SpawnWalls)}: Cannot fill walls. Board has not been initialized.");
-                return; 
+                return;
             }
             if (_deps.WallInstanceDeps == null)
             {
@@ -302,7 +334,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
                     // Assign horizontal walls at the top and bottom.
                     if (y == 0 || y == _deps.GameBoard.ArraySizeY - 1)
                     {
-                        
+
                         WallInstance wall = new WallInstance(_deps.WallInstanceDeps);
                         wall.Initialize(TileType.WallHorizontal, (y, x));
                         _deps.GameObject.RegisterObject((y, x), wall);
@@ -310,11 +342,11 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
                     // Assign vertical walls on the left and right edges.
                     else if (x == 0 || x == _deps.GameBoard.ArraySizeX - 1)
                     {
-                        
+
                         WallInstance wall = new WallInstance(_deps.WallInstanceDeps);
                         wall.Initialize(TileType.WallVertical, (y, x));
                         _deps.GameObject.RegisterObject((y, x), wall);
-                    }                    
+                    }
                 }
             }
             SetCornersForGameObject();
@@ -347,7 +379,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
             {
                 wall.Initialize(newType, position);
                 _deps.GameBoard.SetTile(position, newType);
-                
+
                 _deps.Diagnostic.AddCheck($"{nameof(SpawnManager)}: Updated existing wall at {position} to {newType}.");
             }
             else
@@ -378,6 +410,15 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
             SpawnNpc(npcAmount);
             SpawnKeyFragment(keyAmount);
         }
+        public void SpawnAllNewLvl(int npcAmount, int keyAmount)
+        {
+            CollectSpawnPositions();
+            SpawnWalls();
+            SpawnDoor();
+            SpawnPlayerNewLVL();
+            SpawnNpc(npcAmount);
+            SpawnKeyFragment(keyAmount);
+        }
 
         /// <summary>
         /// Registers the spawned object with the <see cref="GameObjectManager"/> and updates the board state.
@@ -388,6 +429,12 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         {
             _deps.GameObject.RegisterObject(position, obj);
             _deps.Diagnostic.AddCheck($"{nameof(SpawnManager)}: Registered {obj.GetType().Name} at {position}");
+        }
+
+        public void UpdateDependencies(SpawnManagerDependencies newDeps)
+        {
+            _deps = newDeps;
+            _deps.Diagnostic.AddCheck($"{nameof(SpawnManager)}: Dependencies updated.");
         }
     }
 }

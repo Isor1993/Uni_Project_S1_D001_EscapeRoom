@@ -106,8 +106,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
             {
                int j = _random.Next(i + 1);
                 (shuffled[i], shuffled[j]) = (shuffled[j], shuffled[i]);
-            }
-            _deps.AddException($"{nameof(RandomManager)}.{nameof(GetRandomElements)}: Result = {string.Join(", ", shuffled)}");
+            }          
 
             return shuffled.GetRange(0, amount);
         }

@@ -26,7 +26,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
     internal class GameObjectManager
     {
         // === Dependencies ===
-        private readonly GameObjectManagerDependencies _deps;
+        private  GameObjectManagerDependencies _deps;
 
         // === Fields ===
         private readonly Dictionary<(int y, int x), object> _objectOnBoard = new();
@@ -37,6 +37,8 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         public PlayerInstance Player => _playerInstance;
 
         public DoorInstance Door => _doorInstance;
+
+       
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GameObjectManager"/> class.
@@ -342,6 +344,12 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         public DoorInstance? GetDoorInstance()
         {
             return GetDoorInstance(out _);
+        }
+
+        public void UpdateDependencies(GameObjectManagerDependencies newDeps)
+        {
+            _deps = newDeps;
+            _deps.Diagnostic.AddCheck($"{nameof(InteractionManager)}: Dependencies updated.");
         }
 
     }

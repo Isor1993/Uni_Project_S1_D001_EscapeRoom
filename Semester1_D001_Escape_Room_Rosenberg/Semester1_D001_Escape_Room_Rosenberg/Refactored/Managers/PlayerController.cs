@@ -23,7 +23,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
     {
         // === Dependencies ===
         private readonly PlayerControllerDependencies _deps;
-        private readonly PlayerInstance? _player;
+        private  PlayerInstance? _player;
 
         // === Fields ===
         
@@ -67,6 +67,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         /// </summary>
         public (int y, int x) PlayerPosition => _player.Position;
 
+        public PlayerInstance? GetPlayer => _player;
         /// <summary>
         /// Connects the player position from the <see cref="PlayerInstance"/>  
         /// and initializes the movement state.
@@ -221,5 +222,6 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
             _deps.Interaction.InteractionHandler(interactPos);
             _deps.Diagnostic.AddCheck($"{nameof(PlayerController)}: Manual interaction triggered at ({interactPos.y},{interactPos.x}).");
         }
+        
     }
 }

@@ -27,7 +27,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
     internal class UIManager
     {
         // === Dependencies ===
-        private readonly UIManagerDependencies _deps;
+        private  UIManagerDependencies _deps;
 
         // === Fields ===
         private string _bottomHudLine_1 = string.Empty;
@@ -698,6 +698,12 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
             _bottomHudLine_9 = BuildBottomHudLine_9();
 
             _deps.Diagnostic.AddCheck($"{nameof(UIManager)}.{nameof(BuildEmptyBottomHud)}: Empty bottom HUD built.");
+        }
+
+        public void UpdateDependencies(UIManagerDependencies newDeps)
+        {
+            _deps = newDeps;
+            _deps.Diagnostic.AddCheck($"{nameof(UIManager)}: Dependencies updated.");
         }
     }
 }

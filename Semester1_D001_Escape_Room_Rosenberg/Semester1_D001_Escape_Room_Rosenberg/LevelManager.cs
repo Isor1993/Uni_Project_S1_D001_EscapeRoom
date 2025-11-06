@@ -40,12 +40,15 @@ namespace Semester1_D001_Escape_Room_Rosenberg
 
         public void NewLevel(int inventoryScore)
         {
+            _deps.Inventory.RemoveKeyFragment(_requiredKeys);
             _requiredKeys += 3;
             AddLvl();
             Program.NewArraySizeX += 3;
             Program.NpcAmount += 3;
             Program.KeyAmount += 3;
             _isNextLvl= true;
+            _deps.Spawn.ClearAll();
+            _deps.GameObject.ClearAll();            
             Console.Clear();
 
         }
