@@ -1,24 +1,44 @@
-﻿using Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿/*****************************************************************************
+* Project : Escape Room (K2, S2)
+* File    : WallInstanceDependencies.cs
+* Date    : 09.11.2025
+* Author  : Eric Rosenberg
+*
+* Description :
+* Defines all external system references required by the <see cref="GameBoardObjects.Wall.WallInstance"/>.  
+* Provides modular access to diagnostics and symbol management through dependency injection,  
+* ensuring clean architecture and traceable initialization.
+*
+* Responsibilities:
+* - Supply <see cref="DiagnosticsManager"/> for wall initialization and validation logs  
+* - Supply <see cref="SymbolsManager"/> for wall symbol configuration  
+* - Maintain strict decoupling between wall instances and global managers
+*
+* History :
+* 09.11.2025 ER Created / Documentation fully updated
+******************************************************************************/
+
+using Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers;
+
 
 namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies
 {
     /// <summary>
-    /// Defines all required dependencies for the <see cref="WallInstance"/> class.
-    /// Provides access to the diagnostic and symbol management systems used
-    /// for initializing and configuring wall elements on the game board.
+    /// Represents the dependency record required to initialize and manage a  
+    /// <see cref="GameBoardObjects.Wall.WallInstance"/>.
     /// </summary>
+    /// <remarks>
+    /// Provides access to both the <see cref="DiagnosticsManager"/> and  
+    /// the <see cref="SymbolsManager"/> used for visual configuration and runtime logging.  
+    /// Enables dependency injection for modular and testable wall initialization.
+    /// </remarks>
     /// <param name="Diagnostic">
-    /// Reference to the <see cref="Diagnostic"/> responsible for logging
-    /// checks, warnings, and system messages during wall setup and validation.
+    /// Reference to the <see cref="DiagnosticsManager"/> responsible for logging  
+    /// initialization events, position assignments, and wall symbol validations.
     /// </param>
     /// <param name="Symbol">
-    /// Reference to the <see cref="Symbol"/> that provides the visual
-    /// and symbolic representations used for wall elements.
+    /// Reference to the <see cref="SymbolsManager"/> that provides  
+    /// the character symbols used to visually represent different wall types.
     /// </param>
     internal sealed record WallInstanceDependencies
     (

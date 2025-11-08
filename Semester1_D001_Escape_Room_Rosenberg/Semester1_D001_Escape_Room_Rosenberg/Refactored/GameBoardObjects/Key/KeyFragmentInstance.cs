@@ -1,5 +1,24 @@
-﻿using Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies;
-using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Door;
+﻿/*****************************************************************************
+* Project : Escape Room (K2, S2)
+* File    : KeyFragmentInstance.cs
+* Date    : 09.11.2025
+* Author  : Eric Rosenberg
+*
+* Description :
+* Represents a collectible key fragment placed on the game board.  
+* Handles its symbol, position, and quantity value while maintaining 
+* diagnostic traceability through injected dependencies.
+*
+* Responsibilities:
+* - Store and manage key fragment data (symbol, position, quantity)
+* - Log initialization and assignment events for debugging
+* - Integrate with symbol and diagnostic systems through dependencies
+*
+* History :
+* 09.11.2025 ER Created / Documentation fully updated
+******************************************************************************/
+
+using Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers;
 
 namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Key
@@ -43,7 +62,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Key
             _symbol = _deps.Symbol.KeyFragmentSymbol;
             _amount = 1;
             _type = TileType.Key;
-            _deps.Diagnostic.AddCheck($"{nameof(KeyFragmentInstance)}: Default symbol {_symbol} and ammount {_amount} - Keyfragment assigned at start.");
+            _deps.Diagnostic.AddCheck($"{nameof(KeyFragmentInstance)}: Default symbol {_symbol} and amount {_amount} - Keyfragment assigned at start.");
         }
 
         /// <summary>
@@ -58,7 +77,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Key
         /// <summary>
         /// Gets the tile type assigned to this key fragment (typically <see cref="TileType.Key"/>).
         /// </summary>
-        public TileType Typ => _type;
+        public TileType Type => _type;
 
         /// <summary>
         /// Gets the character symbol representing this object on the game board.
@@ -76,7 +95,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Key
         /// </summary>
         /// <param name="symbol">The new character symbol to visually represent the key fragment.</param>
         /// <remarks>
-        /// Updates the visual representation and logs the change in diagnostics for debugging and validation.
+        /// Updates the visual representation and logs the change for traceability and validation.
         /// </remarks>
         public void AssignSymbol(char symbol)
         {
@@ -102,14 +121,14 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Key
         /// </summary>
         /// <param name="position">The position of the key fragment on the game board as (Y, X) coordinates.</param>
         /// <remarks>
-        /// This method is typically called by the <see cref="SpawnManager"/> or game initialization routines  
-        /// when placing collectibles on the board at runtime.
+        /// Typically called by the <see cref="SpawnManager"/> during runtime initialization  
+        /// when placing collectibles on the board.  
+        /// Logs successful initialization through diagnostics.
         /// </remarks>
         public void Initialize((int y, int x) position)
         {
             AssignPosition(position);
+            _deps.Diagnostic.AddCheck($"{nameof(KeyFragmentInstance)}.{nameof(Initialize)}: Initialized successfully.");
         }
-
-
     }
 }

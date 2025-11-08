@@ -1,4 +1,25 @@
-﻿using Semester1_D001_Escape_Room_Rosenberg.Refactored;
+﻿/*****************************************************************************
+* Project : Escape Room (K2, S2)
+* File    : SpawnManager.cs
+* Date    : 09.11.2025
+* Author  : Eric Rosenberg
+*
+* Description :
+* Handles the initialization and placement of all dynamic game objects 
+* (player, NPCs, keys, and door) within the game board. 
+* Manages wall generation, spawn validation, and position allocation logic.
+*
+* Responsibilities:
+* - Collects valid spawn positions (walls and empty tiles)
+* - Spawns and registers all major interactive entities
+* - Validates free positions using the RulesManager
+* - Updates GameObject and GameBoard state after each spawn
+* - Handles wall and corner tile construction
+*
+* History :
+* 09.11.2025 ER Created / Documentation fully updated
+******************************************************************************/
+
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Door;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Key;
@@ -7,45 +28,38 @@ using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Player;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Wall;
 using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Reflection;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
-// RSK Kontrolle ok
+
 namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 {
     /// <summary>
-    /// Handles the spawning of all interactive game objects onto the board.
+    /// Controls all spawn operations for entities within the game world.
+    /// Handles procedural placement of player, door, NPCs, and key fragments,
+    /// as well as construction of static walls and corner structures.
     /// </summary>
-    /// <remarks>
-    /// The <see cref="SpawnManager"/> is responsible for placing all key gameplay elements such as  
-    /// <see cref="PlayerInstance"/>, <see cref="DoorInstance"/>, <see cref="NpcInstance"/>, and <see cref="KeyFragmentInstance"/>  
-    /// onto the game board in valid positions.  
-    /// It performs randomized placement using <see cref="RandomManager"/> while validating all positions via <see cref="RulesManager"/>.
-    /// </remarks>
     internal class SpawnManager
 
     {
         // === Dependencies ===
+        private readonly SpawnManagerDependencies _deps;
 
-        private SpawnManagerDependencies _deps;
-
+        // === Cached Instances ===
         private PlayerInstance? _playerInstance;
 
-        // === Fields ===
+        // === Spawn Position Lists ===
         private List<(int y, int x)> _wallPositions = new();
         private List<(int y, int x)> _emptyPositions = new();
+
+        // === Fields ===
+        const int MAX_ATTEMPTS = 50;
 
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SpawnManager"/> class.
         /// </summary>
-        /// <param name="spawnManagerDependencies">The dependency container providing all core systems required for spawning.</param>
+        /// <param name="spawnManagerDependencies">Dependency container providing all core systems required for spawning.</param>
         /// <remarks>
-        /// Dependencies include managers for rules, diagnostics, symbols, randomization, and references  
-        /// to key object dependencies such as walls, doors, NPCs, and the player.
+        /// Dependencies include managers for diagnostics, randomization, 
+        /// symbol handling, wall/door/player/NPC dependencies, and rule validation.
         /// </remarks>
         public SpawnManager(SpawnManagerDependencies spawnManagerDependencies)
         {
@@ -54,45 +68,80 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 
         }
 
-        public PlayerInstance GetPlayer => _playerInstance;
+        /// <summary>
+        /// Returns the currently spawned <see cref="PlayerInstance"/>, if any.
+        /// </summary>
+        public PlayerInstance? GetPlayer => _playerInstance;
 
         /// <summary>
-        /// Gets all current wall positions detected on the board.
+        /// Returns all recorded wall tile positions detected on the board.
         /// </summary>
         public List<(int y, int x)> WallPosition => _wallPositions;
 
-        public (int y, int x) ApplyHudOffset((int y, int x) pos)
-        {
-            return (pos.y + Program.CursorPosYGamBoardStart, pos.x);
-        }
         /// <summary>
-        /// Gets all currently empty board positions available for object spawning.
+        /// Returns all currently empty board positions available for spawning objects.
         /// </summary>
         public List<(int y, int x)> EmptyPositions => _emptyPositions;
 
-
+        /// <summary>
+        /// Clears all cached spawn position lists (walls and empty tiles).
+        /// </summary>
         public void ClearAll()
         {
             WallPosition.Clear();
             EmptyPositions.Clear();
         }
+
         /// <summary>
-        /// Attempts to find a valid spawn position from a list of candidates.
+        /// Executes the complete spawn sequence for a new level start.
         /// </summary>
-        /// <param name="positions">A list of candidate positions from which a valid one is selected.</param>
+        /// <param name="npcAmount">Number of NPCs to spawn.</param>
+        /// <param name="keyAmount">Number of key fragments to spawn.</param>
+        /// <remarks>
+        /// Sequence: Collect → Walls → Door → Player → NPCs → Keys.
+        /// </remarks>
+        public void SpawnAll(int npcAmount, int keyAmount)
+        {
+            CollectSpawnPositions();
+            SpawnWalls();
+            SpawnDoor();
+            SpawnPlayer();
+            SpawnNpc(npcAmount);
+            SpawnKeyFragment(keyAmount);
+        }
+
+        /// <summary>
+        /// Performs the spawn sequence when a new level is loaded,
+        /// reusing the existing player instance.
+        /// </summary>
+        /// <param name="npcAmount">Number of NPCs to spawn.</param>
+        /// <param name="keyAmount">Number of key fragments to spawn.</param>
+        public void SpawnAllNewLvl(int npcAmount, int keyAmount)
+        {
+            CollectSpawnPositions();
+            SpawnWalls();
+            SpawnDoor();
+            SpawnPlayerNewLVL();
+            SpawnNpc(npcAmount);
+            SpawnKeyFragment(keyAmount);
+        }
+
+        /// <summary>
+        /// Attempts to locate a valid free position for object spawning.
+        /// </summary>
+        /// <param name="positions">List of candidate positions to evaluate.</param>
         /// <returns>
-        /// Returns a tuple containing a success flag and the chosen position.  
-        /// If no position is found, <c>success</c> is <c>false</c> and position defaults to (0, 0).
+        /// Tuple containing success flag and position coordinates.  
+        /// Returns <c>(false, (0,0))</c> if no valid position is found.
         /// </returns>
         /// <remarks>
-        /// The method performs randomized attempts using <see cref="RulesManager.IsPositionFreeForSpawn((int, int))"/>  
-        /// to ensure a valid spawn area.  
-        /// Each attempt is logged via the <see cref="DiagnosticsManager"/>.
+        /// Performs multiple randomized checks using <see cref="RulesManager.IsPositionFreeForSpawn"/>.
+        /// Each attempt is logged through the diagnostics system.
         /// </remarks>
         private (bool success, (int y, int x) position) TryFindFreeSpawnPosition(List<(int y, int x)> positions)
         {
-            int maxAttempts = 50;
-            for (int attempt = 1; attempt <= maxAttempts; attempt++)
+
+            for (int attempt = 1; attempt <= MAX_ATTEMPTS; attempt++)
             {
                 (int y, int x) position = _deps.Random.RandomPositionFromList(positions);
 
@@ -105,17 +154,16 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
                 _deps.Diagnostic.AddWarning($"{nameof(SpawnManager)}.{nameof(TryFindFreeSpawnPosition)}: Attempt {attempt} failed at {position}.");
             }
 
-            _deps.Diagnostic.AddError($"{nameof(SpawnManager)}.{nameof(TryFindFreeSpawnPosition)}: No free position found after {maxAttempts} attempts.");
+            _deps.Diagnostic.AddError($"{nameof(SpawnManager)}.{nameof(TryFindFreeSpawnPosition)}: No free position found after {MAX_ATTEMPTS} attempts.");
             return (false, (0, 0));
         }
 
         /// <summary>
-        /// Scans the current game board and collects all wall and empty cell positions.
+        /// Scans the current game board and records all wall and empty cell positions.
         /// </summary>
         /// <remarks>
-        /// Must be called after <see cref="GameBoardManager.DecideArraySize"/>  
-        /// to ensure a valid board exists before spawning.  
-        /// Logs total counts of wall and empty tiles.
+        /// Must be called after <see cref="GameBoardManager.DecideArraySize"/> 
+        /// to ensure the board exists. Logs total counts of found tiles.
         /// </remarks>
         private void CollectSpawnPositions()
         {
@@ -149,12 +197,8 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         }
 
         /// <summary>
-        /// Spawns a single door on a random wall position.
+        /// Creates and places the main exit door at a random wall position.
         /// </summary>
-        /// <remarks>
-        /// Creates a new <see cref="DoorInstance"/> and initializes it at a random wall location.  
-        /// Once spawned, the wall position is removed from the available wall list.
-        /// </remarks>
         private void SpawnDoor()
         {
             if (_deps.DoorInstanceDeps == null)
@@ -189,12 +233,8 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         }
 
         /// <summary>
-        /// Spawns the player at a random empty position.
+        /// Creates a new player instance and places it at a random empty position.
         /// </summary>
-        /// <remarks>
-        /// Uses <see cref="TryFindFreeSpawnPosition(List{(int, int)})"/> to determine  
-        /// a valid location and initializes a new <see cref="PlayerInstance"/> at that position.
-        /// </remarks>
         private void SpawnPlayer()
         {
             if (_deps.PlayerInstanceDeps == null)
@@ -219,6 +259,10 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 
             _deps.Diagnostic.AddCheck($"{nameof(SpawnManager)}.{nameof(SpawnPlayer)}: Player placed successfully at {result.position}.");
         }
+
+        /// <summary>
+        /// Repositions the existing player instance at the start of a new level.
+        /// </summary>
         private void SpawnPlayerNewLVL()
         {
             if (_deps.PlayerInstanceDeps == null)
@@ -233,8 +277,8 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
             {
                 return;
             }
-            
-            
+
+
             Program.PlayerInstance.Initialize(result.position);
 
             RegisterAndPlaceObject(result.position, Program.PlayerInstance);
@@ -245,9 +289,9 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         }
 
         /// <summary>
-        /// Spawns the specified number of key fragments at random free positions.
+        /// Spawns multiple key fragments across the board.
         /// </summary>
-        /// <param name="amount">The total number of key fragments to spawn.</param>
+        /// <param name="amount">Total number of fragments to spawn.</param>
         private void SpawnKeyFragment(int amount)
         {
             for (int i = 0; i < amount; i++)
@@ -277,9 +321,9 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         }
 
         /// <summary>
-        /// Spawns the specified number of NPCs at random free positions.
+        /// Spawns a given number of NPCs at randomized positions.
         /// </summary>
-        /// <param name="amount">The number of NPCs to spawn.</param>
+        /// <param name="amount">Number of NPCs to spawn.</param>
         private void SpawnNpc(int amount)
         {
             List<NpcInstance> tempNpcList = _deps.Random.GetRandomElements(_deps.Npc.NpcList, amount);
@@ -310,9 +354,9 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         }
 
         /// <summary>
-        /// 
+        /// Generates the wall boundaries around the game board.
         /// </summary>
-        public void SpawnWalls()
+        private void SpawnWalls()
         {
             // Check if the board exists and recreate before trying to fill it.
             if (_deps.GameBoard.GameBoardArray == null)
@@ -353,7 +397,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         }
 
         /// <summary>
-        /// 
+        /// Replaces edge tiles with appropriate corner tile types.
         /// </summary>
         private void SetCornersForGameObject()
         {
@@ -364,10 +408,10 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         }
 
         /// <summary>
-        /// 
+        /// Updates a specific wall tile to a corner tile type on the board.
         /// </summary>
-        /// <param name="position"></param>
-        /// <param name="newType"></param>
+        /// <param name="position">Target position of the corner.</param>
+        /// <param name="newType">New tile type to assign (corner variant).</param>
         private void UpdateCorner((int y, int x) position, TileType newType)
         {
             if (_deps.GameBoard.GameBoardArray == null)
@@ -389,52 +433,15 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         }
 
         /// <summary>
-        /// Spawns all interactive entities: door, player, NPCs, and key fragments.
+        /// Registers a spawned object and updates both the GameObjectManager 
+        /// and diagnostic logs accordingly.
         /// </summary>
-        /// <param name="npcAmount">The number of NPCs to spawn.</param>
-        /// <param name="keyAmount">The number of key fragments to spawn.</param>
-        /// <remarks>
-        /// This method executes the complete spawn sequence in the following order:
-        /// 1. Collect positions  
-        /// 2. Spawn door  
-        /// 3. Spawn player  
-        /// 4. Spawn NPCs  
-        /// 5. Spawn key fragments  
-        /// </remarks>
-        public void SpawnAll(int npcAmount, int keyAmount)
-        {
-            CollectSpawnPositions();
-            SpawnWalls();
-            SpawnDoor();
-            SpawnPlayer();
-            SpawnNpc(npcAmount);
-            SpawnKeyFragment(keyAmount);
-        }
-        public void SpawnAllNewLvl(int npcAmount, int keyAmount)
-        {
-            CollectSpawnPositions();
-            SpawnWalls();
-            SpawnDoor();
-            SpawnPlayerNewLVL();
-            SpawnNpc(npcAmount);
-            SpawnKeyFragment(keyAmount);
-        }
-
-        /// <summary>
-        /// Registers the spawned object with the <see cref="GameObjectManager"/> and updates the board state.
-        /// </summary>
-        /// <param name="position">The grid position where the object is placed.</param>
-        /// <param name="obj">The object to register and track.</param>
+        /// <param name="position">Position where the object is placed.</param>
+        /// <param name="obj">Spawned object instance.</param>
         private void RegisterAndPlaceObject((int y, int x) position, object obj)
         {
             _deps.GameObject.RegisterObject(position, obj);
             _deps.Diagnostic.AddCheck($"{nameof(SpawnManager)}: Registered {obj.GetType().Name} at {position}");
-        }
-
-        public void UpdateDependencies(SpawnManagerDependencies newDeps)
-        {
-            _deps = newDeps;
-            _deps.Diagnostic.AddCheck($"{nameof(SpawnManager)}: Dependencies updated.");
         }
     }
 }

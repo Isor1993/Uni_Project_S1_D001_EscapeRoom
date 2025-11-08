@@ -1,25 +1,46 @@
-﻿using Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies;
+﻿/*****************************************************************************
+* Project : Escape Room (K2, S2)
+* File    : InteractionManager.cs
+* Date    : 09.11.2025
+* Author  : Eric Rosenberg
+*
+* Description :
+* Handles all player interactions with in-game objects, such as NPCs, keys,
+* and doors. Coordinates between game logic, UI, inventory, and level systems.
+* Each interaction triggers feedback, sound, and diagnostics logging.
+*
+* Responsibilities:
+* - Process player interactions (NPCs, keys, doors)
+* - Update UI and inventory according to interaction outcomes
+* - Log all results via DiagnosticsManager
+* - Manage game progression (unlock doors, advance levels)
+*
+* History :
+* 09.11.2025 ER Created / Documentation fully updated
+******************************************************************************/
+
+using Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Door;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Key;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Player;
-using Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers;
-using System.Reflection.Metadata.Ecma335;
 
-namespace Semester1_D001_Escape_Room_Rosenberg
+
+namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 {
     /// <summary>
-    /// Handles all player interactions with objects on the game board, including NPCs, keys, and doors.
+    /// Manages all player interactions with objects on the game board,
+    /// including NPC dialogues, key fragment pickups, and door unlocking.
     /// </summary>
     /// <remarks>
-    /// The <see cref="InteractionManager"/> processes player interactions depending on the type of object  
-    /// located at a specific tile. It handles NPC dialogues, item collection, and door unlocking.  
-    /// Additionally, it updates the HUD and logs all events to the <see cref="DiagnosticsManager"/>.
+    /// The <see cref="InteractionManager"/> determines the type of object the player interacts with
+    /// and delegates handling to specific methods. It updates the HUD, plays audio feedback,
+    /// modifies the player inventory, and logs results to the diagnostics system.
     /// </remarks>
     internal class InteractionManager
     {
         // === Dependencies ===
-        private InteractionManagerDependencies _deps;
+        private readonly InteractionManagerDependencies _deps;
 
         // === Fields ===
 
@@ -29,7 +50,6 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         private string _system = "System";
 
         // === Handle Door ===
-
         private string _doorNotOpenMessage = "You need more Key Fragments";
         private string _doorNotOpenInfobox = "Required Key Fragments ";
         private string _doorOpenMessage = " Door is open now. You won the Level";
@@ -39,8 +59,8 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         /// Initializes a new instance of the <see cref="InteractionManager"/> class.
         /// </summary>
         /// <param name="interactionManagerDependencies">
-        /// Dependency container providing references to all required systems  
-        /// (UI, Inventory, GameBoard, Diagnostics, Door, Level, etc.).
+        /// Container providing references to all required systems:
+        /// UI, inventory, game board, diagnostics, door, and level management.
         /// </param>
         public InteractionManager(InteractionManagerDependencies interactionManagerDependencies)
         {
@@ -49,21 +69,65 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         }
 
         /// <summary>
-        /// Reads the player's input choice from the console and determines whether it matches the correct answer.
+        /// Determines the object type at the player’s target position and
+        /// routes the call to the appropriate interaction method.
         /// </summary>
-        /// <param name="answer_1">The first selectable answer option.</param>
-        /// <param name="answer_2">The second selectable answer option.</param>
-        /// <param name="answer_3">The third selectable answer option.</param>
-        /// <param name="correctAnswer">The correct answer string for validation.</param>
+        /// <param name="targetPosition">Tuple containing Y and X coordinates to check.</param>
+        public void InteractionHandler((int y, int x) targetPosition)
+        {
+            if (_deps.GameBoard == null)
+            {
+                _deps.Diagnostic.AddError($"{nameof(InteractionManager)}.{nameof(InteractionHandler)}: GameBoardArray reference missing!");
+                return;
+
+            }
+            else if (_deps.GameBoard.GameBoardArray == null)
+            {
+                _deps.Diagnostic.AddError($"{nameof(InteractionManager)}.{nameof(InteractionHandler)}: GameBoard reference missing!");
+                return;
+
+            }
+
+            TileType tile = _deps.GameBoard.GameBoardArray[targetPosition.y, targetPosition.x];
+
+            switch (tile)
+            {
+                case TileType.Key:
+                    HandleKey(targetPosition);
+                    break;
+
+                case TileType.Npc:
+                    HandleNpc(targetPosition);
+                    break;
+
+                case TileType.Door:
+                    HandleDoor(targetPosition);
+                    break;
+
+                default:
+                    _deps.Diagnostic.AddCheck($"{nameof(InteractionManager)}.{nameof(InteractionHandler)}: No interaction at ({targetPosition.y},{targetPosition.x}) [{tile}].");
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Reads the player’s key input (1–3) and compares the selected answer
+        /// to the correct one provided by the NPC dialogue.
+        /// </summary>
+        /// <param name="answer_1">First answer option.</param>
+        /// <param name="answer_2">Second answer option.</param>
+        /// <param name="answer_3">Third answer option.</param>
+        /// <param name="correctAnswer">The correct answer text to validate against.</param>
         /// <returns>
-        /// Returns <see langword="true"/> if the player’s selection matches the correct answer; otherwise, <see langword="false"/>.
+        /// <see langword="true"/> if the player chose the correct answer;
+        /// otherwise, <see langword="false"/>.
         /// </returns>
         private bool PlayerChooseAnswer(string answer_1, string answer_2, string answer_3, string correctAnswer)
         {
             string chosen = string.Empty;
-            while(true)
+            while (true)
             {
-            char input = Console.ReadKey(true).KeyChar;
+                char input = Console.ReadKey(true).KeyChar;
                 switch (input)
                 {
                     case '1':
@@ -87,14 +151,12 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         }
 
         /// <summary>
-        /// Handles player interaction with an NPC at a specified position.
+        /// Handles the player’s interaction with an NPC at the specified board position.
         /// </summary>
-        /// <param name="targetPosition">
-        /// The (Y, X) coordinates of the NPC on the game board.
-        /// </param>
+        /// <param name="targetPosition">Tuple containing Y and X coordinates of the NPC.</param>
         /// <remarks>
-        /// Displays the NPC dialogue, processes player answers, updates HUD feedback,  
-        /// and grants rewards or penalties depending on the correctness of the answer.
+        /// Displays NPC dialogue, plays feedback sounds, processes the player’s answer,
+        /// updates the HUD, modifies the inventory, and logs the outcome.
         /// </remarks>
         private void HandleNpc((int y, int x) targetPosition)
         {
@@ -120,7 +182,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg
                 return;
             }
 
-            // TODO Audio Npc Greeting
+            // TODO: Replace with multithreading maybe in future
             Console.Beep(400, 250);
             Console.Beep(450, 300);
 
@@ -179,18 +241,16 @@ namespace Semester1_D001_Escape_Room_Rosenberg
                 _deps.UI.PrintBottomHud();
             }
             npc.Deactivate();
-            //TODO Audio Npc Goodbye
+
         }
 
         /// <summary>
-        /// Handles player interaction with a key fragment located at the given board position.
+        /// Handles the player’s interaction with a key fragment at the specified position.
         /// </summary>
-        /// <param name="targetPosition">
-        /// The (Y, X) coordinates of the key object on the game board.
-        /// </param>
+        /// <param name="targetPosition">Tuple containing Y and X coordinates of the key object.</param>
         /// <remarks>
-        /// Removes the key object, updates the player’s inventory, refreshes the HUD,  
-        /// and plays a collection sound to provide feedback.
+        /// Updates the player’s inventory and HUD, removes the key object from the board,
+        /// and plays a pickup sound for feedback.
         /// </remarks>
         private void HandleKey((int y, int x) targetPosition)
         {
@@ -233,21 +293,20 @@ namespace Semester1_D001_Escape_Room_Rosenberg
 
             _deps.UI?.PrintBottomHud();
 
-            //TODO Play Audio Colected Key
+            // TODO: Replace with multithreading maybe in future
             Console.Beep(1000, 100);
             Console.Beep(1300, 100);
             Console.Beep(1600, 150);
         }
 
         /// <summary>
-        /// Handles interaction with a door object and checks whether the player has enough keys to unlock it.
+        /// Handles the player’s interaction with a door and checks if it can be opened.
         /// </summary>
-        /// <param name="targetPosition">
-        /// The (Y, X) coordinates of the door object on the game board.
-        /// </param>
+        /// <param name="targetPosition">Tuple containing Y and X coordinates of the door object.</param>
         /// <remarks>
-        /// If the player lacks the required number of key fragments, a warning message is displayed.  
-        /// Otherwise, the door is opened, victory feedback is shown, and a new level is generated.
+        /// Displays a message if not enough key fragments are available.
+        /// If requirements are met, the door opens, victory feedback is shown,
+        /// and the next level is initialized.
         /// </remarks>
         private void HandleDoor((int y, int x) targetPosition)
         {
@@ -288,8 +347,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg
 
             _deps.Diagnostic.AddCheck($"{nameof(InteractionManager)}.{nameof(HandleDoor)}: Door opened at ({targetPosition.y},{targetPosition.x}). Used {requiredKeys} key fragments.");
 
-            // TODO Audio
-            Console.Beep(784, 150);
+            // TODO: Replace with multithreading maybe in future
             Console.Beep(880, 150);
             Console.Beep(988, 150);
             Console.Beep(1046, 250);
@@ -297,58 +355,12 @@ namespace Semester1_D001_Escape_Room_Rosenberg
             Console.Beep(880, 150);
             Console.Beep(1174, 400);
 
-            //TODO new Level generating
+
             _deps.Level.NewLevel(_deps.Inventory.Score);
+            // TODO: Replace with non-blocking delay system in future engine version
             Thread.Sleep(2000);
 
         }
 
-        /// <summary>
-        /// Determines the type of object at the specified position and triggers the correct interaction.
-        /// </summary>
-        /// <param name="targetPosition">
-        /// The (Y, X) coordinates on the game board that the player interacts with.
-        /// </param>
-        public void InteractionHandler((int y, int x) targetPosition)
-        {
-            if (_deps.GameBoard == null)
-            {
-                _deps.Diagnostic.AddError($"{nameof(InteractionManager)}.{nameof(InteractionHandler)}: GameBoardArray reference missing!");
-                return;
-
-            }
-            else if (_deps.GameBoard.GameBoardArray == null)
-            {
-                _deps.Diagnostic.AddError($"{nameof(InteractionManager)}.{nameof(InteractionHandler)}: GameBoard reference missing!");
-                return;
-
-            }
-
-            TileType tile = _deps.GameBoard.GameBoardArray[targetPosition.y, targetPosition.x];
-
-            switch (tile)
-            {
-                case TileType.Key:
-                    HandleKey(targetPosition);
-                    break;
-
-                case TileType.Npc:
-                    HandleNpc(targetPosition);
-                    break;
-
-                case TileType.Door:
-                    HandleDoor(targetPosition);
-                    break;
-
-                default:
-                    _deps.Diagnostic.AddCheck($"{nameof(InteractionManager)}.{nameof(InteractionHandler)}: No interaction at ({targetPosition.y},{targetPosition.x}) [{tile}].");
-                    break;
-            }
-        }
-        public void UpdateDependencies(InteractionManagerDependencies newDeps)
-        {
-            _deps = newDeps;
-            _deps.Diagnostic.AddCheck($"{nameof(InteractionManager)}: Dependencies updated.");
-        }
     }
 }

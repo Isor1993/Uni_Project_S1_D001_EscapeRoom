@@ -1,17 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-// RSK Kontrolle ok
+﻿/*****************************************************************************
+* Project : Escape Room (K2, S2)
+* File    : SymbolsManager.cs
+* Date    : 09.11.2025
+* Author  : Eric Rosenberg
+*
+* Description :
+* Provides a centralized collection of all character symbols used for rendering
+* walls, objects, and entities within the console-based Escape Room project.
+*
+* History :
+* 09.11.2025 ER Created
+******************************************************************************/
+
+using System;
+
 namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 {
+    /// <summary>
+    /// Provides all visual Unicode symbols used in the console-based Escape Room.
+    /// </summary>
     internal class SymbolsManager
     {
-        /// <summary>
-        /// Symbols used throughout the game
-        /// Each symbol can be accessed or modified via its corresponding property.
-        /// </summary>
+
+        // Private fields for symbols
 
         private char _wallTDownSymbol = '\u2566'; //                 ' ╦ '  
 
@@ -35,7 +46,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 
         private char _wallCornerBottomRightSymbol = '\u255D';//      ' ╝ '
 
-        private char _playerSymbol = '\u2659';//                     ' ♙ '   //\u2603 Schneeman  \u2659 bauer
+        private char _playerSymbol = '\u2659';//                     ' ♙ '   
 
         private char _trapSymbol = '\u2297';// ;                     ' ⊗ '
 
@@ -61,33 +72,127 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 
         private char _hearthSymbol = '\u2764';//                      ' ❤ '
 
-        /// <summary>
-        /// Properties for accessing or optionally changing symbols later
-        /// </summary>
+        // Properties with get and set for possible upgrades later
 
-        public char WallTDownSymbol { get => _wallTDownSymbol; set => _wallTDownSymbol = value; }
-        public char WallTUpSymbol { get => _wallTUpSymbol; set => _wallTUpSymbol = value; }
-        public char WallTRightSymbol { get => _wallTRightSymbol; set => _wallTRightSymbol = value; }
-        public char WallTLeftSymbol { get => _wallTLeftSymbol; set => _wallTLeftSymbol = value; }
-        public char WallCrossSymbol { get => _wallCrossSymbol; set => _wallCrossSymbol = value; }
-        public char WallHorizontalSymbol { get => _wallHorizontalSymbol; set => _wallHorizontalSymbol = value; }
-        public char WallVerticalSymbol { get => _wallVerticalSymbol; set => _wallVerticalSymbol = value; }
-        public char WallCornerTopLeftSymbol { get => _wallCornerTopLeftSymbol; set => _wallCornerTopLeftSymbol = value; }
-        public char WallCornerTopRightSymbol { get => _wallCornerTopRightSymbol; set => _wallCornerTopRightSymbol = value; }
-        public char WallCornerBottomLeftSymbol { get => _wallCornerBottomLeftSymbol; set => _wallCornerBottomLeftSymbol = value; }
-        public char WallCornerBottomRightSymbol { get => _wallCornerBottomRightSymbol; set => _wallCornerBottomRightSymbol = value; }
-        public char PlayerSymbol { get => _playerSymbol; set => _playerSymbol = value; }
-        public char TrapSymbol { get => _trapSymbol; set => _trapSymbol = value; }
-        public char FogSymbol { get => _fogSymbol; set => _fogSymbol = value; }
-        public char DeathSymbol { get => _deathSymbol; set => _deathSymbol = value; }
-        public char KeyFragmentSymbol { get => _keyFragmentSymbol; set => _keyFragmentSymbol = value; }
-        public char QuestSymbol { get => _questSymbol; set => _questSymbol = value; }
-        public char EmptySymbol { get => _emptySymbol; set => _emptySymbol = value; }
-        public char OpenDoorVerticalSymbol { get => _openDoorVerticalSymbol; set => _openDoorVerticalSymbol = value; }
-        public char ClosedDoorVerticalSymbol { get => _closedDoorVerticalSymbol; set => _closedDoorVerticalSymbol = value; }
-        public char OpenDoorHorizontalSymbol { get => _openDoorHorizontalSymbol; set => _openDoorHorizontalSymbol = value; }
-        public char ClosedDoorHorizontalSymbol { get => _closedDoorHorizontalSymbol; set => _closedDoorHorizontalSymbol = value; }
-        public char TimeWatchSymbol { get => _timeWatchSymbol; set => _timeWatchSymbol = value; }
-        public char HearthSymbol { get => _hearthSymbol; set => _hearthSymbol = value; }
+        /// <summary>
+        /// Wall intersection (top-down): ╦
+        /// </summary>
+        public char WallTDownSymbol { get => _wallTDownSymbol; private set => _wallTDownSymbol = value; }
+
+        /// <summary>
+        /// Wall intersection (bottom-up): ╩
+        /// </summary>
+        public char WallTUpSymbol { get => _wallTUpSymbol; private set => _wallTUpSymbol = value; }
+
+        /// <summary>
+        /// Wall intersection (left-right): ╠
+        /// </summary>
+        public char WallTRightSymbol { get => _wallTRightSymbol; private set => _wallTRightSymbol = value; }
+
+        /// <summary>
+        /// Wall intersection (right-left): ╣
+        /// </summary>
+        public char WallTLeftSymbol { get => _wallTLeftSymbol; private set => _wallTLeftSymbol = value; }
+
+        /// <summary>
+        /// Wall cross intersection: ╬
+        /// </summary>
+        public char WallCrossSymbol { get => _wallCrossSymbol; private set => _wallCrossSymbol = value; }
+
+        /// <summary>
+        /// Horizontal wall: ═
+        /// </summary>
+        public char WallHorizontalSymbol { get => _wallHorizontalSymbol; private set => _wallHorizontalSymbol = value; }
+
+        /// <summary>
+        /// Vertical wall: ║
+        /// </summary>
+        public char WallVerticalSymbol { get => _wallVerticalSymbol; private set => _wallVerticalSymbol = value; }
+
+        /// <summary>
+        /// Top-left corner: ╔
+        /// </summary>
+        public char WallCornerTopLeftSymbol { get => _wallCornerTopLeftSymbol; private set => _wallCornerTopLeftSymbol = value; }
+
+        /// <summary>
+        /// Top-right corner: ╗
+        /// </summary>
+        public char WallCornerTopRightSymbol { get => _wallCornerTopRightSymbol; private set => _wallCornerTopRightSymbol = value; }
+
+        /// <summary>
+        /// Bottom-left corner: ╚
+        /// </summary>
+        public char WallCornerBottomLeftSymbol { get => _wallCornerBottomLeftSymbol; private set => _wallCornerBottomLeftSymbol = value; }
+
+        /// <summary>
+        /// Bottom-right corner: ╝
+        /// </summary>
+        public char WallCornerBottomRightSymbol { get => _wallCornerBottomRightSymbol; private set => _wallCornerBottomRightSymbol = value; }
+
+        /// <summary>
+        /// Player: ♙
+        /// </summary>
+        public char PlayerSymbol { get => _playerSymbol; private set => _playerSymbol = value; }
+
+        /// <summary>
+        /// Trap: ⊗
+        /// </summary>
+        public char TrapSymbol { get => _trapSymbol; private set => _trapSymbol = value; }
+
+        /// <summary>
+        /// Fog of war: ▒
+        /// </summary>
+        public char FogSymbol { get => _fogSymbol; private set => _fogSymbol = value; }
+
+        /// <summary>
+        /// Death: ☠
+        /// </summary>
+        public char DeathSymbol { get => _deathSymbol; private set => _deathSymbol = value; }
+
+        /// <summary>
+        /// Key fragment: ⚿
+        /// </summary>
+        public char KeyFragmentSymbol { get => _keyFragmentSymbol; private set => _keyFragmentSymbol = value; }
+
+        /// <summary>
+        /// Quest mark: ?
+        /// </summary>
+        public char QuestSymbol { get => _questSymbol; private set => _questSymbol = value; }
+
+        /// <summary>
+        /// Empty space.
+        /// </summary>
+        public char EmptySymbol { get => _emptySymbol; private set => _emptySymbol = value; }
+
+        /// <summary>
+        /// Closed vertical door: ▮
+        /// </summary>
+        public char ClosedDoorVerticalSymbol { get => _closedDoorVerticalSymbol; private set => _closedDoorVerticalSymbol = value; }
+
+        /// <summary>
+        /// Open vertical door: ▯
+        /// </summary>
+        public char OpenDoorVerticalSymbol { get => _openDoorVerticalSymbol; private set => _openDoorVerticalSymbol = value; }
+
+        /// <summary>
+        /// Closed horizontal door: ▬
+        /// </summary>
+        public char ClosedDoorHorizontalSymbol { get => _closedDoorHorizontalSymbol; private set => _closedDoorHorizontalSymbol = value; }
+
+        /// <summary>
+        /// Open horizontal door: ▭
+        /// </summary>
+        public char OpenDoorHorizontalSymbol { get => _openDoorHorizontalSymbol; private set => _openDoorHorizontalSymbol = value; }
+
+
+        /// <summary>
+        /// Time watch: ⏱
+        /// </summary>
+        public char TimeWatchSymbol { get => _timeWatchSymbol; private set => _timeWatchSymbol = value; }
+
+        /// <summary>
+        /// Heart: ❤
+        /// </summary>
+        public char HearthSymbol { get => _hearthSymbol; private set => _hearthSymbol = value; }
     }
 }

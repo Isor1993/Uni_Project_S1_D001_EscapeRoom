@@ -1,16 +1,26 @@
-﻿using Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies;
+﻿/*****************************************************************************
+* Project : Escape Room (K2, S2)
+* File    : RulesManager.cs
+* Date    : 09.11.2025
+* Author  : Eric Rosenberg
+*
+* Description :
+* Defines and validates core logical rules for the Escape Room.
+* Verifies player movement, spawn conditions, and object interaction rules.
+*
+* History :
+* 09.11.2025 ER Created / Refactored for SAE Coding Convention compliance
+******************************************************************************/
+
+using Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Runtime.Intrinsics.X86;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 {
     /// <summary>
-    /// 
+    /// Handles logical rules and interaction validation for the Escape Room game.
+    /// Responsible for verifying movement, spawn positions, and potential interactions
+    /// between entities and environment tiles.
     /// </summary>
     internal class RulesManager
     {
@@ -18,11 +28,12 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         private readonly RulesManagerDependencies _deps;
 
         /// <summary>
-        /// 
+        /// Initializes a new instance of the <see cref="RulesManager"/> with required dependencies.
+        /// Logs a system check once initialization completes successfully.
         /// </summary>
-        /// <param name="symbols"></param>
-        /// <param name="gameBoardBuilder"></param>
-        /// <param name="diagnosticsManager"></param>
+        /// <param name="rulesManagerDependencies">
+        /// Structured record providing references to <see cref="DiagnosticsManager"/> and <see cref="GameBoardManager"/>.
+        /// </param>
         public RulesManager(RulesManagerDependencies rulesManagerDependencies)
         {
             _deps = rulesManagerDependencies;
@@ -30,21 +41,22 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         }
 
         /// <summary>
-        /// Checks whether a given position on the game board is free and suitable for spawning.
-        /// The method verifies a 3x3 area around the specified coordinates to ensure that
-        /// no interactive or blocking tiles (such as doors, players, NPCs, or key fragments)
-        /// are present in the surrounding cells.
+        /// Checks if a target position and its 3×3 surrounding area are free
+        /// from interactive or blocking tiles such as doors, players, NPCs, or keys.
         /// </summary>
-        /// <param name="position">The target position to evaluate, represented as (y, x) coordinates.</param>
+        /// <param name="position">Target (y, x) coordinates to evaluate.</param>
         /// <returns>
-        /// <c>true</c> if the position and its 3x3 surroundings are free of interactive tiles;
-        /// otherwise, <c>false</c>.
+        /// <remarks>
+        /// This method relies on <see cref="TileType"/> classification 
+        /// (Door, Player, Npc, Key, Empty) to decide spawn validity.
+        /// </remarks>
+        /// <c>true</c> if the area is clear for spawning; otherwise <c>false</c>.
         /// </returns>
         public bool IsPositionFreeForSpawn((int y, int x) position)
         {
             if (_deps.GameBoard.GameBoardArray == null)
             {
-                _deps.Diagnostic.AddCheck($"{nameof(RulesManager)}.{nameof(IsPositionFreeForSpawn)}: GameboardArray is null");
+                _deps.Diagnostic.AddError($"{nameof(RulesManager)}.{nameof(IsPositionFreeForSpawn)}: GameboardArray is null");
                 return false;
             }
             // Retrieve the game board.
@@ -76,11 +88,14 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         }
 
         /// <summary>
-        /// 
+        /// Determines whether movement to the specified target position is permitted
+        /// based on the current <see cref="TileType"/> at that location.
         /// </summary>
-        /// <param name="targetposition"></param>
-        /// <returns></returns>
-        public bool IsMoveAllowed((int y, int x) targetposition)
+        /// <param name="targetPosition">The board coordinates to move to (y, x).</param>
+        /// <returns>
+        /// <c>true</c> if the tile is walkable (empty or key); otherwise <c>false</c>.
+        /// </returns>
+        public bool IsMoveAllowed((int y, int x) targetPosition)
         {
             if (_deps.GameBoard.GameBoardArray == null)
             {
@@ -89,7 +104,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
                 return false;
 
             }
-            TileType typ = _deps.GameBoard.GameBoardArray[targetposition.y, targetposition.x];
+            TileType typ = _deps.GameBoard.GameBoardArray[targetPosition.y, targetPosition.x];
 
             switch (typ)
             {
@@ -104,24 +119,5 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
                     return false;
             }
         }
-
-        //TODO mögliche Methoden die man braucht für interaction
-        public void IsDoorOpenable()
-        {
-
-        }
-
-        //TODO mögliche Methoden die man braucht für interaction
-        public void IsNpcInteractable()
-        {
-
-        }
-
-        //TODO mögliche Methoden die man braucht für interaction
-        public void IsInsideBounds((int y, int x) position)
-        {
-
-        }
     }
 }
-

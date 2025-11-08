@@ -1,4 +1,18 @@
-﻿using Microsoft.VisualBasic;
+﻿/*****************************************************************************
+* Project : Escape Room (K2, S2)
+* File    : GameObjectManager.cs
+* Date    : 09.11.2025
+* Author  : Eric Rosenberg
+*
+* Description :
+* Manages registration, lookup, and movement of all interactive objects 
+* (Player, Door, NPCs, Keys, and Walls) on the game board.
+* Synchronizes tile data in the GameBoardManager and provides diagnostic logging.
+*
+* History :
+* 09.11.2025 ER Created / Refactored for SAE Coding Convention compliance
+******************************************************************************/
+
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Door;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Key;
@@ -7,22 +21,15 @@ using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Player;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Wall;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 {
     /// <summary>
-    /// Central registry for all active objects placed on the game board.
+    /// Handles all interactive objects placed on the game board.
+    /// Registers, removes, queries, and moves entities while synchronizing 
+    /// their representation in the <see cref="GameBoardManager"/>.
     /// </summary>
-    /// <remarks>
-    /// The <see cref="GameObjectManager"/> acts as a unified storage system for all dynamic game objects,  
-    /// including NPCs, keys, doors, walls, and the player.  
-    /// It provides methods to register, move, remove, and retrieve objects while ensuring 
-    /// that the visual board representation remains synchronized with the internal state.  
-    /// All actions are logged via <see cref="DiagnosticsManager"/> for debugging and validation.
-    /// </remarks>
     internal class GameObjectManager
     {
         // === Dependencies ===
@@ -30,26 +37,27 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 
         // === Fields ===
         private readonly Dictionary<(int y, int x), object> _objectOnBoard = new();
+
         // === Cached single instances ===
         private PlayerInstance? _playerInstance;
         private DoorInstance? _doorInstance;
 
-        public PlayerInstance Player => _playerInstance;
-
-        public DoorInstance Door => _doorInstance;
-
-       
+        /// <summary>
+        /// Gets the currently registered <see cref="PlayerInstance"/> if available.
+        /// </summary>
+        public PlayerInstance? Player => _playerInstance;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GameObjectManager"/> class.
+        /// Gets the currently registered <see cref="DoorInstance"/> if available.
+        /// </summary>
+        public DoorInstance? Door => _doorInstance;
+
+        /// <summary>
+        /// Initializes a new <see cref="GameObjectManager"/> and logs its creation.
         /// </summary>
         /// <param name="gameObjectManagerDependencies">
-        /// Provides the required references for managing the board and diagnostic logging.
+        /// Record containing required dependencies such as diagnostics and board access.
         /// </param>
-        /// <remarks>
-        /// When created, the manager is ready to register and synchronize board objects immediately.  
-        /// A diagnostic confirmation message is logged upon instantiation.
-        /// </remarks>
         public GameObjectManager(GameObjectManagerDependencies gameObjectManagerDependencies)
         {
             _deps = gameObjectManagerDependencies;
@@ -57,20 +65,11 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         }
 
         /// <summary>
-        /// Registers a new game object at the specified grid position.
+        /// Registers an object on the board and updates the corresponding tile type.
+        /// Supports players, doors, NPCs, key fragments, and walls.
         /// </summary>
-        /// <remarks>
-        /// This method determines the <see cref="TileType"/> of the object based on its type 
-        /// (e.g., <see cref="NpcInstance"/>, <see cref="DoorInstance"/>, <see cref="KeyFragmentInstance"/>, etc.)  
-        /// and updates both the internal object dictionary and the visual board array accordingly.  
-        /// Logs all operations and error cases through the diagnostics system.
-        /// </remarks>
-        /// <param name="position">
-        /// The (y, x) grid coordinates where the object will be placed.
-        /// </param>
-        /// <param name="boardObject">
-        /// The object to register, such as a wall, key, door, or NPC instance.
-        /// </param>
+        /// <param name="position">The target grid coordinates (y, x).</param>
+        /// <param name="boardObject">The object to register.</param>
         public void RegisterObject((int y, int x) position, object boardObject)
         {
             if (boardObject == null)
@@ -104,7 +103,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
                     break;
 
                 case WallInstance wall:
-                    switch (wall.Typ)
+                    switch (wall.Type)
                     {
                         case TileType.WallHorizontal:
                             type = TileType.WallHorizontal;
@@ -132,47 +131,45 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 
                         default:
                             type = TileType.None;
-                            _deps.Diagnostic.AddError($"{nameof(GameObjectManager)}.{nameof(RegisterObject)}:No TileTyp wall found regristerted as None");
+                            _deps.Diagnostic.AddError($"{nameof(GameObjectManager)}.{nameof(RegisterObject)}:No TileType wall found regristerted as None.");
                             break;
                     }
                     break;
 
                 default:
                     type = TileType.None;
-                    _deps.Diagnostic.AddError($"{nameof(GameObjectManager)}.{nameof(RegisterObject)}: No TileTyp found registerted as None");
+                    _deps.Diagnostic.AddError($"{nameof(GameObjectManager)}.{nameof(RegisterObject)}: No TileType found. Registered as None.");
                     break;
             }
 
             _deps.GameBoard.SetTile(position, type);
 
-            _deps.Diagnostic.AddCheck($"{nameof(GameObjectManager)}: Registered {boardObject.GetType().Name} at {position}.");
+            _deps.Diagnostic.AddCheck($"{nameof(GameObjectManager)}.{nameof(RegisterObject)}: Registered {boardObject.GetType().Name} at {position}.");
         }
 
         /// <summary>
-        /// Removes an object from the game board at the specified position.
+        /// Removes an object from the given board position and clears the tile.
         /// </summary>
-        /// <param name="position">
-        /// The (y, x) grid coordinates of the object to remove.
-        /// </param>
+        /// <param name="position">The grid position of the object to remove.</param>
         public void RemoveObject((int y, int x) position)
         {
             if (_objectOnBoard.Remove(position))
             {
                 _deps.GameBoard.SetTileToEmpty(position);                
-                _deps.Diagnostic.AddCheck($"{nameof(GameObjectManager)}: Removed object at {position}.");
+                _deps.Diagnostic.AddCheck($"{nameof(GameObjectManager)}.{nameof(RemoveObject)}: Removed object at {position}.");
             }
             else
             {
-                _deps.Diagnostic.AddWarning($"{nameof(GameObjectManager)}: Tried to remove object at {position}, but none was found.");
+                _deps.Diagnostic.AddWarning($"{nameof(GameObjectManager)}.{nameof(RemoveObject)}: Tried to remove object at {position}, but none was found.");
             }
         }
 
         /// <summary>
-        /// Attempts to retrieve a registered object at the given position.
+        /// Attempts to retrieve an object from the specified position.
         /// </summary>
-        /// <param name="position">The (y, x) position to check on the board.</param>
-        /// <param name="boardObject">Outputs the object found, or <c>null</c> if none was present.</param>
-        /// <returns><c>true</c> if an object was found; otherwise <c>false</c>.</returns>
+        /// <param name="position">The grid coordinates (y, x).</param>
+        /// <param name="boardObject">Outputs the found object, if any.</param>
+        /// <returns><c>true</c> if an object exists at the given position; otherwise false.</returns>        
         public bool TryGetObject((int y, int x) position, out object? boardObject)
         {
             bool success = _objectOnBoard.TryGetValue(position, out boardObject);
@@ -192,12 +189,9 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         /// <summary>
         /// Retrieves an object of a specific type from the given position.
         /// </summary>
-        /// <typeparam name="T">The expected class type of the object.</typeparam>
-        /// <param name="position">The (y, x) position to check on the board.</param>
-        /// <returns>
-        /// The object cast to the specified type if found; otherwise <c>null</c>.
-        /// Logs a warning if the type does not match or the position is empty.
-        /// </returns>
+        /// <typeparam name="T">Expected object type (e.g. PlayerInstance).</typeparam>
+        /// <param name="position">The target grid coordinates (y, x).</param>
+        /// <returns>The object if found and matching the type; otherwise null.</returns>
         public T? GetObject<T>((int y, int x) position) where T : class
         {
 
@@ -210,55 +204,20 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         }
 
         /// <summary>
-        /// Removes all currently registered objects from the game board.
+        /// Removes all registered objects from the internal dictionary.
         /// </summary>
-        /// <remarks>
-        /// Typically used during level resets or scene transitions.  
-        /// Logs the action in diagnostics for state verification.
-        /// </remarks>
         public void ClearAll()
         {
             _objectOnBoard.Clear();
-            _deps.Diagnostic.AddCheck($"{nameof(GameObjectManager)}: Cleared all registered objects.");
+            _deps.Diagnostic.AddCheck($"{nameof(GameObjectManager)}.{nameof(ClearAll)}: Cleared all registered objects.");
         }
 
         /// <summary>
-        /// Returns a copy of all currently registered objects on the game board.
+        /// Moves a player object from an old position to a new one if possible.
         /// </summary>
-        /// <remarks>
-        /// Intended for debugging, logging, or developer inspection.  
-        /// The returned dictionary is a safe copy to prevent external modification.
-        /// </remarks>
-        /// <returns>
-        /// A read-only dictionary of all registered objects and their respective positions.
-        /// </returns>
-        public IReadOnlyDictionary<(int y, int x), object> GetAllObjects()
-        {
-            return new Dictionary<(int y, int x), object>(_objectOnBoard);
-        }
-
-        /// <summary>
-        /// Updates the board tile at the given position to match the provided <see cref="TileType"/>.
-        /// </summary>
-        /// <param name="position">The (y, x) grid position to update.</param>
-        /// <param name="typ">The new <see cref="TileType"/> to assign to this position.</param>
-        public void UpdateBoard((int y, int x) position, TileType typ)
-        {
-            _deps.GameBoard.SetTile(position, typ);            
-        }
-
-        /// <summary>
-        /// Moves a player object from one position to another on the game board.
-        /// </summary>
-        /// <remarks>
-        /// The method ensures that the new position is not already occupied, 
-        /// removes the player from the old position, registers it at the new one, 
-        /// and synchronizes both the object registry and board state.  
-        /// Diagnostic messages are logged for every operation or failure.
-        /// </remarks>
-        /// <param name="oldPosition">The player’s current grid position.</param>
-        /// <param name="newPosition">The target grid position to move to.</param>
-        /// <returns><c>true</c> if the move was successful; otherwise <c>false</c>.</returns>
+        /// <param name="oldPosition">Current grid coordinates of the player.</param>
+        /// <param name="newPosition">Target grid coordinates for movement.</param>
+        /// <returns><c>true</c> if movement succeeded; otherwise false.</returns>
         public bool MovePlayer((int y, int x) oldPosition, (int y, int x) newPosition)
         {
             if (!_objectOnBoard.TryGetValue(oldPosition, out object? boardObject))
@@ -277,28 +236,16 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
             RemoveObject(oldPosition);            
 
             RegisterObject(newPosition, boardObject);
+
             return true;
         }
 
         /// <summary>
-        /// Searches the provided board dictionary for a <see cref="PlayerInstance"/> 
-        /// and returns it if found.
+        /// Searches the board for the player instance and returns it with its position.
         /// </summary>
-        /// <param name="boardObject">
-        /// The dictionary containing all objects placed on the game board.
-        /// The key represents a 2D coordinate tuple (y, x),
-        /// and the value represents the stored object 
-        /// (e.g., PlayerInstance, DoorInstance, WallInstance, etc.).
-        /// </param>
-        /// <param name="playerPosition">
-        /// Outputs the position of the found <see cref="PlayerInstance"/> as (y, x).
-        /// If no player is found, the returned position will be (1, 1).
-        /// </param>
-        /// <returns>
-        /// The located <see cref="PlayerInstance"/>, or <c>null</c> 
-        /// if no player object exists within the board dictionary.
-        /// </returns>
-        public PlayerInstance? GetPlayerInstance(out (int y,int x)playerPosition)
+        /// <param name="playerPosition">Outputs the found player position.</param>
+        /// <returns>The found <see cref="PlayerInstance"/> or null if not found.</returns>
+        private PlayerInstance? GetPlayerInstance(out (int y,int x)playerPosition)
         {
             foreach(KeyValuePair<(int y,int x),object>entry in _objectOnBoard)
             {
@@ -309,24 +256,24 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
                 }
             }
             playerPosition = (1, 1);
-            _deps.Diagnostic.AddWarning($"{nameof(GameObjectManager)}.{nameof(GetPlayerInstance)}: No PlayerInstance found in boardObject. Player position deafault is {playerPosition}");
+            _deps.Diagnostic.AddError($"{nameof(GameObjectManager)}.{nameof(GetPlayerInstance)}: No PlayerInstance found. Default position {playerPosition} assigned.");
             return null;
         }
 
         /// <summary>
-        /// Searches the internal board dictionary for a <see cref="PlayerInstance"/> 
-        /// and returns it if found.
+        /// Retrieves the player instance without position output.
         /// </summary>
-        /// <returns>
-        /// The located <see cref="PlayerInstance"/>, or <c>null</c> 
-        /// if no player object exists within the board.
-        /// </returns>
-        public PlayerInstance? GetPlayerInstance()
+        private PlayerInstance? GetPlayerInstance()
         {
             return GetPlayerInstance(out _);
         }
 
-        public DoorInstance? GetDoorInstance(out (int y, int x) doorPosition)
+        /// <summary>
+        /// Searches the board for the door instance and returns it with its position.
+        /// </summary>
+        /// <param name="doorPosition">Outputs the found door position.</param>
+        /// <returns>The found <see cref="DoorInstance"/> or null if not found.</returns>
+        private DoorInstance? GetDoorInstance(out (int y, int x) doorPosition)
         {
             foreach (KeyValuePair<(int y, int x), object> entry in _objectOnBoard)
             {
@@ -337,20 +284,16 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
                 }
             }
             doorPosition = (1, 1);
-            _deps.Diagnostic.AddWarning($"{nameof(GameObjectManager)}.{nameof(GetDoorInstance)}: No DoorInstance found in boardObject. Door position deafault is {doorPosition}");
+            _deps.Diagnostic.AddWarning($"{nameof(GameObjectManager)}.{nameof(GetDoorInstance)}: No DoorInstance found in boardObject. Default door position is {doorPosition}.");
             return null;
         }
 
-        public DoorInstance? GetDoorInstance()
+        /// <summary>
+        /// Retrieves the door instance without position output.
+        /// </summary>
+        private DoorInstance? GetDoorInstance()
         {
             return GetDoorInstance(out _);
         }
-
-        public void UpdateDependencies(GameObjectManagerDependencies newDeps)
-        {
-            _deps = newDeps;
-            _deps.Diagnostic.AddCheck($"{nameof(InteractionManager)}: Dependencies updated.");
-        }
-
     }
 }

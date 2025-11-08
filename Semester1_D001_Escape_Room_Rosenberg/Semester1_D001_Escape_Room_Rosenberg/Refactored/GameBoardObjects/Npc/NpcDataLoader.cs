@@ -1,4 +1,26 @@
-﻿using Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies;
+﻿/*****************************************************************************
+* Project : Escape Room (K2, S2)
+* File    : NpcDataLoader.cs
+* Date    : 09.11.2025
+* Author  : Eric Rosenberg
+*
+* Description :
+* Loads and parses NPC data from external text files.
+* Each line in the file defines a single NPC with metadata, dialogue, and reward information.
+* The class ensures robust error handling, validation, and diagnostic logging
+* to maintain data integrity during runtime.
+*
+* Responsibilities:
+* - Load NPC data from structured text files
+* - Parse and validate NPC definitions
+* - Build NpcRawData objects from file content
+* - Log all warnings, errors, and results via DiagnosticsManager
+*
+* History :
+* 09.11.2025 ER Created / Documentation fully updated
+******************************************************************************/
+
+using Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc.NpcData;
 using System;
 using System.Collections.Generic;
@@ -9,9 +31,17 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc
 {
     /// <summary>
     /// Handles loading and parsing of NPC data from external text files.
-    /// Creates and returns a list of <see cref="NpcInstance"/> objects based on file contents.
-    /// Includes extensive exception handling and diagnostic logging for reliability.
     /// </summary>
+    /// <remarks>
+    /// The <see cref="NpcDataLoader"/> reads NPC definitions from structured text files and 
+    /// converts them into <see cref="NpcRawData"/> objects.  
+    /// Each line represents a single NPC and contains seven semicolon-separated values:
+    /// <br/>
+    /// <c>[Name];[Question];[CorrectAnswer];[OptionB];[OptionC];[KeyFragments];[RewardPoints]</c>
+    /// <br/>
+    /// Robust exception handling and detailed diagnostic logging ensure stability even if 
+    /// files are missing, malformed, or contain invalid data.
+    /// </remarks>
     internal class NpcDataLoader
     {
         // === Dependencies ===
@@ -34,14 +64,11 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc
         }
 
         /// <summary>
-        /// Loads and parses NPC data from a specified file.
-        /// Each line of the file is expected to contain semicolon-separated NPC parameters:
-        /// <br/> <c>[Name];[Question];[CorrectAnswer];[OptionB];[OptionC];[KeyFragments];[RewardPoints]</c>
+        /// Loads and parses NPC data from the predefined file path within the project directory.
         /// </summary>
-        /// <param name="filePath">The full path to the NPC data file.</param>
         /// <returns>
-        /// A list of <see cref="NpcRawData"/> objects representing all successfully loaded NPCs.
-        /// Returns an empty list if an exception occurs during loading.
+        /// A list of <see cref="NpcRawData"/> objects representing all successfully loaded NPC entries.  
+        /// Returns an empty list if the file is missing or an error occurs during processing.
         /// </returns>
         public List<NpcRawData> LoadNpcDataFromFile()
         {

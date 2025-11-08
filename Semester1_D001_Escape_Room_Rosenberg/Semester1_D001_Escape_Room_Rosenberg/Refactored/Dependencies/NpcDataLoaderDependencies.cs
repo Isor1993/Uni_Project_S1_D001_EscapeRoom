@@ -1,29 +1,39 @@
-﻿using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc.NpcData;
+﻿/*****************************************************************************
+* Project : Escape Room (K2, S2)
+* File    : NpcDataLoaderDependencies.cs
+* Date    : 09.11.2025
+* Author  : Eric Rosenberg
+*
+* Description :
+* Defines the dependency references required by the <see cref="NpcDataLoader"/>.
+* Connects the NPC data loading process with diagnostic logging and symbol
+* management for consistent NPC initialization and validation.
+*
+* Responsibilities:
+* - Provide <see cref="NpcDataLoader"/> access to diagnostics for runtime logging
+* - Supply symbol references for NPC data verification and visualization
+* - Maintain clear separation between data loading logic and global systems
+*
+* History :
+* 09.11.2025 ER Created / Documentation fully updated
+******************************************************************************/
+
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies
 {
     /// <summary>
-    /// Provides all required dependencies for the <see cref="NpcDataLoader"/> system.
+    ///Defines the dependency links required by the <see cref="NpcDataLoader"/>.
+    /// Provides unified access to diagnostic and symbol systems, ensuring
+    /// traceable and consistent NPC data parsing and initialization.
     /// </summary>
-    /// <remarks>
-    /// This dependency record bundles the <see cref="DiagnosticsManager"/> and <see cref="SymbolsManager"/> 
-    /// into a single container for dependency injection.  
-    /// It allows the NPC data loading process to log validation messages and assign 
-    /// correct symbols to NPC-related data such as <see cref="NpcMetaData"/> or <see cref="NpcDialogData"/>.
-    /// </remarks>
     /// <param name="Diagnostic">
-    /// Reference to the <see cref="DiagnosticsManager"/> used for logging checks, warnings, and errors 
-    /// during NPC data parsing and initialization.
+    /// Reference to the <see cref="DiagnosticsManager"/> responsible for logging
+    /// all NPC data loading events, warnings, and errors during file parsing.
     /// </param>
     /// <param name="Symbol">
-    /// Reference to the <see cref="SymbolsManager"/> that provides visual symbols 
-    /// used in NPC metadata and debugging displays.
+    /// Reference to the <see cref="SymbolsManager"/> that supplies visual
+    /// symbol definitions used when validating or assigning NPC icons on the board.
     /// </param>
     internal sealed record NpcDataLoaderDependencies
     (

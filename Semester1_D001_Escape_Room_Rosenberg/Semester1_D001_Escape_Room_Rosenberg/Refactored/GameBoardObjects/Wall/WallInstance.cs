@@ -1,4 +1,24 @@
-﻿using Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies;
+﻿/*****************************************************************************
+* Project : Escape Room (K2, S2)
+* File    : WallInstance.cs
+* Date    : 09.11.2025
+* Author  : Eric Rosenberg
+*
+* Description :
+* Represents a wall element on the game board.  
+* Stores its type, position, and visual symbol, while maintaining diagnostic
+* traceability through dependency injection.
+*
+* Responsibilities:
+* - Store wall type, position, and visual representation
+* - Assign correct symbol based on wall type
+* - Log all initialization and assignment events
+*
+* History :
+* 09.11.2025 ER Created / Documentation fully updated
+******************************************************************************/
+
+using Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers;
 
 namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Wall
@@ -28,21 +48,24 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Wall
         /// Reference to the <see cref="WallInstanceDependencies"/> object providing 
         /// access to the symbol configuration and diagnostic manager.
         /// </param>
+        /// <remarks>
+        /// The instance starts with <see cref="TileType.None"/> until it is initialized.
+        /// </remarks>
         public WallInstance(WallInstanceDependencies wallInstanceDependencies)
         {
             _deps = wallInstanceDependencies;
             _type = TileType.None;
-            _deps.Diagnostic.AddCheck($"{nameof(WallInstance)}: successfully created.");
+            _deps.Diagnostic.AddCheck($"{nameof(WallInstance)}: Successfully created.");
         }
 
         /// <summary>
         /// Gets the tile type assigned to this wall instance 
         /// (typically one of the <see cref="TileType.Wall..."/> values).
         /// </summary>
-        public TileType Typ => _type;
+        public TileType Type => _type;
 
         /// <summary>
-        /// GGets the visual character symbol representing this wall instance.
+        /// Gets the visual character symbol representing this wall instance.
         /// </summary>
         public char Symbol => _symbol;
 
@@ -54,13 +77,12 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Wall
         /// <summary>
         /// Assigns a visual symbol to the wall based on the provided <see cref="TileType"/>.
         /// </summary>
+        /// <param name="type">The wall type determining the correct symbol to use.</param>
         /// <remarks>
-        /// This method maps each wall type to its corresponding character symbol 
-        /// from the <see cref="WallInstanceDependencies.Symbol"/> configuration.  
-        /// Each assignment is logged through the diagnostics system.  
-        /// If the provided type is invalid, a fallback death symbol is used.
+        /// Each wall type is mapped to its corresponding symbol from 
+        /// <see cref="WallInstanceDependencies.Symbol"/>.  
+        /// If the type is invalid, a fallback death symbol is applied and a warning is logged.
         /// </remarks>
-        /// <param name="type">The type of wall to assign a symbol for.</param>
         public void AssignSymbol(TileType type)
         {
             switch (type)
@@ -103,14 +125,14 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Wall
         }
 
         /// <summary>
-        /// Initializes the wall instance by assigning its type and position.
+        ///Initializes the wall instance by assigning its type and position.
         /// </summary>
-        /// <remarks>
-        /// Calls <see cref="AssignSymbol(TileType)"/> to set the correct visual representation,  
-        /// then assigns the wall’s grid coordinates and logs both steps in the diagnostics system.
-        /// </remarks>
-        /// <param name="typ">The type of wall (horizontal, vertical, or one of the corner types).</param>
+        /// <param name="type">The type of wall (horizontal, vertical, or one of the corner types).</param>
         /// <param name="position">The position of the wall on the game board as (y, x) coordinates.</param>
+        /// <remarks>
+        /// Calls <see cref="AssignSymbol(TileType)"/> to apply the correct symbol,  
+        /// assigns the grid position, and logs both actions in the diagnostics system.
+        /// </remarks>
         public void Initialize(TileType typ, (int y, int x) position)
         {
             _type = typ;
@@ -123,8 +145,8 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Wall
         /// </summary>
         /// <param name="position">The Y/X coordinates where this wall should be placed.</param>
         /// <remarks>
-        /// This method only updates internal position data and logs the result.  
-        /// It does not modify the visual board array — this is handled by the <see cref="GameBoardManager"/>.
+        /// This method only updates internal position data and logs the assignment.  
+        /// It does not modify the actual game board array — this is handled by the <see cref="GameBoardManager"/>.
         /// </remarks>
         public void AssignPosition((int y, int x) position)
         {

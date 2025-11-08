@@ -1,37 +1,60 @@
-﻿using Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies;
+﻿/*****************************************************************************
+* Project : Escape Room (K2, S2)
+* File    : NpcManager.cs
+* Date    : 09.11.2025
+* Author  : Eric Rosenberg
+*
+* Description :
+* Manages all non-player characters (NPCs) in the game world.
+* Handles the loading, instantiation, and lookup of all NPC entities, 
+* using the <see cref="NpcDataLoader"/> and <see cref="SymbolsManager"/>.
+* Logs every major action (loading, creation, lookup) via the DiagnosticsManager.
+*
+* Responsibilities:
+* - Load NPC data through the NpcDataLoader
+* - Instantiate NPC objects with dependencies and metadata
+* - Provide lookup functionality for NPCs by board position
+* - Log all events for debugging and runtime tracking
+*
+* History :
+* 09.11.2025 ER Created / Documentation fully updated
+******************************************************************************/
+
+using Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc.NpcData;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers;
 using System;
+using System.Collections.Generic;
 
 namespace Semester1_D001_Escape_Room_Rosenberg.Refactored
 {
     /// <summary>
-    /// Manages all non-player characters (NPCs) within the game.
+    ///Central manager responsible for all non-player character (NPC) operations.
+    /// Handles loading from data files, instantiation, and runtime access to NPC entities.
     /// </summary>
     /// <remarks>
-    /// The <see cref="NpcManager"/> is responsible for loading, storing, and retrieving 
-    /// all <see cref="NpcInstance"/> objects.  
-    /// It interacts with the <see cref="NpcDataLoader"/> to read NPC data files 
-    /// and instantiate NPCs with their associated metadata, dialogue, and rewards.  
-    /// Diagnostics messages are logged for every major step (loading, instantiation, lookup).
+    /// The <see cref="NpcManager"/> interacts with the <see cref="NpcDataLoader"/> 
+    /// to read external configuration files, creates fully initialized 
+    /// <see cref="NpcInstance"/> objects, and provides lookup utilities 
+    /// for gameplay interactions.  
+    /// All operations are logged for transparency and debugging.
     /// </remarks>
     internal class NpcManager
     {
         // === Dependencies ===
-
         private readonly NpcManagerDependencies _deps;
 
         // === Fields ===
-
-        private List<NpcInstance> _npcList = new List<NpcInstance>();
+        private readonly List<NpcInstance> _npcList = new List<NpcInstance>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NpcManager"/> class.
         /// </summary>
         /// <param name="npcManagerDependencies">
-        /// Provides references to all required dependencies for managing NPC data and instantiation, 
-        /// including <see cref="NpcDataLoader"/>, <see cref="DiagnosticsManager"/>, and <see cref="SymbolsManager"/>.
+        /// Provides references to the <see cref="NpcDataLoader"/>, 
+        /// <see cref="DiagnosticsManager"/>, and <see cref="SymbolsManager"/> 
+        /// required for NPC initialization and logging.
         /// </param>
         public NpcManager(NpcManagerDependencies npcManagerDependencies)
         {
@@ -45,21 +68,20 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored
         public List<NpcInstance> NpcList => _npcList;
 
         /// <summary>
-        /// Loads and initializes all NPCs from an external data source.
+        /// Loads and initializes all NPCs from the external data source.
         /// </summary>
-        /// <param name="filePath">The path to the NPC data file to be loaded.</param>
         /// <remarks>
-        /// This method clears the current NPC list, then:
+        /// This method:
         /// <list type="number">
-        /// <item><description>Loads raw NPC data from the <see cref="NpcDataLoader"/>.</description></item>
-        /// <item><description>Creates a new <see cref="NpcInstance"/> for each dataset.</description></item>
-        /// <item><description>Stores all instances in the <see cref="NpcList"/>.</description></item>
+        /// <item><description>Clears the current NPC list.</description></item>
+        /// <item><description>Loads raw NPC data via the <see cref="NpcDataLoader"/>.</description></item>
+        /// <item><description>Instantiates new <see cref="NpcInstance"/> objects with dependencies.</description></item>
+        /// <item><description>Stores all initialized NPCs in the <see cref="NpcList"/>.</description></item>
         /// </list>
-        /// After loading, a diagnostic entry logs the total number of NPCs initialized.
+        /// After loading, a diagnostic entry logs the total number of NPCs created.
         /// </remarks>
         public void LoadAllNpcData()
         {
-
             List<NpcRawData> rawDataList = _deps.NpcDataLoader.LoadNpcDataFromFile();
 
             _npcList.Clear();
@@ -68,11 +90,11 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored
             {
                 NpcInstanceDependencies npcInstanceDeps = new NpcInstanceDependencies(_deps.Diagnostic, _deps.Symbol);
 
-                NpcInstance npc = new NpcInstance(npcInstanceDeps, rawData.Meta, rawData.Dialog, rawData.Reward);               
+                NpcInstance npc = new NpcInstance(npcInstanceDeps, rawData.Meta, rawData.Dialog, rawData.Reward);
 
                 _npcList.Add(npc);
             }
-            _deps.Diagnostic.AddCheck($"{nameof(NpcManager)}: Loaded {_npcList.Count} NPC instances.");
+            _deps.Diagnostic.AddCheck($"{nameof(NpcManager)}.{nameof(LoadAllNpcData)}: Loaded {_npcList.Count} NPC instances.");
         }
 
         /// <summary>
@@ -84,12 +106,11 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored
         /// or <c>null</c> if no NPC exists at that location.
         /// </returns>
         /// <remarks>
-        /// A diagnostic entry is created whether an NPC is found or not, 
-        /// to help with debugging board-based interactions.
+        /// A diagnostic log entry is always created to track lookups for debugging purposes.
         /// </remarks>
         public NpcInstance? GetNpcAt((int y, int x) position)
         {
-            foreach (var npc in _npcList)
+            foreach (NpcInstance npc in _npcList)
             {
                 if (npc.Meta.Position == position)
                 {
@@ -103,5 +124,3 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored
         }
     }
 }
-
-
