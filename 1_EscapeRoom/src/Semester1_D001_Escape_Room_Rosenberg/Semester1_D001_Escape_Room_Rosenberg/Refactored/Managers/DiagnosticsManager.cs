@@ -13,9 +13,6 @@
 * History :
 * 09.11.2025 ER Created / Refactored for SAE Coding Convention compliance
 ******************************************************************************/
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Semester1_D001_Escape_Room_Rosenberg
 {
@@ -35,7 +32,6 @@ namespace Semester1_D001_Escape_Room_Rosenberg
     /// </summary>
     internal class DiagnosticsManager
     {
-
         // === Fields ===
 
         /// <summary>
@@ -113,7 +109,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         /// </code>
         /// </para>
         /// </summary>
-        /// <param name="message">A short and clear description of the exception event.</param> 
+        /// <param name="message">A short and clear description of the exception event.</param>
         public void AddException(string message)
         {
             string timestamp = DateTime.Now.ToString("HH:mm:ss.fff");
@@ -164,9 +160,10 @@ namespace Semester1_D001_Escape_Room_Rosenberg
             string timestamp = DateTime.Now.ToString("HH:mm:ss.fff");
             _checks.Add($"[{timestamp}] [CHECK] {message}");
         }
-                
+
         // === Output and Reporting ===
-     
+
+        /* For DEBUG
         /// <summary>
         /// Prints all collected logs (exceptions, errors, warnings, and checks)
         /// to the console using the specified <see cref="PrintManager"/>.
@@ -188,7 +185,6 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         public void PrintAll(PrintManager printer)
         {
             printer.PrintLine("--- Diagnostics Report ---");
-
 
             foreach (string msg in _errors) printer.PrintLine(msg);
 
@@ -223,8 +219,25 @@ namespace Semester1_D001_Escape_Room_Rosenberg
                 $"Errors: {_errors.Count} | " +
                 $"Warnings: {_warnings.Count} | " +
                 $"Checks: {_checks.Count}"
-                );            
+                );
         }
+
+         /// <summary>
+        /// Clears all stored diagnostic data across every category,
+        /// including exceptions, errors, warnings, and checks.
+        /// <para>
+        /// Use this method to reset the diagnostics state between test runs
+        /// or level reloads to ensure logs only reflect current execution data.
+        /// </para>
+        /// </summary>
+        public void ClearAll()
+        {
+            _errors.Clear();
+            _warnings.Clear();
+            _checks.Clear();
+            _exceptions.Clear();
+        }
+        */
 
         // === Chronological Output ===
 
@@ -244,8 +257,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         /// </summary>
         public void PrintChronologicalLogs()
         {
-           
-            List<string> combined = new ();
+            List<string> combined = new();
             combined.AddRange(_exceptions);
             combined.AddRange(_errors);
             combined.AddRange(_warnings);
@@ -273,22 +285,6 @@ namespace Semester1_D001_Escape_Room_Rosenberg
             foreach (var log in sorted)
                 Console.WriteLine(log);
             Console.WriteLine("=== End of Chronological Output ===");
-        }
-
-        /// <summary>
-        /// Clears all stored diagnostic data across every category,
-        /// including exceptions, errors, warnings, and checks.
-        /// <para>
-        /// Use this method to reset the diagnostics state between test runs
-        /// or level reloads to ensure logs only reflect current execution data.
-        /// </para>
-        /// </summary>
-        public void ClearAll()
-        {
-            _errors.Clear();
-            _warnings.Clear();
-            _checks.Clear();
-            _exceptions.Clear();
-        }
+        } 
     }
 }

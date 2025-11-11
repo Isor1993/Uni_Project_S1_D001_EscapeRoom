@@ -5,9 +5,9 @@
 * Author  : Eric Rosenberg
 *
 * Description :
-* Handles all visual console screen outputs, including tutorial, start, win, 
-* and game over screens.  
-* Uses ASCII-based UI elements to create immersive feedback sequences during gameplay.  
+* Handles all visual console screen outputs, including tutorial, start, win,
+* and game over screens.
+* Uses ASCII-based UI elements to create immersive feedback sequences during gameplay.
 * Integrates with inventory, level, and symbol systems for dynamic data display.
 *
 * Responsibilities:
@@ -20,23 +20,20 @@
 ******************************************************************************/
 
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies;
-using System;
-using System.Collections.Generic;
-
 
 namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 {
     /// <summary>
-    /// Handles all static and animated screen displays such as tutorial, 
+    /// Handles all static and animated screen displays such as tutorial,
     /// start menu, victory, and game over scenes.
     /// </summary>
     /// <remarks>
-    /// The <see cref="ScreenManager"/> uses ASCII-based layout strings 
-    /// to render immersive visual transitions.  
-    /// It integrates with <see cref="ScreenManagerDependencies"/> 
-    /// for access to <see cref="SymbolsManager"/>, <see cref="InventoryManager"/>, 
-    /// and <see cref="LevelManager"/> data.  
-    /// Each screen supports animation timing and visual spacing 
+    /// The <see cref="ScreenManager"/> uses ASCII-based layout strings
+    /// to render immersive visual transitions.
+    /// It integrates with <see cref="ScreenManagerDependencies"/>
+    /// for access to <see cref="SymbolsManager"/>, <see cref="InventoryManager"/>,
+    /// and <see cref="LevelManager"/> data.
+    /// Each screen supports animation timing and visual spacing
     /// to enhance player experience within the console window.
     /// </remarks>
     internal class ScreenManager
@@ -48,7 +45,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         /// Initializes a new instance of the <see cref="ScreenManager"/> class.
         /// </summary>
         /// <param name="screenManagerDependencies">
-        /// Provides access to symbol, inventory, level, and diagnostics managers 
+        /// Provides access to symbol, inventory, level, and diagnostics managers
         /// for runtime visual rendering.
         /// </param>
         public ScreenManager(ScreenManagerDependencies screenManagerDependencies)
@@ -59,16 +56,20 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         // === Fields ===
         // Tutorial screen symbols and layout strings.
         private char _playerSymbol = ' ';
+
         private char _keyFragmentSymbol = ' ';
         private char _npcSymbol = ' ';
         private char _openDoor = ' ';
 
         // Static tutorial ASCII layout strings
         private static string _tutorial_1 = "                                               ░▀█▀░█░█░▀█▀░█▀█░█▀▄░▀█▀░█▀█░█░░";
+
         private static string _tutorial_2 = "                                               ░░█░░█░█░░█░░█░█░█▀▄░░█░░█▀█░█░░";
         private static string _tutorial_3 = "                                               ░░▀░░▀▀▀░░▀░░▀▀▀░▀░▀░▀▀▀░▀░▀░▀▀▀";
+
         // Tutorial ASCII layout strings
         private string _tutorialBoxSpace = "                         ║                                                                         ║";
+
         private string _tutorialBoxLineTop = "                         ╔═════════════════════════════════════════════════════════════════════════╗";
         private string _tutorialIntro = "                         ║ Welcome to the Escape Room. Your goal is to escape room through the door║";
         private string _tutorial_4 = "                         ║ Movement:             => Move your player with the following keys       ║";
@@ -112,7 +113,6 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         private static string _madeBy_10 = "                                                                                       ▒▒██████";
         private List<string> _madeBy = new List<string> { _madeBy_1, _madeBy_2, _madeBy_3, _madeBy_4, _madeBy_5, _madeBy_6, _madeBy_7, _madeBy_8, _madeBy_9, _madeBy_10 };
 
-
         private List<string> _name = new List<string> { _name_1, _name_2, _name_3, _name_4, _name_5, _name_6, _name_7, _name_8 };
 
         private static string _name_1 = "                             █████                            ████   ████████   ████████   ████████";
@@ -124,10 +124,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         private static string _name_7 = "                             █████ ██████ ▒▒██████  █████     █████▒▒████████ ▒▒████████ ▒▒████████";
         private static string _name_8 = "                            ▒▒▒▒▒ ▒▒▒▒▒▒   ▒▒▒▒▒▒  ▒▒▒▒▒     ▒▒▒▒▒  ▒▒▒▒▒▒▒▒   ▒▒▒▒▒▒▒▒   ▒▒▒▒▒▒▒▒";
 
-
-
-
-        // === ScreenWin ===   
+        // === ScreenWin ===
 
         private static string _youWon_1 = "                       █████ █████                        █████   ███   █████";
         private static string _youWon_2 = "                      ▒▒███ ▒▒███                        ▒▒███   ▒███  ▒▒███";
@@ -155,7 +152,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         private string _youWonBoxLineBottom_23 = "                      ╚❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ VV❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ╝";
         private string _youWonScore_24 = "                                                        ";
         private List<string> _youWon = new List<string> { _youWon_1, _youWon_2, _youWon_3, _youWon_4, _youWon_5, _youWon_6, _youWon_7, _youWon_8 };
-        // === ScreenGameOver === 
+        // === ScreenGameOver ===
 
         private static string _gameOver_1 = "              █████████                                           ███████";
         private static string _gameOver_2 = "             ███▒▒▒▒▒███                                        ███▒▒▒▒▒███";
@@ -184,10 +181,6 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         private string _gameOverScore_24 = "                                                         ";
         private List<string> _gameOver = new List<string> { _gameOver_1, _gameOver_2, _gameOver_3, _gameOver_4, _gameOver_5, _gameOver_6, _gameOver_7, _gameOver_8 };
 
-
-
-
-
         /// <summary>
         /// Displays the tutorial screen and waits for player input to continue.
         /// </summary>
@@ -197,7 +190,6 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
             ScreenTutorialBuildBody();
             Console.ReadKey(true);
             Console.Clear();
-
         }
 
         /// <summary>
@@ -335,7 +327,6 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         /// </summary>
         private void ScreenWinBuildBody()
         {
-
             Console.WriteLine(" ");
             Console.WriteLine(" ");
             Console.WriteLine(" ");
@@ -358,8 +349,6 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
             Console.WriteLine($"{_youWonBoxLineBottom_23}");
             Console.WriteLine($"{_youWonScore_24} {_deps.Inventory.Score}");
         }
-
-
 
         /// <summary>
         /// Prints the ASCII "Game Over" header.

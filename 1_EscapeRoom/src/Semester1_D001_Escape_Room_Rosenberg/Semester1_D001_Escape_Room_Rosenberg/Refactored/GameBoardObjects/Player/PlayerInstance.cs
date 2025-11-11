@@ -5,7 +5,7 @@
 * Author  : Eric Rosenberg
 *
 * Description :
-* Represents the player instance on the game board.  
+* Represents the player instance on the game board.
 * Stores position, symbol, lives, and alive state while maintaining diagnostic
 * traceability through dependency injection.
 *
@@ -20,8 +20,6 @@
 
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers;
-using System;
-
 
 namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Player
 {
@@ -29,10 +27,10 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Playe
     /// Represents the player instance on the game board.
     /// </summary>
     /// <remarks>
-    /// The <see cref="PlayerInstance"/> manages player-specific attributes such as name,  
-    /// position, lives, and active state.  
-    /// Initialization and symbol assignment are performed via 
-    /// <see cref="PlayerInstanceDependencies"/> and all actions are logged through the 
+    /// The <see cref="PlayerInstance"/> manages player-specific attributes such as name,
+    /// position, lives, and active state.
+    /// Initialization and symbol assignment are performed via
+    /// <see cref="PlayerInstanceDependencies"/> and all actions are logged through the
     /// <see cref="DiagnosticsManager"/>.
     /// </remarks>
     internal class PlayerInstance
@@ -42,23 +40,23 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Playe
 
         // === Fields ===
         private char _symbol;
+
         private (int y, int x) _position;
         private int _lives;
         private bool _isAlive;
         private TileType _type;
 
-
         /// <summary>
         /// Initializes a new instance of the <see cref="PlayerInstance"/> class.
         /// </summary>
         /// <param name="playerInstanceDependencies">
-        /// Provides access to required systems such as 
+        /// Provides access to required systems such as
         /// <see cref="DiagnosticsManager"/> and <see cref="SymbolsManager"/>.
         /// </param>
         /// <param name="name">The display name of the player.</param>
         /// <remarks>
-        /// When created, the player receives the default symbol, three lives, and 
-        /// is marked as alive.  
+        /// When created, the player receives the default symbol, three lives, and
+        /// is marked as alive.
         /// A log entry confirms successful creation.
         /// </remarks>
         public PlayerInstance(PlayerInstanceDependencies playerInstanceDependencies, string name)
@@ -74,7 +72,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Playe
 
         /// <summary>
         /// Gets the player's display name used for HUD and diagnostics.
-        /// </summary>  
+        /// </summary>
         public string Name { get; private set; }
 
         /// <summary>
@@ -86,7 +84,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Playe
         /// Gets the number of remaining lives the player currently has.
         /// </summary>
         /// <remarks>
-        /// Initially set to <c>3</c>.  
+        /// Initially set to <c>3</c>.
         /// Each time the player takes damage, this value decreases.
         /// </remarks>
         public int Lives => _lives;
@@ -95,7 +93,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Playe
         /// Indicates whether the player is currently alive.
         /// </summary>
         /// <remarks>
-        /// Returns <c>true</c> if the player has at least one remaining life;  
+        /// Returns <c>true</c> if the player has at least one remaining life;
         /// set to <c>false</c> when all lives are lost.
         /// </remarks>
         public bool IsAlive => _isAlive;
@@ -135,7 +133,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Playe
         /// </summary>
         /// <param name="position">The player's initial grid coordinates (Y, X).</param>
         /// <remarks>
-        /// Typically called when spawning the player or starting a level.  
+        /// Typically called when spawning the player or starting a level.
         /// Logs successful initialization through diagnostics.
         /// </remarks>
         public void Initialize((int y, int x) position)
@@ -148,7 +146,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Playe
         /// Sets the player's status to dead.
         /// </summary>
         /// <remarks>
-        /// Called when the player's life count reaches zero.  
+        /// Called when the player's life count reaches zero.
         /// The change is logged for debugging and validation.
         /// </remarks>
         public void SetDead()
@@ -161,7 +159,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Playe
         /// Decreases the player's life count by one and logs the result.
         /// </summary>
         /// <remarks>
-        /// When all lives are lost, <see cref="SetDead"/> should be called afterward  
+        /// When all lives are lost, <see cref="SetDead"/> should be called afterward
         /// to update the alive status.
         /// </remarks>
         public void LoseLife()

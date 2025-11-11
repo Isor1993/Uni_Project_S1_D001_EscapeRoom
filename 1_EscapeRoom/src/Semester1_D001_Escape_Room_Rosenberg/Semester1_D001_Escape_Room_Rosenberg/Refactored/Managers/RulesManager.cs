@@ -13,7 +13,6 @@
 ******************************************************************************/
 
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies;
-using System;
 
 namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 {
@@ -47,7 +46,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         /// <param name="position">Target (y, x) coordinates to evaluate.</param>
         /// <returns>
         /// <remarks>
-        /// This method relies on <see cref="TileType"/> classification 
+        /// This method relies on <see cref="TileType"/> classification
         /// (Door, Player, Npc, Key, Empty) to decide spawn validity.
         /// </remarks>
         /// <c>true</c> if the area is clear for spawning; otherwise <c>false</c>.
@@ -99,10 +98,8 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         {
             if (_deps.GameBoard.GameBoardArray == null)
             {
-
                 _deps.Diagnostic.AddError($"{nameof(RulesManager)}.{nameof(IsMoveAllowed)}: GameboardArray is null");
                 return false;
-
             }
             TileType typ = _deps.GameBoard.GameBoardArray[targetPosition.y, targetPosition.x];
 

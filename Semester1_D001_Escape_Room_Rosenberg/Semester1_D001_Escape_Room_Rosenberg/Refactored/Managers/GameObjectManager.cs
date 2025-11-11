@@ -5,7 +5,7 @@
 * Author  : Eric Rosenberg
 *
 * Description :
-* Manages registration, lookup, and movement of all interactive objects 
+* Manages registration, lookup, and movement of all interactive objects
 * (Player, Door, NPCs, Keys, and Walls) on the game board.
 * Synchronizes tile data in the GameBoardManager and provides diagnostic logging.
 *
@@ -19,27 +19,25 @@ using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Key;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Player;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Wall;
-using System;
-using System.Collections.Generic;
-
 
 namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 {
     /// <summary>
     /// Handles all interactive objects placed on the game board.
-    /// Registers, removes, queries, and moves entities while synchronizing 
+    /// Registers, removes, queries, and moves entities while synchronizing
     /// their representation in the <see cref="GameBoardManager"/>.
     /// </summary>
     internal class GameObjectManager
     {
         // === Dependencies ===
-        private  GameObjectManagerDependencies _deps;
+        private GameObjectManagerDependencies _deps;
 
         // === Fields ===
         private readonly Dictionary<(int y, int x), object> _objectOnBoard = new();
 
         // === Cached single instances ===
         private PlayerInstance? _playerInstance;
+
         private DoorInstance? _doorInstance;
 
         /// <summary>
@@ -94,12 +92,12 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
                     _doorInstance = door;
                     break;
 
-                case NpcInstance :
-                    type = TileType.Npc;                    
+                case NpcInstance:
+                    type = TileType.Npc;
                     break;
 
-                case KeyFragmentInstance :
-                    type = TileType.Key;                   
+                case KeyFragmentInstance:
+                    type = TileType.Key;
                     break;
 
                 case WallInstance wall:
@@ -155,7 +153,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         {
             if (_objectOnBoard.Remove(position))
             {
-                _deps.GameBoard.SetTileToEmpty(position);                
+                _deps.GameBoard.SetTileToEmpty(position);
                 _deps.Diagnostic.AddCheck($"{nameof(GameObjectManager)}.{nameof(RemoveObject)}: Removed object at {position}.");
             }
             else
@@ -169,7 +167,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         /// </summary>
         /// <param name="position">The grid coordinates (y, x).</param>
         /// <param name="boardObject">Outputs the found object, if any.</param>
-        /// <returns><c>true</c> if an object exists at the given position; otherwise false.</returns>        
+        /// <returns><c>true</c> if an object exists at the given position; otherwise false.</returns>
         public bool TryGetObject((int y, int x) position, out object? boardObject)
         {
             bool success = _objectOnBoard.TryGetValue(position, out boardObject);
@@ -194,7 +192,6 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         /// <returns>The object if found and matching the type; otherwise null.</returns>
         public T? GetObject<T>((int y, int x) position) where T : class
         {
-
             if (_objectOnBoard.TryGetValue(position, out object? boardObject) && boardObject is T instance)
             {
                 return instance;
@@ -228,12 +225,11 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 
             if (_objectOnBoard.ContainsKey(newPosition))
             {
-                
                 _deps.Diagnostic.AddWarning($"{nameof(GameObjectManager)}.{nameof(MovePlayer)}: Target position {newPosition} already occupied.");
                 return false;
             }
 
-            RemoveObject(oldPosition);            
+            RemoveObject(oldPosition);
 
             RegisterObject(newPosition, boardObject);
 
@@ -245,9 +241,9 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         /// </summary>
         /// <param name="playerPosition">Outputs the found player position.</param>
         /// <returns>The found <see cref="PlayerInstance"/> or null if not found.</returns>
-        private PlayerInstance? GetPlayerInstance(out (int y,int x)playerPosition)
+        private PlayerInstance? GetPlayerInstance(out (int y, int x) playerPosition)
         {
-            foreach(KeyValuePair<(int y,int x),object>entry in _objectOnBoard)
+            foreach (KeyValuePair<(int y, int x), object> entry in _objectOnBoard)
             {
                 if (entry.Value is PlayerInstance player)
                 {

@@ -5,7 +5,7 @@
 * Author  : Eric Rosenberg
 *
 * Description :
-* Represents a door object within the game board.  
+* Represents a door object within the game board.
 * Manages its open/closed state, symbol assignment, and position through
 * dependency injection, ensuring visual and logical consistency.
 *
@@ -20,9 +20,6 @@
 
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers;
-using System;
-using System.Collections.Generic;
-
 
 namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Door
 {
@@ -30,8 +27,8 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Door
     /// Represents a door object within the game board.
     /// </summary>
     /// <remarks>
-    /// The <see cref="DoorInstance"/> manages its open or closed state, symbol assignment, and board position.  
-    /// It determines its visual representation dynamically based on board edges (horizontal or vertical orientation)  
+    /// The <see cref="DoorInstance"/> manages its open or closed state, symbol assignment, and board position.
+    /// It determines its visual representation dynamically based on board edges (horizontal or vertical orientation)
     /// and interacts with <see cref="DoorInstanceDependencies"/> for symbol configuration and diagnostic logging.
     /// </remarks>
     internal class DoorInstance
@@ -41,6 +38,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Door
 
         // === Fields ===
         private char _symbol;
+
         private (int y, int x) _position;
         private bool _isOpen;
         private TileType _type;
@@ -49,7 +47,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Door
         /// Initializes a new instance of the <see cref="DoorInstance"/> class.
         /// </summary>
         /// <param name="doorInstanceDependencies">
-        /// Provides access to the symbol configuration (<see cref="SymbolsManager"/>) 
+        /// Provides access to the symbol configuration (<see cref="SymbolsManager"/>)
         /// and diagnostics system (<see cref="DiagnosticsManager"/>).
         /// </param>
         /// <remarks>
@@ -97,7 +95,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Door
         /// Closes the door and updates its visual representation accordingly.
         /// </summary>
         /// <remarks>
-        /// After closing, the door symbol is reassigned based on its orientation  
+        /// After closing, the door symbol is reassigned based on its orientation
         /// (horizontal or vertical) and logged through diagnostics.
         /// </remarks>
         public void CloseDoor()
@@ -105,14 +103,13 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Door
             _isOpen = false;
             AssignDoorSymbol();
             _deps.Diagnostic.AddCheck($"{nameof(DoorInstance)}.{nameof(CloseDoor)}:  Door closed successfully.");
-
         }
 
         /// <summary>
         /// Opens the door and updates its visual representation accordingly.
         /// </summary>
         /// <remarks>
-        /// The symbol is dynamically selected from the <see cref="SymbolsManager"/>  
+        /// The symbol is dynamically selected from the <see cref="SymbolsManager"/>
         /// depending on whether the door is placed on a vertical or horizontal wall edge.
         /// </remarks>
         public void OpenDoor()
@@ -126,9 +123,9 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Door
         /// Assigns the correct symbol to the door based on its state and position.
         /// </summary>
         /// <remarks>
-        /// - Vertical edge → vertical door symbol  
-        /// - Horizontal edge → horizontal door symbol  
-        /// If the door is not placed on a valid edge, a fallback death symbol is assigned  
+        /// - Vertical edge → vertical door symbol
+        /// - Horizontal edge → horizontal door symbol
+        /// If the door is not placed on a valid edge, a fallback death symbol is assigned
         /// and a warning is logged for debugging.
         /// </remarks>
         public void AssignDoorSymbol()
@@ -164,7 +161,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Door
         /// </summary>
         /// <param name="position">The door’s grid coordinates (Y, X).</param>
         /// <remarks>
-        /// Ensures the door is properly aligned and visually initialized before rendering.  
+        /// Ensures the door is properly aligned and visually initialized before rendering.
         /// Logs successful setup in the diagnostics system.
         /// </remarks>
         public void Initialize((int y, int x) position)

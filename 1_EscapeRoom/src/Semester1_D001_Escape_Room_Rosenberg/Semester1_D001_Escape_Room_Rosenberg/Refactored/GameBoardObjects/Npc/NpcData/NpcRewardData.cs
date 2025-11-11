@@ -5,8 +5,8 @@
 * Author  : Eric Rosenberg
 *
 * Description :
-* Defines the reward configuration associated with a non-player character (NPC).  
-* Stores the number of key fragments and score points the player receives 
+* Defines the reward configuration associated with a non-player character (NPC).
+* Stores the number of key fragments and score points the player receives
 * after a successful interaction or task completion.
 *
 * Responsibilities:
@@ -26,14 +26,15 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc.N
     /// <remarks>
     /// The <see cref="NpcRewardData"/> class contains all reward-related information
     /// for an NPC interaction. It specifies the number of key fragments and
-    /// score points awarded to the player.  
-    /// Used by both <see cref="NpcRawData"/> for data aggregation and 
+    /// score points awarded to the player.
+    /// Used by both <see cref="NpcRawData"/> for data aggregation and
     /// <see cref="GameBoardObjects.Npc.NpcInstance"/> during gameplay.
     /// </remarks>
     internal class NpcRewardData
     {
         // === Fields ===
         private int _keyFragment;
+
         private int _points;
 
         /// <summary>

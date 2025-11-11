@@ -5,7 +5,7 @@
 * Author  : Eric Rosenberg
 *
 * Description :
-* Defines dependency references required by the RulesManager. 
+* Defines dependency references required by the RulesManager.
 * This record ensures clean dependency injection for diagnostics and board data.
 *
 * History :

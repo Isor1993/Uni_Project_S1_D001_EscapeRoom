@@ -19,11 +19,7 @@
 * 09.11.2025 ER Created / Documentation fully updated
 ******************************************************************************/
 
-
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies;
-using System;
-using System.Collections.Generic;
-
 
 namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 {
@@ -43,6 +39,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 
         // === Fields ===
         private int _keyFragment;
+
         private int _score;
 
         /// <summary>
@@ -56,7 +53,6 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         {
             _deps = inventoryDependencies;
             _deps.Diagnostic.AddCheck($"{nameof(InventoryManager)}: Initialized successfully.");
-
         }
 
         /// <summary>
@@ -79,7 +75,6 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         {
             _keyFragment += amount;
             _deps.Diagnostic.AddCheck($"{nameof(InventoryManager)}.{nameof(AddKeyFragment)}: Added {amount} key fragments. Total now: {_keyFragment}.");
-
         }
 
         /// <summary>

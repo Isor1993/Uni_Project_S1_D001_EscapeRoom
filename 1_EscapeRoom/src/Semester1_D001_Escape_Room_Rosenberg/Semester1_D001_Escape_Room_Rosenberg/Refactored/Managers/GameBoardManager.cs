@@ -12,8 +12,8 @@
 * History :
 * 09.11.2025 ER Created / Refactored for SAE Coding Convention compliance
 ******************************************************************************/
+
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies;
-using System;
 
 namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 {
@@ -36,6 +36,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         Key,
         Player,
     }
+
     /// <summary>
     /// Controls creation, initialization, and manipulation of the Escape Room
     /// game board. Handles board setup, tile placement, and boundary checks.
@@ -47,6 +48,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 
         // === Fields ===
         private int _arraySizeY;
+
         private int _arraySizeX;
         private TileType[,]? _gameBoardArray;
 
@@ -79,7 +81,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         public int ArraySizeY => _arraySizeY;
 
         /// <summary>
-        /// Initializes the entire game board. 
+        /// Initializes the entire game board.
         /// Creates the array, fills wall tiles, and assigns corners.
         /// </summary>
         public void InitializeBoard()
@@ -95,11 +97,10 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         /// </summary>
         public void DecideArraySize()
         {
-
             if (_gameBoardArray != null)
             {
                 _deps.Diagnostic.AddWarning($"{nameof(GameBoardManager)}.{nameof(DecideArraySize)}: GameBoardArray was recreated.");
-            }           
+            }
 
             _arraySizeX = Program.ArraySizeX;
             _arraySizeY = Program.ArraySizeY;
@@ -163,20 +164,18 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         }
 
         /// <summary>
-        /// Fills the board with wall and empty tiles. 
+        /// Fills the board with wall and empty tiles.
         /// Top and bottom edges receive horizontal walls,
         /// left and right edges receive vertical walls,
         /// and all inner tiles are initialized as empty.
         /// </summary>
         private void FillWallTypesToBoard()
         {
-
             if (_gameBoardArray == null)
             {
                 _deps.Diagnostic.AddError($"{nameof(GameBoardManager)}.{nameof(FillWallTypesToBoard)}: Cannot fill walls. Board has not been initialized.");
                 _gameBoardArray = new TileType[_arraySizeY, _arraySizeX];
             }
-
 
             if (_gameBoardArray[0, 0] != TileType.None)
             {
@@ -185,20 +184,16 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 
             for (int y = 0; y < _arraySizeY; y++)
             {
-
                 for (int x = 0; x < _arraySizeX; x++)
                 {
-
                     if (y == 0 || y == _arraySizeY - 1)
                     {
                         _gameBoardArray[y, x] = TileType.WallHorizontal;
                     }
-
                     else if (x == 0 || x == _arraySizeX - 1)
                     {
                         _gameBoardArray[y, x] = TileType.WallVertical;
                     }
-
                     else
                     {
                         _gameBoardArray[y, x] = TileType.Empty;
@@ -224,24 +219,6 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
             _gameBoardArray[0, _arraySizeX - 1] = TileType.WallCornerTopRight;
             _gameBoardArray[_arraySizeY - 1, 0] = TileType.WallCornerBottomLeft;
             _gameBoardArray[_arraySizeY - 1, _arraySizeX - 1] = TileType.WallCornerBottomRight;
-        }
-
-        /// <summary>
-        /// Attempts to retrieve the tile type from a given position.
-        /// Returns true if the operation succeeds.
-        /// </summary>
-        /// <param name="position">Tuple containing (y, x) grid coordinates.</param>
-        /// <param name="tile">Outputs the found tile type.</param>
-        /// <returns><c>true</c> if valid position and tile exist; otherwise false.</returns>
-        private bool TryGetTile((int y, int x) position, out TileType tile)
-        {
-            tile = TileType.None;
-
-            if (_gameBoardArray == null || !IsInBounds(position))
-                return false;
-
-            tile = _gameBoardArray[position.y, position.x];
-            return true;
         }       
 
         /// <summary>

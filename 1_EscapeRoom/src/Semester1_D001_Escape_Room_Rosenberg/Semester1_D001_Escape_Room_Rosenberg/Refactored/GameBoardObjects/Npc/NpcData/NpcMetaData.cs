@@ -6,7 +6,7 @@
 *
 * Description :
 * Defines the metadata of a non-player character (NPC), including its name,
-* position on the board, and associated visual symbol.  
+* position on the board, and associated visual symbol.
 * Serves as the foundational identity component for all NPC instances.
 *
 * Responsibilities:
@@ -22,14 +22,13 @@ using Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers;
 
 namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc.NpcData
 {
-
     /// <summary>
     /// Represents the metadata of a non-player character (NPC).
     /// </summary>
     /// <remarks>
     /// The <see cref="NpcMetaData"/> class contains static identity data for an NPC,
     /// including its name, grid position, and the visual symbol used for rendering
-    /// on the game board.  
+    /// on the game board.
     /// It does not handle any dialogue or reward logic — those are defined separately
     /// in <see cref="NpcDialogData"/> and <see cref="NpcRewardData"/>.
     /// </remarks>
@@ -40,6 +39,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc.N
 
         // === Fields ===
         private string _name;
+
         private char _symbol;
 
         /// <summary>

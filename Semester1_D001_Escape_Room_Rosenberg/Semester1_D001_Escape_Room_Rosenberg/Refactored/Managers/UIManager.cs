@@ -6,7 +6,7 @@
 *
 * Description :
 * Handles all visual console output related to the game HUD (Heads-Up Display).
-* Responsible for drawing and updating the top and bottom UI sections, 
+* Responsible for drawing and updating the top and bottom UI sections,
 * including player stats, NPC messages, symbols, and interaction responses.
 * Integrates data from multiple managers (GameBoard, GameObject, Inventory, etc.)
 * and provides visual feedback through structured console rendering.
@@ -38,13 +38,10 @@
 * History :
 * 09.11.2025 ER Created / Refactored for SAE Coding Convention compliance
 ******************************************************************************/
+
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Door;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Player;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
 
 namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 {
@@ -60,6 +57,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 
         // === Fields ===
         private string _bottomHudLine_1 = string.Empty;
+
         private string _bottomHudLine_2 = string.Empty;
         private string _bottomHudLine_3 = string.Empty;
         private string _bottomHudLine_4 = string.Empty;
@@ -131,8 +129,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 
             List<string> cutTextLines = CutNpcMessageIntoLines(message, innerWidth);
 
-
-            // === BUILD HUD STRUCTURE ===           
+            // === BUILD HUD STRUCTURE ===
             _bottomHudLine_1 = BuildBottomHudLine_1();
             _bottomHudLine_2 = BuildBottomHudLine_2(messangerName, infoBox);
             _bottomHudLine_3 = BuildBottomHudLine_3();
@@ -172,7 +169,6 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
             int innerWidth = _deps.GameBoard.ArraySizeX - SYMBOL_OFFSET * 2;
 
             List<string> cutTextLines = CutNpcMessageIntoLines(message, innerWidth);
-
 
             // === BUILD HUD STRUCTURE ===
 
@@ -251,7 +247,6 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
             PlayerInstance? player = _deps.GameObject?.Player;
             if (player == null)
             {
-
                 _deps.Diagnostic.AddError($"{nameof(UIManager)}.{nameof(UpdateTopHudLine_1_GameInfos)}: Playerinstance is null");
                 return;
             }
@@ -277,14 +272,12 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
             DoorInstance? door = _deps.GameObject?.Door;
             if (door == null)
             {
-
                 _deps.Diagnostic.AddError($"{nameof(UIManager)}.{nameof(UpdateTopHudLine_2_GameInfos_2)}: DoorInstance is null");
                 return;
             }
             PlayerInstance? player = _deps.GameObject?.Player;
             if (player == null)
             {
-
                 _deps.Diagnostic.AddError($"{nameof(UIManager)}.{nameof(UpdateTopHudLine_2_GameInfos_2)}: PlayerInstance is null");
                 return;
             }
@@ -300,7 +293,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         }
 
         /// <summary>
-        /// Builds a centered console HUD line by combining three text zones: 
+        /// Builds a centered console HUD line by combining three text zones:
         /// left, middle, and right. Ensures balanced spacing within the given line width.
         /// </summary>
         /// <param name="leftZone">Text aligned to the left section of the HUD line.</param>
@@ -337,7 +330,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         }
 
         /// <summary>
-        /// Builds the top border line of the bottom HUD frame. 
+        /// Builds the top border line of the bottom HUD frame.
         /// Combines corner, horizontal, and connector symbols for visual separation.
         /// </summary>
         /// <returns>Formatted HUD frame line used as the top boundary of the bottom section.</returns>
@@ -368,7 +361,6 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
             // === RETURN FINAL LINE ===
             return line;
         }
-
 
         /// <summary>
         /// Builds the second HUD line containing NPC name and info box.
@@ -440,7 +432,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         /// <returns>Formatted HUD line dividing the name/info area from the dialogue text area.</returns>
         private string BuildBottomHudLine_3()
         {
-            // === INITIAL SETUP ===            
+            // === INITIAL SETUP ===
             char leftConnectSymbol = _deps.Symbol.WallTRightSymbol;
             char rightConnectSymbol = _deps.Symbol.WallTLeftSymbol;
             char TopSymbol = _deps.Symbol.WallHorizontalSymbol;
@@ -475,7 +467,6 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         /// <returns>Formatted string for display inside the bottom HUD message box.</returns>
         private string BuildBottomHudLine_4(string npcMessagePart)
         {
-
             // === INITIAL SETUP ===
             char SideSymbol = _deps.Symbol.WallVerticalSymbol;
 
@@ -557,6 +548,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
             // === RETURN FINAL LINE ===
             return line;
         }
+
         /// <summary>
         /// Builds a horizontal divider line separating the NPC dialogue section from the answer options.
         /// </summary>
@@ -602,10 +594,9 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
             int lineMaxLength = _deps.GameBoard.ArraySizeX;
             //List<string> answers = new List<string> { answer_1, answer_2, answer_3 };
 
-
             //answers = _deps.Random.GetRandomElements(answers, answers.Count);
 
-            // === INITIALIZE LINE ===            
+            // === INITIALIZE LINE ===
 
             string coreLine = BuildCentredLine("[1] " + answer_1, "[2] " + answer_2, "[3] " + answer_3, lineMaxLength - SYMBOL_OFFSET);
 
@@ -617,12 +608,11 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
                 return fullLine = BuildCentredLine(string.Empty, string.Empty, string.Empty, _deps.GameBoard.ArraySizeX);
             }
 
-
             return fullLine;
         }
 
         /// <summary>
-        /// Builds the bottom boundary line of the HUD frame. 
+        /// Builds the bottom boundary line of the HUD frame.
         /// Closes the visual structure with corner and horizontal symbols.
         /// </summary>
         /// <returns>Formatted line representing the lower edge of the HUD box.</returns>
@@ -662,7 +652,6 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
             // === INITIALIZE STORAGE ===
             // Create a list to store the formatted message lines.
             List<string> lines = new List<string>();
-
 
             // Holds the current line being built.
             string currentLine = string.Empty;

@@ -18,8 +18,6 @@
 * 09.11.2025 ER Created / Documentation fully updated
 ******************************************************************************/
 
-using System.Collections.Generic;
-
 namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc.NpcData
 {
     /// <summary>
@@ -36,6 +34,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc.N
     {
         // === Fields ===
         private readonly string _question;
+
         private string _correctAnswer;
         private readonly List<(string A, string B, string C)> _answerGroups = new();
 
@@ -66,7 +65,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc.N
         /// Gets all available answer groups for the NPC’s question.
         /// </summary>
         /// <remarks>
-        /// Each tuple represents one set of multiple-choice options (A, B, C).  
+        /// Each tuple represents one set of multiple-choice options (A, B, C).
         /// These can be expanded for randomized quiz sequences or adaptive dialogue trees.
         /// </remarks>
         public List<(string A, string B, string C)> AnswerGroups => _answerGroups;

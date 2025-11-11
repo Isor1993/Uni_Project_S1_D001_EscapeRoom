@@ -6,7 +6,7 @@
 *
 * Description :
 * Manages all non-player characters (NPCs) in the game world.
-* Handles the loading, instantiation, and lookup of all NPC entities, 
+* Handles the loading, instantiation, and lookup of all NPC entities,
 * using the <see cref="NpcDataLoader"/> and <see cref="SymbolsManager"/>.
 * Logs every major action (loading, creation, lookup) via the DiagnosticsManager.
 *
@@ -24,8 +24,6 @@ using Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc.NpcData;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers;
-using System;
-using System.Collections.Generic;
 
 namespace Semester1_D001_Escape_Room_Rosenberg.Refactored
 {
@@ -34,10 +32,10 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored
     /// Handles loading from data files, instantiation, and runtime access to NPC entities.
     /// </summary>
     /// <remarks>
-    /// The <see cref="NpcManager"/> interacts with the <see cref="NpcDataLoader"/> 
-    /// to read external configuration files, creates fully initialized 
-    /// <see cref="NpcInstance"/> objects, and provides lookup utilities 
-    /// for gameplay interactions.  
+    /// The <see cref="NpcManager"/> interacts with the <see cref="NpcDataLoader"/>
+    /// to read external configuration files, creates fully initialized
+    /// <see cref="NpcInstance"/> objects, and provides lookup utilities
+    /// for gameplay interactions.
     /// All operations are logged for transparency and debugging.
     /// </remarks>
     internal class NpcManager
@@ -52,8 +50,8 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored
         /// Initializes a new instance of the <see cref="NpcManager"/> class.
         /// </summary>
         /// <param name="npcManagerDependencies">
-        /// Provides references to the <see cref="NpcDataLoader"/>, 
-        /// <see cref="DiagnosticsManager"/>, and <see cref="SymbolsManager"/> 
+        /// Provides references to the <see cref="NpcDataLoader"/>,
+        /// <see cref="DiagnosticsManager"/>, and <see cref="SymbolsManager"/>
         /// required for NPC initialization and logging.
         /// </param>
         public NpcManager(NpcManagerDependencies npcManagerDependencies)
@@ -102,7 +100,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored
         /// </summary>
         /// <param name="position">The target (Y, X) coordinates on the game board.</param>
         /// <returns>
-        /// The <see cref="NpcInstance"/> found at the specified position, 
+        /// The <see cref="NpcInstance"/> found at the specified position,
         /// or <c>null</c> if no NPC exists at that location.
         /// </returns>
         /// <remarks>

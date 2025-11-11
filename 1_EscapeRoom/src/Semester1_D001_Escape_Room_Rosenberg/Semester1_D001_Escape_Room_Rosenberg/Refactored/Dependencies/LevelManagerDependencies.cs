@@ -19,7 +19,6 @@
 * 09.11.2025 ER Created / Documentation fully updated
 ******************************************************************************/
 
-
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers;
 
 namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies

@@ -7,7 +7,7 @@
 * Description :
 * Defines dependency references required by the GameBoardManager.
 * Provides access to the DiagnosticsManager for centralized logging.
-* 
+*
 * History :
 * 09.11.2025 ER Created / Refactored for SAE Coding Convention compliance
 ******************************************************************************/
@@ -22,9 +22,9 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies
     /// </summary>
     /// <param name="Diagnostics">
     /// Reference to the <see cref="DiagnosticsManager"/> responsible for error and event logging.
-    /// </param>    
+    /// </param>
     internal sealed record GameBoardManagerDependencies
-    (        
-        DiagnosticsManager Diagnostic             
-    );    
+    (
+        DiagnosticsManager Diagnostic
+    );
 }

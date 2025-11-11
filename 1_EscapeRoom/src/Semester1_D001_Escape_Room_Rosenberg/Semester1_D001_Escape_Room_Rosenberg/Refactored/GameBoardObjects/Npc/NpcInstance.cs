@@ -29,21 +29,23 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc
     /// Represents an instantiated non-player character (NPC) within the game world.
     /// </summary>
     /// <remarks>
-    /// The <see cref="NpcInstance"/> aggregates all key data about an NPC — 
-    /// including metadata, dialogue, and rewards — and controls its runtime state 
-    /// such as activation and interaction flags.  
+    /// The <see cref="NpcInstance"/> aggregates all key data about an NPC —
+    /// including metadata, dialogue, and rewards — and controls its runtime state
+    /// such as activation and interaction flags.
     /// Diagnostic logging is integrated for full traceability of NPC behavior.
     /// </remarks>
     internal class NpcInstance
     {
         // === Dependencies ===
         private readonly NpcInstanceDependencies _deps;
+
         private readonly NpcMetaData _meta;
         private readonly NpcDialogData _dialog;
         private readonly NpcRewardData _reward;
 
         // === Fields ===
         private bool _isActive;
+
         private bool _hasInteracted;
         private TileType _typ;
 
@@ -64,7 +66,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc
         /// </param>
         /// <remarks>
         /// Upon creation, the NPC is set as inactive and un-interacted,
-        /// with its tile type defined as <see cref="TileType.Npc"/>.  
+        /// with its tile type defined as <see cref="TileType.Npc"/>.
         /// A diagnostic entry confirms successful instantiation.
         /// <remarks>
         public NpcInstance(NpcInstanceDependencies npcInstanceDependencies, NpcMetaData npcMetaData, NpcDialogData npcDialogData, NpcRewardData npcRewardData)
@@ -89,10 +91,12 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc
         /// Gets the metadata information for this NPC.
         /// </summary>
         public NpcMetaData Meta => _meta;
+
         /// <summary>
         /// Gets the dialog data associated with this NPC.
         /// </summary>
         public NpcDialogData Dialog => _dialog;
+
         /// <summary>
         /// Gets the reward data associated with this NPC.
         /// </summary>
@@ -102,6 +106,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc
         /// Indicates whether the NPC is currently active in the game.
         /// </summary>
         public bool IsActive => _isActive;
+
         /// <summary>
         /// Indicates whether the NPC has already been interacted with by the player.
         /// </summary>
@@ -155,6 +160,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc
             _hasInteracted = false;
             _deps.Diagnostic.AddCheck($"{nameof(NpcInstance)}.{nameof(MarkAsNotInteracted)}: NPC {_meta.Name} marked as not interacted.");
         }
+
         /// <summary>
         /// Updates the NPC’s position on the game board.
         /// </summary>
@@ -172,8 +178,8 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc
         ///Resets the NPC’s state to its default configuration.
         /// </summary>
         /// <remarks>
-        /// Sets both <see cref="_isActive"/> and <see cref="_hasInteracted"/> to <c>false</c>, 
-        /// restoring the NPC to its original inactive state.  
+        /// Sets both <see cref="_isActive"/> and <see cref="_hasInteracted"/> to <c>false</c>,
+        /// restoring the NPC to its original inactive state.
         /// Typically called when restarting or regenerating a level.
         /// </remarks>
         public void ResetState()

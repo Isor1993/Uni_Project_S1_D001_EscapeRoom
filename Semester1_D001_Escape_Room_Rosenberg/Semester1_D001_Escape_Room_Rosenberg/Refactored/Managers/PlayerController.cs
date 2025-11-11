@@ -24,7 +24,6 @@
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Key;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Player;
-using System;
 
 namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 {
@@ -41,7 +40,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         // === Player Instance ===
         private PlayerInstance? _player;
 
-        // === Movement Tracking ===      
+        // === Movement Tracking ===
         private PlayerActions _lastMoveDirection;
 
         /// <summary>
@@ -72,7 +71,6 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
             _player = _deps.GameObject.Player;
             if (_player == null)
             {
-
                 _deps.Diagnostic.AddError($"{nameof(PlayerController)}: PlayerInstance is null");
                 return;
             }
@@ -81,18 +79,13 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         /// <summary>
         /// Gets the current player position on the board.
         /// </summary>
-        public (int y, int x) PlayerPosition => _player!.Position;
-
-        /// <summary>
-        /// Gets the active player instance reference.
-        /// </summary>
-        public PlayerInstance? GetPlayer => _player;
+        public (int y, int x) PlayerPosition => _player!.Position;       
 
         /// <summary>
         /// Handles player movement, interaction, and command logic based on key input.
         /// </summary>
         /// <param name="key">
-        /// The <see cref="ConsoleKey"/> input pressed by the player.  
+        /// The <see cref="ConsoleKey"/> input pressed by the player.
         /// Supported keys: WASD / Arrow keys (movement), E/Enter (interact), Escape (quit).
         /// </param>
         public void MovePlayer(ConsoleKey key)
@@ -106,7 +99,6 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
             {
                 _deps.Diagnostic.AddError($"{nameof(PlayerController)}.{nameof(MovePlayer)}: GameBoardArray reference missing!");
                 return;
-
             }
 
             PlayerActions moveDirection = GetMoveDirection(key);
@@ -118,14 +110,17 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
                     newPosition.y--;
                     _lastMoveDirection = PlayerActions.Up;
                     break;
+
                 case PlayerActions.Down:
                     newPosition.y++;
                     _lastMoveDirection = PlayerActions.Down;
                     break;
+
                 case PlayerActions.Left:
                     newPosition.x--;
                     _lastMoveDirection = PlayerActions.Left;
                     break;
+
                 case PlayerActions.Right:
                     newPosition.x++;
                     _lastMoveDirection = PlayerActions.Right;
@@ -179,7 +174,6 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
             _lastMoveDirection = PlayerActions.None;
 
             _deps.Diagnostic.AddCheck($"{nameof(PlayerController)}.{nameof(SetStartPosition)}: Connected player position from PlayerInstance.");
-
         }
 
         /// <summary>
@@ -187,7 +181,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         /// </summary>
         /// <param name="key">The input key from the console.</param>
         /// <returns>
-        /// A matching <see cref="PlayerActions"/> enum value.  
+        /// A matching <see cref="PlayerActions"/> enum value.
         /// Returns <see cref="PlayerActions.None"/> if no valid mapping exists.
         /// </returns>
         private PlayerActions GetMoveDirection(ConsoleKey key)
@@ -202,6 +196,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
                 case ConsoleKey.S:
                 case ConsoleKey.DownArrow:
                     return PlayerActions.Down;
+
                 case ConsoleKey.A:
                 case ConsoleKey.LeftArrow:
                     return PlayerActions.Left;
@@ -209,15 +204,18 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
                 case ConsoleKey.D:
                 case ConsoleKey.RightArrow:
                     return PlayerActions.Right;
+
                 case ConsoleKey.E:
                 case ConsoleKey.Enter:
                     return PlayerActions.Interact;
+
                 case ConsoleKey.Escape:
                     return PlayerActions.Quit;
+
                 default:
                     return PlayerActions.None;
             }
-        }      
+        }
 
         /// <summary>
         /// Triggers an interaction in the direction of the player's last movement.

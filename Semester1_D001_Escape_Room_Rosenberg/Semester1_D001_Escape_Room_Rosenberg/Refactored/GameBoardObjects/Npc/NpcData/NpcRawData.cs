@@ -5,9 +5,9 @@
 * Author  : Eric Rosenberg
 *
 * Description :
-* Defines a unified data record that aggregates all information about a 
-* non-player character (NPC) — including metadata, dialogue configuration, 
-* and reward definition.  
+* Defines a unified data record that aggregates all information about a
+* non-player character (NPC) — including metadata, dialogue configuration,
+* and reward definition.
 * Serves as a single, immutable data package for NPC initialization.
 *
 * Responsibilities:
@@ -25,7 +25,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc.N
     /// Represents a complete data container for a non-player character (NPC).
     /// </summary>
     /// <remarks>
-    /// The <see cref="NpcRawData"/> record combines three essential NPC components:  
+    /// The <see cref="NpcRawData"/> record combines three essential NPC components:
     /// <list type="bullet">
     /// <item><see cref="NpcMetaData"/> — defines the NPC’s name, position, and symbol</item>
     /// <item><see cref="NpcDialogData"/> — stores question and answer configuration</item>

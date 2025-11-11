@@ -25,7 +25,6 @@ using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Key;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Player;
 
-
 namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 {
     /// <summary>
@@ -46,11 +45,13 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 
         // === Handle Key ===
         private string _keyMessage = " You collected a Key Fragment";
+
         private string _keyInfobox = "Key Fragment ";
         private string _system = "System";
 
         // === Handle Door ===
         private string _doorNotOpenMessage = "You need more Key Fragments";
+
         private string _doorNotOpenInfobox = "Required Key Fragments ";
         private string _doorOpenMessage = " Door is open now. You won the Level";
         private string _doorOpenInfobox = "Door is open";
@@ -79,13 +80,11 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
             {
                 _deps.Diagnostic.AddError($"{nameof(InteractionManager)}.{nameof(InteractionHandler)}: GameBoardArray reference missing!");
                 return;
-
             }
             else if (_deps.GameBoard.GameBoardArray == null)
             {
                 _deps.Diagnostic.AddError($"{nameof(InteractionManager)}.{nameof(InteractionHandler)}: GameBoard reference missing!");
                 return;
-
             }
 
             TileType tile = _deps.GameBoard.GameBoardArray[targetPosition.y, targetPosition.x];
@@ -133,21 +132,22 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
                     case '1':
                         chosen = answer_1;
                         break;
+
                     case '2':
                         chosen = answer_2;
                         break;
+
                     case '3':
                         chosen = answer_3;
                         break;
+
                     default:
                         continue;
-
                 }
                 break;
             }
             bool correct = chosen == correctAnswer;
             return correct;
-
         }
 
         /// <summary>
@@ -204,7 +204,6 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 
                 bool correct = PlayerChooseAnswer(answers[0], answers[1], answers[2], npc.Dialog.CorrectAnswer);
 
-
                 if (correct)
                 {
                     _deps.Inventory.AddScorePoints(npc.Reward.Points);
@@ -241,7 +240,6 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
                 _deps.UI.PrintBottomHud();
             }
             npc.Deactivate();
-
         }
 
         /// <summary>
@@ -267,7 +265,6 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
             if (_deps.UI == null || _deps.Symbol == null)
             {
                 _deps.Diagnostic.AddWarning($"{nameof(InteractionManager)}.{nameof(HandleKey)}: UI or SymbolsManager missing.");
-
             }
 
             // === RETRIEVE KEY OBJECT FROM POSITION ===
@@ -355,12 +352,9 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
             Console.Beep(880, 150);
             Console.Beep(1174, 400);
 
-
             _deps.Level.NewLevel(_deps.Inventory.Score);
             // TODO: Replace with non-blocking delay system in future engine version
             Thread.Sleep(2000);
-
         }
-
     }
 }

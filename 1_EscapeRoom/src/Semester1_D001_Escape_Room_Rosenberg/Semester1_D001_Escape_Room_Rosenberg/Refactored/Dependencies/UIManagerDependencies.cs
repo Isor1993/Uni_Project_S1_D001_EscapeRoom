@@ -7,7 +7,7 @@
 * Description :
 * Dependency record defining all required manager references for the UIManager.
 * Provides a structured link between visual console output and core gameplay data.
-* 
+*
 * Responsibilities:
 * - Supplies access to GameBoard dimensions for HUD rendering
 * - Enables centralized diagnostic logging
@@ -22,8 +22,6 @@
 ******************************************************************************/
 
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers;
-using System;
-
 
 namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies
 {
@@ -47,8 +45,8 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies
         SymbolsManager Symbol,
         PrintManager Print,
         RandomManager Random,
-        InventoryManager Inventory, 
+        InventoryManager Inventory,
         GameObjectManager GameObject,
-        LevelManager Level        
+        LevelManager Level
     );
 }

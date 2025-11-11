@@ -12,13 +12,14 @@
 * History :
 * 09.11.2025 ER Created / Refactored for SAE Coding Convention compliance
 ******************************************************************************/
+
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers;
 using System;
 
 namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies
 {
     /// <summary>
-    /// Encapsulates all external dependencies required by the 
+    /// Encapsulates all external dependencies required by the
     /// <see cref="GameObjectManager"/>. Enables clean dependency injection for
     /// diagnostics and board interaction.
     /// </summary>

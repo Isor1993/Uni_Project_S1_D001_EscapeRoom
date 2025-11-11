@@ -1,99 +1,120 @@
-# 🧩 Escape Room (Console Edition)
-**Author:** Eric Rosenberg  
-**Module:** D001 – Game Programming Basics (K2 / S2), SAE Institute Stuttgart  
-**Date:** November 2025  
+# 📘 README  
+### SAE Institute Stuttgart  
+**Modul:** D001 – Game Programming Basics (K2 / S2)  
+**Student:** Eric Rosenberg  
+**Projekt:** Escape Room (Console Edition)
 
 ---
 
-## 🎯 Overview
-**Escape Room** is a modular console-based C# (.NET 8.0) game developed as part of the *Game Programming Basics* module at the SAE Institute Stuttgart.  
-The project focuses on **clean architecture**, **SRP (Single Responsibility Principle)**, **dependency injection**, and **structured diagnostics logging**.
+## 1. Basis-Modul
+Dies ist die Abgabe von **Eric Rosenberg** für das Modul  
+**D001 – Game Programming Basics (K2 / S2)** am SAE Institute Stuttgart.
 
-The goal was to create a flexible, scalable console game that demonstrates professional object-oriented structure and can easily be extended with new content and systems.
-
----
-
-## 🧠 Core Features
-
-- **Dynamic TileType-Based Game Board**  
-  Managed by the `GameBoardManager`, which handles the entire board as a 2D array.  
-  Each cell represents a distinct `TileType` (Empty, Wall, Player, NPC, Key, Door, etc.).
-
-- **NPC Quiz System (Dialog, Rewards, Scoring)**  
-  NPC data is loaded from an external `.txt` file (`npc_questions.txt`) containing question sets, possible answers, and rewards.  
-  This allows easy content expansion without changing the code.
-
-- **Key and Door Mechanics**  
-  Players collect key fragments to open doors and advance to higher levels.  
-  The `LevelManager` scales difficulty, board size, and spawn logic automatically.
-
-- **HUD Rendering System**  
-  Managed by the `UIManager`, which builds and displays upper and lower console HUD sections.  
-  Data is dynamically provided by the `InteractionManager`.
-
-- **Diagnostics Logging**  
-  The `DiagnosticsManager` records all events (Errors, Warnings, Checks) with timestamps.  
-  Logs can be displayed during runtime (press `I`).
-
-- **Level Progression & Difficulty Scaling**  
-  Each level increases the number of required keys, board complexity, and NPC count.
-
-- **Dependency Injection Architecture**  
-  Every major system has its own `Dependencies` record for modular setup.  
-  No circular references – all managers have isolated, well-defined responsibilities.
+Das Projekt trägt den Titel **„Escape Room“** und wurde in **C# (.NET 8.0)** als **Konsolenanwendung** entwickelt.  
+Ziel war die Entwicklung eines modular aufgebauten Game-Systems, das auf Prinzipien wie **SRP (Single Responsibility Principle)**, **Dependency Injection** und **strukturiertes Logging** basiert.
 
 ---
 
-## 🏗️ Manager Overview (SRP / OOP)
-
-| Manager | Responsibility |
-|----------|----------------|
-| **GameBoardManager** | Creates and manages the game board (2D array of `TileType`). |
-| **GameObjectManager** | Registers, moves, and removes objects on the board. |
-| **SpawnManager** | Handles spawning of NPCs, keys, doors, and the player. |
-| **RulesManager** | Defines and enforces game rules and movement restrictions. |
-| **InteractionManager** | Processes all interactions (NPCs, doors, keys). |
-| **InventoryManager** | Stores collected keys and player score. |
-| **LevelManager** | Controls level transitions, difficulty scaling, and key requirements. |
-| **NpcManager** | Loads and manages NPCs, connected to the `NpcDataLoader` and `.txt` database. |
-| **PlayerController** | Handles input, player movement, and interaction direction. |
-| **PrintManager** | Handles board and HUD rendering. |
-| **ScreenManager** | Displays start, tutorial, win, and game-over screens. |
-| **RandomManager** | Provides seeded randomization and math logic. |
-| **SymbolsManager** | Central repository for all game symbols (used by UI and board). |
-| **UIManager** | Builds and prints the HUD sections. |
-| **DiagnosticsManager** | Manages debug logging with timestamps. |
-| **Program.cs** | Entry point and main game loop with a state machine. |
+## 2. Abgabe nicht vorhanden
+*(nicht zutreffend – alle geforderten Projektbestandteile vorhanden)*
 
 ---
 
-## ⚙️ Technical Details
-
-- **Language / Framework:** C# (.NET 8.0 Console Application)  
-- **IDE:** Visual Studio 2022  
-- **Target Platform:** Windows Console  
-- **Architecture:** Modular / Dependency Injection / SRP  
-- **Documentation:** Full XML comments for every method  
-- **Design Goal:** Clear separation of logic layers, easy scalability, and maintainability  
-- **No Hardcoding:** Systems are data-driven and easily extendable through enums and records  
+## 3. Mehrere Abgaben in einem Ordner
+*(nicht zutreffend – eigenständiges Einzelprojekt)*
 
 ---
 
-## 📁 Project Structure
+## 4. Gruppenarbeit
+*(nicht zutreffend – Einzelarbeit von Eric Rosenberg)*
+
+---
+
+## 5. Feature-Beschreibung  
+### 🧩 Hauptfunktionen & Systemübersicht
+
+Das Projekt **„Escape Room“** ist ein vollständig modular aufgebautes Konsolen-Spiel, bestehend aus mehreren spezialisierten Managern, klaren Datenstrukturen und sauber gekapselten Verantwortlichkeiten.
+
+### 🎮 Kernsysteme
+
+- **Dynamisches Board mit TileType-System**  
+  → Steuerung über `GameBoardManager`, der das gesamte Spielfeld als 2D-Array verwaltet.  
+  Jedes Feld besitzt einen eigenen `TileType` (Empty, Wall, Player, NPC, Key, Door usw.).
+
+- **NPC-Quiz mit Dialogsystem (Fragenbank, Rewards, Score)**  
+  → NPC-Daten werden aus einer `.txt`-Datei geladen und bestehen aus Name, Frage, Antworten, Rewards (Score & KeyFragments).  
+  → Das System erlaubt die **einfache Erweiterung der Quiz-Datei**, ohne Codeänderung.
+
+- **Key-/Door-Mechanik mit Level-Progression**  
+  → Spieler sammelt Key-Fragmente, um Türen zu öffnen und das nächste Level freizuschalten.  
+  → Nach Türöffnung: Levelmanager erhöht Schwierigkeitsgrad, Boardgröße und Spawnanzahl.
+
+- **HUD-System (Top & Bottom HUD, Console Rendering)**  
+  → Realisiert durch `UIManager`, der dynamisch obere und untere HUD-Zonen rendert.  
+  → Befüllung durch `InteractionManager` (z. B. NPC-Dialoge, Systemnachrichten).
+
+- **Diagnostics-Log mit Zeitstempeln**  
+  → `DiagnosticsManager` speichert alle Logs (Errors, Warnings, Checks) mit Zeitstempeln.  
+  → Ausgabe auf Knopfdruck (`I`) zur Laufzeit.
+
+- **Level-Scaling + Difficulty-Progression**  
+  → Jedes Level erfordert mehr Schlüssel, größere Maps und mehr NPCs.  
+  → Dynamische Anpassung über `LevelManager` (Programmatisch durch `Program.cs`-Parameter).
+
+- **Modularer Dependency-Injection-Aufbau**  
+  → Jede Komponente besitzt eine eigene `Dependencies`-Record-Struktur.  
+  → Keine zirkulären Abhängigkeiten, klare Zuständigkeiten.
+
+---
+
+### 🧠 Manager-Architektur (SRP / OOP)
+
+- **GameBoardManager** – Erstellt und verwaltet das Spielfeld-Array mit TileTypes.  
+- **GameObjectManager** – Registriert, bewegt und löscht alle Objekte auf dem Board.  
+- **SpawnManager** – Steuert Spawn-Positionen für NPCs, Keys, Player und Doors.  
+- **RulesManager** – Definiert alle Regeln für Bewegung und Spawns.  
+- **InteractionManager** – Handhabt alle Interaktionen (NPC, Door, Key).  
+- **InventoryManager** – Speichert Key-Fragmente und Score.  
+- **LevelManager** – Verwaltet Levelwechsel, Difficulty und Key-Anforderungen.  
+- **NpcManager** – Lädt NPCs aus `.txt` und erstellt Instanzen mit eigenem Leben & Daten.  
+- **PlayerController** – Liest Input, steuert Bewegung und Interaktionen.  
+- **PrintManager** – Kümmert sich um das visuelle Rendering (Board, HUD, Symbole).  
+- **ScreenManager** – Verwaltet Start-, Tutorial-, Win- und GameOver-Screens.  
+- **RandomManager** – Generiert deterministische Zufallsentscheidungen mit Seed.  
+- **SymbolsManager** – Hält alle im Spiel verwendeten Symbole (z. B. Player, Door, Key).  
+- **UIManager** – Baut und rendert das HUD (oben/unten).  
+- **DiagnosticsManager** – Loggt Systemmeldungen mit Zeitstempel und Typ.  
+- **Program.cs** – Zentrale Steuerung, Initialisierung und GameLoop mit State-Machine.
+
+---
+
+### ⚙️ Technische Eckdaten
+
+- **Sprache / Framework:** C# (.NET 8.0 Console Application)  
+- **Entwicklungsumgebung:** Visual Studio 2022  
+- **Zielplattform:** Windows Console  
+- **Architektur:** Modular / Dependency Injection / SRP  
+- **Kommentierung:** Vollständige XML-Dokumentation jeder Methode  
+- **Erweiterbarkeit:** Keine Hardcodings – neue Features können über Dependencies und Enums ergänzt werden.  
+- **Designprinzip:** Einfache Erweiterbarkeit und vollständige Trennung der Logikschichten.
+
+---
+
+### 📂 Ordnerstruktur (nach SAE-Vorgabe)
 
 ```
 EscapeRoom_Project/
 │
-├── src/              # Full source code
+├── src/              # Vollständiger Sourcecode
 │   ├── Program.cs
 │   ├── Managers/
 │   ├── Dependencies/
 │   ├── GameBoardObjects/
 │   └── npc_questions.txt
 │
-├── release/          # Compiled executable (.exe + .dll + .json)
+├── release/          # Kompilierte Build-Dateien (.exe)
 │
-└── other/            # Screenshots, documentation, and gameplay video
+└── other/            # Screenshots, Videos, zusätzliche Infos
     ├── Screenshot_01.png
     ├── Screenshot_02.png
     ├── Screenshot_03.png
@@ -102,26 +123,23 @@ EscapeRoom_Project/
 
 ---
 
-## 🎮 How to Run
+### 🧾 Abgabebeschreibung (nach SAE-Vorgabe)
 
-1. Navigate to the `/release/` folder.  
-2. Ensure `npc_questions.txt` is placed next to the `.exe`.  
-3. Run `Escape_Room.exe` (or `Semester1_D001_Escape_Room_Rosenberg.exe`).  
-4. Use keyboard input to move and interact with NPCs, doors, and keys.
-
----
-
-## 🧾 Project Summary
-
-**Escape Room (Console Edition)** demonstrates a fully modular, SRP-based architecture for a console game.  
-Every system is separated into individual managers, supported by dependency injection, and documented with XML comments.
-
-This project can serve as a foundation for larger frameworks or engine prototypes, featuring:
-- Clean OOP structure  
-- Modular expandability  
-- Fully data-driven logic  
+- **Art der Abgabe:** Einzelarbeit  
+- **Medien:** Mindestens 1 Gameplay-Video (30–90 Sek.) + 3(+) Screenshots (≥ 1024×768) => Kleiner da es ein Konsolen Projekt ist.
+- **Dateiname:** `README.md` (nicht verändert, Pflichtname laut SAE-Vorgabe)  
+- **Inhalt:** Strukturierte Übersicht über Module, Features und Besonderheiten  
 
 ---
 
-**© 2025 Eric Rosenberg – SAE Institute Stuttgart**  
-*“Built from scratch with structure, logic, and a little obsession for clean code.”*
+### 🧠 Zusammenfassung
+
+Das Projekt **Escape Room** zeigt ein **vollständig eigenständig programmiertes Spielsystem**, das auf **sauberer Codearchitektur, Modularität, Datenkapselung und systematischem Logging** basiert.  
+Alle Systeme wurden SRP-konform entworfen, mit klaren Schnittstellen und XML-Dokumentation.  
+
+Das Spiel ist **leicht erweiterbar** (neue NPCs, neue Tiles, neue Regeln) und kann als **Grundlage für komplexere Game-Frameworks** verwendet werden.
+
+---
+
+**Stuttgart, 09. November 2025**  
+_© 2025 Eric Rosenberg – SAE Institute Stuttgart_

@@ -26,8 +26,6 @@ using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Player;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Wall;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers;
-using System;
-using System.Collections.Generic;
 
 namespace Semester1_D001_Escape_Room_Rosenberg
 {
@@ -40,7 +38,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         // === Dependencies ===
         private readonly PrintManagerDependencies _deps;
 
-        // === Fields ===               
+        // === Fields ===
         public const int BOARD_TOP_OFFSET = 3;
 
         /// <summary>
@@ -56,21 +54,11 @@ namespace Semester1_D001_Escape_Room_Rosenberg
             _deps.Diagnostic.AddCheck($"{nameof(PrintManager)}: Initialized successfully.");
         }
 
-
-        /// <summary>
-        /// Internal list for storing error messages during runtime.
-        /// </summary>
-        readonly List<string> _listErrorMessages = new List<string>();
-
-        /// <summary>
-        /// Exposes all stored error messages as a read-only property.
-        /// </summary>
-        public List<string> ListErrorMessages => _listErrorMessages;
-
         /// <summary>
         /// Default question texts used when asking the user for array dimensions.
         /// </summary>
         public string arraySizeXQuestion = "How long should the game board be?";
+
         public string arraySizeYQuestion = "How wide should the game board be?";
 
         /// <summary>
@@ -104,6 +92,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg
             Console.WriteLine(message);
         }
 
+        /* For DEBUG
         /// <summary>
         /// Prints all messages contained in the provided list with timestamp prefix.
         /// </summary>
@@ -114,16 +103,8 @@ namespace Semester1_D001_Escape_Room_Rosenberg
             {
                 Console.WriteLine($" Error: {message}");
             }
-        }
-
-        /// <summary>
-        /// Adds a single error message to the internal message list.
-        /// </summary>
-        /// <param name="errorMessage">The error text to store.</param>
-        public void GetErrorMessage(string errorMessage)
-        {
-            _listErrorMessages.Add(errorMessage);
-        }
+        }       
+        */
 
         /// <summary>
         /// Requests a numeric value from the user within the specified range.
@@ -150,7 +131,6 @@ namespace Semester1_D001_Escape_Room_Rosenberg
                     string? input = Console.ReadLine();
                     // Clear console for the next input attempt
                     Console.Clear();
-
 
                     // Try to convert the input to int and check if successful
                     if (int.TryParse(input, out result))
@@ -214,18 +194,23 @@ namespace Semester1_D001_Escape_Room_Rosenberg
                                 case PlayerInstance player:
                                     Console.Write(player.Symbol);
                                     break;
+
                                 case DoorInstance door:
                                     Console.Write(door.Symbol);
                                     break;
+
                                 case NpcInstance npc:
                                     Console.Write(npc.Meta.Symbol);
                                     break;
+
                                 case KeyFragmentInstance key:
                                     Console.Write(key.Symbol);
                                     break;
+
                                 case WallInstance wall:
                                     Console.Write(wall.Symbol);
                                     break;
+
                                 default:
                                     Console.Write(_deps.Symbol.EmptySymbol);
                                     break;
@@ -247,6 +232,37 @@ namespace Semester1_D001_Escape_Room_Rosenberg
             catch (Exception ex)
             {
                 _deps.Diagnostic.AddException($"{nameof(PrintManager)}.{nameof(PrintBoard)}: Unexpected error during rendering — {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Prints the NPC's question result symbol at the specified console position.  
+        /// Displays the symbol in green if the player's answer was correct,  
+        /// or in red if the answer was incorrect.
+        /// </summary>
+        /// <param name="position">
+        /// The 2D console coordinates (y, x) where the NPC symbol should be rendered.
+        /// </param>
+        /// <param name="isRight">
+        /// Determines the color of the symbol:  
+        /// <c>true</c> = green (correct answer),  
+        /// <c>false</c> = red (incorrect answer).
+        /// </param>
+        public void PrintNpc((int y, int x) position, bool isRight)
+        {
+            if (isRight)
+            {
+                Console.SetCursorPosition(position.x, position.y);
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.Write($"{_deps.Symbol.QuestSymbol}");
+                Console.ResetColor();
+            }
+            else
+            {
+                Console.SetCursorPosition(position.x, position.y);
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Write($"{_deps.Symbol.QuestSymbol}");
+                Console.ResetColor();
             }
         }
     }

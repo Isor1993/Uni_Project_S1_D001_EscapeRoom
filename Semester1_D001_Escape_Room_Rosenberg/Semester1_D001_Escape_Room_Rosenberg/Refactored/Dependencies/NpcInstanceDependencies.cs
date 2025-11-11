@@ -19,12 +19,9 @@
 ******************************************************************************/
 
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers;
-using System;
-
 
 namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies
 {
-
     /// <summary>
     /// Defines the dependency links required by the <see cref="NpcInstance"/>.
     /// Provides access to core systems responsible for logging NPC actions

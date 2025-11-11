@@ -24,7 +24,6 @@ using Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies;
 
 namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 {
-
     /// <summary>
     /// Coordinates level progression, transitions, and resets.
     /// The <see cref="LevelManager"/> manages level state, increases difficulty,
@@ -37,6 +36,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 
         // === Fields ===
         private int _currentLevel = 1;
+
         private int _requiredKeys = 5;
         private bool _isNextLvl = false;
 
@@ -111,6 +111,6 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 
             Console.Clear();
             _deps.Diagnostic.AddCheck($"{nameof(LevelManager)}.{nameof(NewLevel)}: Level {_currentLevel} initialized. Required keys now {_requiredKeys}.");
-        }              
+        }
     }
 }

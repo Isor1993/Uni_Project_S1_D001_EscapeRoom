@@ -12,8 +12,6 @@
 * 09.11.2025 ER Created
 ******************************************************************************/
 
-using System;
-
 namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 {
     /// <summary>
@@ -21,18 +19,18 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
     /// </summary>
     internal class SymbolsManager
     {
-
         // Private fields for symbols
+        // Some Symbols are needed for later updates
 
-        private char _wallTDownSymbol = '\u2566'; //                 ' ╦ '  
+        private char _wallTDownSymbol = '\u2566'; //                 ' ╦ '
 
-        private char _wallTUpSymbol = '\u2569'; //                   ' ╩ '  
+        private char _wallTUpSymbol = '\u2569'; //                   ' ╩ '
 
-        private char _wallTRightSymbol = '\u2560'; //                ' ╠ '  
+        private char _wallTRightSymbol = '\u2560'; //                ' ╠ '
 
-        private char _wallTLeftSymbol = '\u2563'; //                 ' ╣ '  
+        private char _wallTLeftSymbol = '\u2563'; //                 ' ╣ '
 
-        private char _wallCrossSymbol = '\u256C'; //                 ' ╬ '  
+        private char _wallCrossSymbol = '\u256C'; //                 ' ╬ '
 
         private char _wallHorizontalSymbol = '\u2550';//             ' ═ '
 
@@ -46,7 +44,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 
         private char _wallCornerBottomRightSymbol = '\u255D';//      ' ╝ '
 
-        private char _playerSymbol = '\u2659';//                     ' ♙ '   
+        private char _playerSymbol = '\u2659';//                     ' ♙ '
 
         private char _trapSymbol = '\u2297';// ;                     ' ⊗ '
 
@@ -56,7 +54,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 
         private char _keyFragmentSymbol = '\u26BF';  //              ' ⚿ '
 
-        private char _questSymbol = '\u003f';//                      ' ? '
+        private char _questSymbol = '\u003f';//                      ' ? ' 
 
         private char _emptySymbol = ' ';//                           '   '
 
@@ -157,7 +155,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         /// <summary>
         /// Quest mark: ?
         /// </summary>
-        public char QuestSymbol { get => _questSymbol; private set => _questSymbol = value; }
+        public char QuestSymbol { get => _questSymbol; private set => _questSymbol = value; }     
 
         /// <summary>
         /// Empty space.
@@ -183,7 +181,6 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         /// Open horizontal door: ▭
         /// </summary>
         public char OpenDoorHorizontalSymbol { get => _openDoorHorizontalSymbol; private set => _openDoorHorizontalSymbol = value; }
-
 
         /// <summary>
         /// Time watch: ⏱

@@ -5,8 +5,8 @@
 * Author  : Eric Rosenberg
 *
 * Description :
-* Handles the initialization and placement of all dynamic game objects 
-* (player, NPCs, keys, and door) within the game board. 
+* Handles the initialization and placement of all dynamic game objects
+* (player, NPCs, keys, and door) within the game board.
 * Manages wall generation, spawn validation, and position allocation logic.
 *
 * Responsibilities:
@@ -26,8 +26,6 @@ using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Key;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Player;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Wall;
-using System;
-using System.Collections.Generic;
 
 namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 {
@@ -47,25 +45,24 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 
         // === Spawn Position Lists ===
         private List<(int y, int x)> _wallPositions = new();
+
         private List<(int y, int x)> _emptyPositions = new();
 
         // === Fields ===
-        const int MAX_ATTEMPTS = 50;
-
+        private const int MAX_ATTEMPTS = 50;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SpawnManager"/> class.
         /// </summary>
         /// <param name="spawnManagerDependencies">Dependency container providing all core systems required for spawning.</param>
         /// <remarks>
-        /// Dependencies include managers for diagnostics, randomization, 
+        /// Dependencies include managers for diagnostics, randomization,
         /// symbol handling, wall/door/player/NPC dependencies, and rule validation.
         /// </remarks>
         public SpawnManager(SpawnManagerDependencies spawnManagerDependencies)
         {
             _deps = spawnManagerDependencies;
             _deps.Diagnostic.AddCheck($"{nameof(SpawnManager)}: Initialized successfully.");
-
         }
 
         /// <summary>
@@ -131,7 +128,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         /// </summary>
         /// <param name="positions">List of candidate positions to evaluate.</param>
         /// <returns>
-        /// Tuple containing success flag and position coordinates.  
+        /// Tuple containing success flag and position coordinates.
         /// Returns <c>(false, (0,0))</c> if no valid position is found.
         /// </returns>
         /// <remarks>
@@ -140,7 +137,6 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         /// </remarks>
         private (bool success, (int y, int x) position) TryFindFreeSpawnPosition(List<(int y, int x)> positions)
         {
-
             for (int attempt = 1; attempt <= MAX_ATTEMPTS; attempt++)
             {
                 (int y, int x) position = _deps.Random.RandomPositionFromList(positions);
@@ -162,7 +158,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         /// Scans the current game board and records all wall and empty cell positions.
         /// </summary>
         /// <remarks>
-        /// Must be called after <see cref="GameBoardManager.DecideArraySize"/> 
+        /// Must be called after <see cref="GameBoardManager.DecideArraySize"/>
         /// to ensure the board exists. Logs total counts of found tiles.
         /// </remarks>
         private void CollectSpawnPositions()
@@ -220,14 +216,11 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
                 return;
             }
 
-
-
             doorInstance.Initialize(_deps.Random.RandomPositionFromList(_wallPositions));
 
             RegisterAndPlaceObject(doorInstance.Position, doorInstance);
 
             _wallPositions.Remove(doorInstance.Position);
-
 
             _deps.Diagnostic.AddCheck($"{nameof(SpawnManager)}.{nameof(SpawnDoor)}: Placed door at {doorInstance.Position}");
         }
@@ -277,7 +270,6 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
             {
                 return;
             }
-
 
             Program.PlayerInstance.Initialize(result.position);
 
@@ -378,7 +370,6 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
                     // Assign horizontal walls at the top and bottom.
                     if (y == 0 || y == _deps.GameBoard.ArraySizeY - 1)
                     {
-
                         WallInstance wall = new WallInstance(_deps.WallInstanceDeps);
                         wall.Initialize(TileType.WallHorizontal, (y, x));
                         _deps.GameObject.RegisterObject((y, x), wall);
@@ -386,7 +377,6 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
                     // Assign vertical walls on the left and right edges.
                     else if (x == 0 || x == _deps.GameBoard.ArraySizeX - 1)
                     {
-
                         WallInstance wall = new WallInstance(_deps.WallInstanceDeps);
                         wall.Initialize(TileType.WallVertical, (y, x));
                         _deps.GameObject.RegisterObject((y, x), wall);
@@ -433,7 +423,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         }
 
         /// <summary>
-        /// Registers a spawned object and updates both the GameObjectManager 
+        /// Registers a spawned object and updates both the GameObjectManager
         /// and diagnostic logs accordingly.
         /// </summary>
         /// <param name="position">Position where the object is placed.</param>

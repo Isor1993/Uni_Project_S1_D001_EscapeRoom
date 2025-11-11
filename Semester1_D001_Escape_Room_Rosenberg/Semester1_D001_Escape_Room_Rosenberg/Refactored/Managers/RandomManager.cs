@@ -19,9 +19,6 @@
 * 09.11.2025 ER Created / Documentation fully updated
 ******************************************************************************/
 
-using System;
-using System.Collections.Generic;
-
 namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 {
     /// <summary>
@@ -31,17 +28,18 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
     /// </summary>
     internal class RandomManager
     {
-        // === Dependencies ===        
+        // === Dependencies ===
         private readonly DiagnosticsManager _deps;
+
         private readonly Random _random;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RandomManager"/> class.
         /// </summary>
         /// <param name="Diagnostics">
-        /// Reference to the <see cref="DiagnosticsManager"/> responsible for reporting 
+        /// Reference to the <see cref="DiagnosticsManager"/> responsible for reporting
         /// randomization-related checks, warnings, and initialization status.
-        /// </param>     
+        /// </param>
         public RandomManager(DiagnosticsManager Diagnostics)
         {
             _random = new Random();
@@ -55,7 +53,6 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         /// </summary>
         public Random Random => _random;
 
-
         /// <summary>
         /// Selects a random position from a list of coordinate tuples.
         /// If the provided list is null or empty, a default fallback position is returned.
@@ -68,7 +65,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         /// Returns <c>(0, 5)</c> if the list is null or empty.
         /// </returns>
         /// <remarks>
-        /// This method is primarily used by the <see cref="SpawnManager"/> 
+        /// This method is primarily used by the <see cref="SpawnManager"/>
         /// to determine random spawn locations for dynamic entities.
         /// </remarks>
         public (int y, int x) RandomPositionFromList(List<(int y, int x)> list)
@@ -76,7 +73,6 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
             (int y, int x) defaultPosition = (0, 5);
             if (list == null || list.Count == 0)
             {
-
                 _deps.AddCheck($"{nameof(RandomManager)}.{nameof(RandomPositionFromList)}:The list was null or empty — using default position {defaultPosition}.");
                 return defaultPosition;
             }
@@ -107,7 +103,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
         /// Used primarily by the <see cref="SpawnManager"/> for randomized NPC selection.
         /// </remarks>
         public List<T> GetRandomElements<T>(List<T> list, int amount)
-        { 
+        {
             if (list == null || list.Count == 0)
             {
                 _deps.AddWarning($"{nameof(RandomManager)}.{nameof(GetRandomElements)}: Source list is empty.");

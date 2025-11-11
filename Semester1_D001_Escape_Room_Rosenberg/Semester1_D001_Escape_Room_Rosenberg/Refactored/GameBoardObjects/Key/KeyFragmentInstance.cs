@@ -5,8 +5,8 @@
 * Author  : Eric Rosenberg
 *
 * Description :
-* Represents a collectible key fragment placed on the game board.  
-* Handles its symbol, position, and quantity value while maintaining 
+* Represents a collectible key fragment placed on the game board.
+* Handles its symbol, position, and quantity value while maintaining
 * diagnostic traceability through injected dependencies.
 *
 * Responsibilities:
@@ -27,9 +27,9 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Key
     /// Represents a collectible key fragment placed on the game board.
     /// </summary>
     /// <remarks>
-    /// Each <see cref="KeyFragmentInstance"/> holds its visual symbol, position, and quantity value.  
-    /// It is initialized through dependency injection using <see cref="KeyFragmentInstanceDependencies"/>  
-    /// and logs all operations via the <see cref="DiagnosticsManager"/>.  
+    /// Each <see cref="KeyFragmentInstance"/> holds its visual symbol, position, and quantity value.
+    /// It is initialized through dependency injection using <see cref="KeyFragmentInstanceDependencies"/>
+    /// and logs all operations via the <see cref="DiagnosticsManager"/>.
     /// Key fragments serve as collectible objects that can unlock specific doors when collected.
     /// </remarks>
     internal class KeyFragmentInstance
@@ -53,7 +53,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Key
         /// </param>
         /// <remarks>
         /// When created, the instance automatically assigns its default symbol from the
-        /// <see cref="SymbolsManager"/>, sets its type to <see cref="TileType.Key"/>,  
+        /// <see cref="SymbolsManager"/>, sets its type to <see cref="TileType.Key"/>,
         /// and initializes its quantity to 1.
         /// </remarks>
         public KeyFragmentInstance(KeyFragmentInstanceDependencies keyFragmentInstanceDependencies)
@@ -69,7 +69,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Key
         /// Gets the quantity of key fragments represented by this instance.
         /// </summary>
         /// <remarks>
-        /// Typically set to <c>1</c>, but can be expanded for advanced gameplay mechanics  
+        /// Typically set to <c>1</c>, but can be expanded for advanced gameplay mechanics
         /// where multiple fragments are combined into a single collectible entity.
         /// </remarks>
         public int Amount => _amount;
@@ -121,8 +121,8 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Key
         /// </summary>
         /// <param name="position">The position of the key fragment on the game board as (Y, X) coordinates.</param>
         /// <remarks>
-        /// Typically called by the <see cref="SpawnManager"/> during runtime initialization  
-        /// when placing collectibles on the board.  
+        /// Typically called by the <see cref="SpawnManager"/> during runtime initialization
+        /// when placing collectibles on the board.
         /// Logs successful initialization through diagnostics.
         /// </remarks>
         public void Initialize((int y, int x) position)

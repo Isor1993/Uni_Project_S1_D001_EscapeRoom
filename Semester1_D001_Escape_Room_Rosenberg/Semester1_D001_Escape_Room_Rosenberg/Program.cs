@@ -5,9 +5,9 @@
 * Author  : Eric Rosenberg
 *
 * Description :
-* Entry point of the Escape Room console game.  
-* Manages initialization of all systems, dependency injection, game state control,  
-* and high-level loop flow between start, tutorial, main gameplay, and end screens.  
+* Entry point of the Escape Room console game.
+* Manages initialization of all systems, dependency injection, game state control,
+* and high-level loop flow between start, tutorial, main gameplay, and end screens.
 * Coordinates interactions between all managers, systems, and instances.
 *
 * Responsibilities:
@@ -17,7 +17,7 @@
 * - Handle main game loop and level transitions
 *
 * History :
-* 09.11.2025 ER Created / Documentation fully updated
+* 11.11.2025 ER Created / Documentation fully updated
 ******************************************************************************/
 
 using Semester1_D001_Escape_Room_Rosenberg.Refactored;
@@ -25,25 +25,43 @@ using Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Player;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers;
-using System;
-
 
 namespace Semester1_D001_Escape_Room_Rosenberg
 {
     /// <summary>
-    /// The main entry class controlling initialization, dependency setup,  
+    /// The main entry class controlling initialization, dependency setup,
     /// and the global game loop of the Escape Room project.
     /// </summary>
     internal class Program
     {
         // === Global Player Reference ===
         private static PlayerInstance? _playerInstance;
+        // === CORE SYSTEMS ===
+        private static DiagnosticsManager _diagnostics = null!;
+        private static SymbolsManager _symbols = null!;
+        // === BOARD SYSTEMS ===
+        private static GameBoardManager _gameBoard = null!;
+        private static GameObjectManager _gameObject = null!;
+        private static RulesManager _rules = null!;
+        private static SpawnManager _spawn = null!;
+        // === GAME FLOW SYSTEMS ===
+        private static LevelManager _level = null!;
+        private static InteractionManager _interaction = null!;
+        private static NpcManager _npcManager = null!;
+        private static InventoryManager _inventory = null!;
+        // === VISUALS ===
+        private static PrintManager _print = null!;
+        private static UIManager _ui = null!;
+
 
         // === CURSOR AND HUD COORDINATES ===
         public const int CursorPosX = 0;
+
         public const int CursorPosYGamBoardStart = 0;
         public const int maxLevel = 5;
         public const int minLive = -1;
+
+
 
         // Dynamische Property: abhängig von ArraySizeY
         /// <summary>
@@ -66,10 +84,10 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         /// </summary>
         public static int CursorPosYTopHud_3 => ArraySizeY + 2;
 
-
         // === BOARD SIZE ===
         private static int _arraySizeY;
-        private static int _arraySizeX;       
+
+        private static int _arraySizeX;
         private static int _newArraySizeX = 45;
         private static int _npcAmount = 5;
         private static int _keyAmount = 3;
@@ -103,11 +121,11 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         /// Gets or sets the current board width.
         /// </summary>
         public static int ArraySizeX { get => _arraySizeX; set => _arraySizeX = value; }
-                  
+
         /// <summary>
         /// Represents the current global state of the game.
         /// </summary>
-        enum GameState
+        private enum GameState
         {
             StartScreen,
             Tutorial,
@@ -117,11 +135,11 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         }
 
         /// <summary>
-        /// The main entry method — sets up all dependencies, systems,  
+        /// The main entry method — sets up all dependencies, systems,
         /// and manages the game state loop.
         /// </summary>
         /// <param name="args">Command line arguments (not used).</param>
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             // === CONSOLE SETUP ===
             Console.OutputEncoding = System.Text.Encoding.UTF8;
@@ -130,45 +148,45 @@ namespace Semester1_D001_Escape_Room_Rosenberg
             Console.SetWindowSize(120, 40);
 
             // === CORE SYSTEMS ===
-            DiagnosticsManager diagnostics = new DiagnosticsManager();
-            SymbolsManager symbols = new SymbolsManager();
-            RandomManager random = new RandomManager(diagnostics);
+            _diagnostics = new DiagnosticsManager();
+            _symbols = new SymbolsManager();
+            RandomManager random = new RandomManager(_diagnostics);
 
             // === BOARD SYSTEMS ===
-            GameBoardManager gameBoard = new GameBoardManager(new GameBoardManagerDependencies(diagnostics));
-            GameObjectManager gameObject = new GameObjectManager(new GameObjectManagerDependencies(gameBoard, diagnostics));
-            RulesManager rules = new RulesManager(new RulesManagerDependencies(diagnostics, gameBoard));
+            _gameBoard = new GameBoardManager(new GameBoardManagerDependencies(_diagnostics));
+            _gameObject = new GameObjectManager(new GameObjectManagerDependencies(_gameBoard, _diagnostics));
+            _rules = new RulesManager(new RulesManagerDependencies(_diagnostics, _gameBoard));
 
             // === DATA & INVENTORY ===
-            NpcDataLoader npcDataLoader = new NpcDataLoader(new NpcDataLoaderDependencies(diagnostics, symbols));
-            NpcManager npcManager = new NpcManager(new NpcManagerDependencies(npcDataLoader, diagnostics, symbols));
-            InventoryManager inventory = new InventoryManager(new InventoryDependencies(diagnostics));
+            NpcDataLoader npcDataLoader = new NpcDataLoader(new NpcDataLoaderDependencies(_diagnostics, _symbols));
+            _npcManager = new NpcManager(new NpcManagerDependencies(npcDataLoader, _diagnostics, _symbols));
+            _inventory = new InventoryManager(new InventoryDependencies(_diagnostics));
 
             // === VISUALS ===
-            PrintManager print = new PrintManager(new PrintManagerDependencies(gameBoard, gameObject, symbols, diagnostics));
+            _print = new PrintManager(new PrintManagerDependencies(_gameBoard, _gameObject, _symbols, _diagnostics));
 
             // === INSTANCE DEPENDENCIES ===
-            WallInstanceDependencies wallInstanceDeps = new WallInstanceDependencies(diagnostics, symbols);
-            KeyFragmentInstanceDependencies keyFragmentInstanceDeps = new KeyFragmentInstanceDependencies(symbols, diagnostics);
-            DoorInstanceDependencies doorInstanceDeps = new DoorInstanceDependencies(symbols, diagnostics);
-            PlayerInstanceDependencies playerInstanceDeps = new PlayerInstanceDependencies(diagnostics, symbols);
-            NpcInstanceDependencies npcInstanceDeps = new NpcInstanceDependencies(diagnostics, symbols);
+            WallInstanceDependencies wallInstanceDeps = new WallInstanceDependencies(_diagnostics, _symbols);
+            KeyFragmentInstanceDependencies keyFragmentInstanceDeps = new KeyFragmentInstanceDependencies(_symbols, _diagnostics);
+            DoorInstanceDependencies doorInstanceDeps = new DoorInstanceDependencies(_symbols, _diagnostics);
+            PlayerInstanceDependencies playerInstanceDeps = new PlayerInstanceDependencies(_diagnostics, _symbols);
+            NpcInstanceDependencies npcInstanceDeps = new NpcInstanceDependencies(_diagnostics, _symbols);
 
             // === SPAWN MANAGER ===
-            SpawnManager spawn = new SpawnManager(new SpawnManagerDependencies(
-                rules, diagnostics, random, gameBoard, symbols,
+            _spawn = new SpawnManager(new SpawnManagerDependencies(
+                _rules, _diagnostics, random, _gameBoard, _symbols,
                 doorInstanceDeps, keyFragmentInstanceDeps, npcInstanceDeps,
-                playerInstanceDeps, wallInstanceDeps, npcManager, gameObject
+                playerInstanceDeps, wallInstanceDeps, _npcManager, _gameObject
             ));
 
             // === LEVEL + INTERACTION ===
-            LevelManager level = new LevelManager(new LevelManagerDependencies(diagnostics, gameBoard, gameObject, spawn, inventory));
-            UIManager ui = new UIManager(new UIManagerDependencies(gameBoard, diagnostics, symbols, print, random, inventory, gameObject, level));
-            InteractionManager interaction = new InteractionManager(new InteractionManagerDependencies(
-                diagnostics, gameBoard, gameObject, rules, inventory, ui, npcManager, symbols, level, print, random
+            _level = new LevelManager(new LevelManagerDependencies(_diagnostics, _gameBoard, _gameObject, _spawn, _inventory));
+            _ui = new UIManager(new UIManagerDependencies(_gameBoard, _diagnostics, _symbols, _print, random, _inventory, _gameObject, _level));
+            _interaction = new InteractionManager(new InteractionManagerDependencies(
+                _diagnostics, _gameBoard, _gameObject, _rules, _inventory, _ui, _npcManager, _symbols, _level, _print, random
             ));
-            // === Screen ===           
-            ScreenManager screen = new ScreenManager(new ScreenManagerDependencies(symbols, inventory, level, diagnostics));
+            // === Screen ===
+            ScreenManager screen = new ScreenManager(new ScreenManagerDependencies(_symbols, _inventory, _level, _diagnostics));
 
             // === GAME STATE CONTROL ===
             GameState currentState = GameState.StartScreen;
@@ -180,7 +198,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg
                 {
                     case GameState.StartScreen:
                         Console.Clear();
-                        screen.ScreenStart();                        
+                        screen.ScreenStart();
                         currentState = GameState.Tutorial;
                         break;
 
@@ -191,10 +209,10 @@ namespace Semester1_D001_Escape_Room_Rosenberg
                         break;
 
                     case GameState.Playing:
-                        bool gameWon = RunGameLoop(diagnostics, level, gameBoard, spawn, print, ui, inventory, interaction, npcManager, rules, symbols, gameObject);
+                        bool gameWon = RunGameLoop();
                         if (gameWon)
                             currentState = GameState.Win;
-                        else if (PlayerInstance == null || gameWon==false )
+                        else if (PlayerInstance == null || gameWon == false)
                             currentState = GameState.GameOver;
                         break;
 
@@ -219,154 +237,79 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         // === LEVEL INITIALIZATION ===
 
         /// <summary>
-        /// Initializes and builds the first game level.  
-        /// Handles dependency wiring, board setup, NPC loading, object spawning,  
+        /// Initializes and builds the first game level.
+        /// Handles dependency wiring, board setup, NPC loading, object spawning,
         /// and the creation of the player controller for active gameplay.
-        /// </summary>
-        /// <param name="diagnostics">Provides diagnostic logging for setup progress and potential errors.</param>
-        /// <param name="level">Controls level-specific states and conditions (e.g., next level flag).</param>
-        /// <param name="gameBoard">Manages the logical grid used for positioning and object placement.</param>
-        /// <param name="spawn">Responsible for spawning player, NPCs, key fragments, and doors on the board.</param>
-        /// <param name="print">Handles console-based visual rendering of the game board and HUD elements.</param>
-        /// <param name="ui">Controls the Heads-Up Display for showing stats, symbols, and interaction feedback.</param>
-        /// <param name="npcManager">Manages all NPC entities, including data loading and dialogue handling.</param>
-        /// <param name="rules">Contains core gameplay rules and validation for movement and collisions.</param>
-        /// <param name="interaction">Handles player interactions with tiles and objects (e.g., doors, NPCs, items).</param>
-        /// <param name="symbols">Provides ASCII symbols for visual representation of in-game entities.</param>
-        /// <param name="gameObject">Stores and organizes runtime references to all spawned objects on the board.</param>
+        /// </summary>        
         /// <returns>Returns a fully initialized <see cref="PlayerController"/> ready for use in the main loop.</returns>
-        static PlayerController InitializeLevel(
-            DiagnosticsManager diagnostics,
-            LevelManager level,
-            GameBoardManager gameBoard,
-            SpawnManager spawn,
-            PrintManager print,
-            UIManager ui,
-            NpcManager npcManager,
-            RulesManager rules,
-            InteractionManager interaction,
-            SymbolsManager symbols,
-            GameObjectManager gameObject
-            )
+        private static PlayerController InitializeLevel()
         {
-            diagnostics.AddCheck("=== Starting world setup ===");
+            _diagnostics.AddCheck("=== Starting world setup ===");
 
-            DecideArraySize(print);
+            DecideArraySize(_print);
 
-            gameBoard.InitializeBoard();
-            npcManager.LoadAllNpcData();
-            spawn.SpawnAll(NpcAmount, KeyAmount);
+            _gameBoard.InitializeBoard();
+            _npcManager.LoadAllNpcData();
+            _spawn.SpawnAll(NpcAmount, KeyAmount);
             // Needs to be Initializede here
             PlayerController playerController = new PlayerController(new PlayerControllerDependencies(
-                gameBoard, rules, diagnostics, interaction, print, symbols, gameObject
+                _gameBoard, _rules, _diagnostics, _interaction, _print, _symbols, _gameObject
             ));
-            PlayerInstance = spawn.GetPlayer;
+            PlayerInstance = _spawn.GetPlayer;
 
-            print.PrintBoard();
-            ui.BuildTopHud();
-            ui.BuildEmptyBottomHud();
-            ui.PrintBottomHud();
+            _print.PrintBoard();
+            _ui.BuildTopHud();
+            _ui.BuildEmptyBottomHud();
+            _ui.PrintBottomHud();
             return playerController;
         }
 
-        // === LEVEL INITIALIZATION ===
-
         /// <summary>
-        ///  Initializes the next level after a successful completion or transition.  
-        /// Resets board data, respawns entities, and refreshes HUD visuals without  
+        ///  Initializes the next level after a successful completion or transition.
+        /// Resets board data, respawns entities, and refreshes HUD visuals without
         /// reinitializing the entire game session.
-        /// </summary>
-        /// <param name="diagnostics">Provides logging and validation output for the next-level setup.</param>
-        /// <param name="level">Tracks and updates the current level state during transitions.</param>
-        /// <param name="gameBoard">Clears and rebuilds the grid for the new level layout.</param>
-        /// <param name="spawn">Handles all new entity spawns (NPCs, keys, doors, player) for the upcoming level.</param>
-        /// <param name="print">Renders the new board layout and HUD after the level reset.</param>
-        /// <param name="ui">Rebuilds top and bottom HUD sections for the next level.</param>
-        /// <param name="npcManager">Reloads NPC data and resets interaction states for the new environment.</param>
-        /// <param name="rules">Ensures gameplay logic and movement validation are consistent in the new level.</param>
-        /// <param name="interaction">Maintains interaction logic and reconnects it with new instances.</param>
-        /// <param name="symbols">Provides consistent visual symbols across levels for entity display.</param>
-        /// <param name="gameObject">Holds updated object references for all entities in the new level.</param>
-        static void InitializeNextLevel(
-            DiagnosticsManager diagnostics,
-            LevelManager level,
-            GameBoardManager gameBoard,
-            SpawnManager spawn,
-            PrintManager print,
-            UIManager ui,
-            NpcManager npcManager,
-            RulesManager rules,
-            InteractionManager interaction,
-            SymbolsManager symbols,
-            GameObjectManager gameObject
-            )
+        /// </summary>        
+        private static void InitializeNextLevel()
         {
-            diagnostics.AddCheck("=== Starting world setup ===");
+            _diagnostics.AddCheck("=== Starting world setup ===");
 
             DecideArraySize(15, NewArraySizeX);
 
-            gameBoard.InitializeBoard();
-            npcManager.LoadAllNpcData();
-            spawn.SpawnAllNewLvl(NpcAmount, KeyAmount);
-            
-            PlayerInstance = spawn.GetPlayer;
+            _gameBoard.InitializeBoard();
+            _npcManager.LoadAllNpcData();
+            _spawn.SpawnAllNewLvl(NpcAmount, KeyAmount);
 
-            print.PrintBoard();
-            ui.BuildTopHud();
-            ui.BuildEmptyBottomHud();
-            ui.PrintBottomHud();
+            PlayerInstance = _spawn.GetPlayer;
 
+            _print.PrintBoard();
+            _ui.BuildTopHud();
+            _ui.BuildEmptyBottomHud();
+            _ui.PrintBottomHud();
         }
 
         // === MAIN GAME LOOP ===
 
         /// <summary>
-        /// Runs the core game loop for the Escape Room.  
-        /// Continuously processes user input, updates player movement, manages  
+        /// Runs the core game loop for the Escape Room.
+        /// Continuously processes user input, updates player movement, manages
         /// interactions, and checks win/loss conditions or level transitions.
-        /// </summary>
-        /// <param name="diagnostics">Logs checks, warnings, and errors occurring during the loop.</param>
-        /// <param name="level">Tracks whether a new level should start or if the game has ended.</param>
-        /// <param name="gameBoard">Provides grid-based spatial data for player and object updates.</param>
-        /// <param name="spawn">Spawns and resets entities when a new level is triggered.</param>
-        /// <param name="print">Handles visual updates to the board and HUD during gameplay.</param>
-        /// <param name="ui">Displays real-time player stats, NPC dialogues, and symbol updates.</param>
-        /// <param name="inventory">Tracks player key fragments and rewards throughout gameplay.</param>
-        /// <param name="interaction">Manages interaction events when the player uses the interact key.</param>
-        /// <param name="npcManager">Controls NPC dialogues and logic for question/answer sequences.</param>
-        /// <param name="rules">Validates actions, movements, and conditions that define gameplay rules.</param>
-        /// <param name="symbols">Provides the character symbols for consistent visual output.</param>
-        /// <param name="gameObject">Stores active in-game objects and updates their state on interaction.</param>
+        /// </summary>        
         /// <returns>
-        /// Returns <c>true</c> if the player successfully completes all levels or wins the game;  
+        /// Returns <c>true</c> if the player successfully completes all levels or wins the game;
         /// returns <c>false</c> if the player dies, quits, or the game ends in failure.
         /// </returns>
-        static bool RunGameLoop(
-            DiagnosticsManager diagnostics,
-            LevelManager level,
-            GameBoardManager gameBoard,
-            SpawnManager spawn,
-            PrintManager print,
-            UIManager ui,
-            InventoryManager inventory,
-            InteractionManager interaction,
-            NpcManager npcManager,
-            RulesManager rules,
-            SymbolsManager symbols,
-            GameObjectManager gameObject)
+        private static bool RunGameLoop()
         {
-            PlayerController playerController = InitializeLevel(diagnostics, level, gameBoard, spawn, print, ui, npcManager, rules, interaction, symbols, gameObject);
+            PlayerController playerController = InitializeLevel();
 
             while (true)
             {
-
                 // === NEXT LEVEL HANDLING ===
-                if (level.IsNextLvl)
+                if (_level.IsNextLvl)
                 {
-
-                    diagnostics.AddCheck("=== Starting world setup NEW LEVEL ===");
-                    InitializeNextLevel(diagnostics, level, gameBoard, spawn, print, ui, npcManager, rules, interaction, symbols, gameObject);
-                    level.IsNextLvl = false;
+                    _diagnostics.AddCheck("=== Starting world setup NEW LEVEL ===");
+                    InitializeNextLevel();
+                    _level.IsNextLvl = false;
                     continue;
                 }
 
@@ -374,55 +317,52 @@ namespace Semester1_D001_Escape_Room_Rosenberg
                 ConsoleKey key = Console.ReadKey(true).Key;
                 playerController.MovePlayer(key);
 
-
                 if (key == ConsoleKey.I)
                 {
-                    diagnostics.PrintChronologicalLogs();
+                    _diagnostics.PrintChronologicalLogs();
                 }
                 if (key == ConsoleKey.Escape)
                     return false;
 
                 if (key == ConsoleKey.K)
                 {
-                    inventory.AddKeyFragment(100);
-                    
+                    _inventory.AddKeyFragment(100);
                 }
                 if (key == ConsoleKey.E && PlayerInstance != null)
-                    interaction.InteractionHandler(PlayerInstance.Position);
+                    _interaction.InteractionHandler(PlayerInstance.Position);
 
-                if (level.CurrentLvl > maxLevel)
+                if (_level.CurrentLvl > maxLevel)
                 {
                     return true;
                 }
                 if (PlayerInstance != null && PlayerInstance.Lives <= minLive)
                     return false;
-
             }
         }
 
         // === ASK FOR SIZE ===
 
         /// <summary>
-        /// Asks the player to define the board size interactively via the console.  
+        /// Asks the player to define the board size interactively via the console.
         /// Ensures the entered dimensions fall within the allowed range.
         /// </summary>
         /// <param name="print">Provides the console input/output methods used for requesting values.</param>
-        static void DecideArraySize(PrintManager print)
+        private static void DecideArraySize(PrintManager print)
         {
             _arraySizeX = print.AskForIntInRange("How wide should the game board be?", 45, 120);
             _arraySizeY = print.AskForIntInRange("How high should the game board be?", 15, 17);
         }
 
         /// <summary>
-        /// Sets the board size directly with given Y and X dimensions  
+        /// Sets the board size directly with given Y and X dimensions
         /// (used for automated level transitions without user input).
         /// </summary>
         /// <param name="arraySizeY">Defines the height (rows) of the board grid.</param>
         /// <param name="arraySizeX">Defines the width (columns) of the board grid.</param>
-        static void DecideArraySize(int arraySizeY, int arraySizeX)
+        private static void DecideArraySize(int arraySizeY, int arraySizeX)
         {
             _arraySizeX = arraySizeX;
             _arraySizeY = arraySizeY;
-        }        
+        }
     }
 }

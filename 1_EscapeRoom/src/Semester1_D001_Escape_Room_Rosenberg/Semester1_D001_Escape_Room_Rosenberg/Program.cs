@@ -5,9 +5,9 @@
 * Author  : Eric Rosenberg
 *
 * Description :
-* Entry point of the Escape Room console game.  
-* Manages initialization of all systems, dependency injection, game state control,  
-* and high-level loop flow between start, tutorial, main gameplay, and end screens.  
+* Entry point of the Escape Room console game.
+* Manages initialization of all systems, dependency injection, game state control,
+* and high-level loop flow between start, tutorial, main gameplay, and end screens.
 * Coordinates interactions between all managers, systems, and instances.
 *
 * Responsibilities:
@@ -25,13 +25,11 @@ using Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Player;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers;
-using System;
-
 
 namespace Semester1_D001_Escape_Room_Rosenberg
 {
     /// <summary>
-    /// The main entry class controlling initialization, dependency setup,  
+    /// The main entry class controlling initialization, dependency setup,
     /// and the global game loop of the Escape Room project.
     /// </summary>
     internal class Program
@@ -41,6 +39,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg
 
         // === CURSOR AND HUD COORDINATES ===
         public const int CursorPosX = 0;
+
         public const int CursorPosYGamBoardStart = 0;
         public const int maxLevel = 5;
         public const int minLive = -1;
@@ -66,10 +65,10 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         /// </summary>
         public static int CursorPosYTopHud_3 => ArraySizeY + 2;
 
-
         // === BOARD SIZE ===
         private static int _arraySizeY;
-        private static int _arraySizeX;       
+
+        private static int _arraySizeX;
         private static int _newArraySizeX = 45;
         private static int _npcAmount = 5;
         private static int _keyAmount = 3;
@@ -103,11 +102,11 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         /// Gets or sets the current board width.
         /// </summary>
         public static int ArraySizeX { get => _arraySizeX; set => _arraySizeX = value; }
-                  
+
         /// <summary>
         /// Represents the current global state of the game.
         /// </summary>
-        enum GameState
+        private enum GameState
         {
             StartScreen,
             Tutorial,
@@ -117,11 +116,11 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         }
 
         /// <summary>
-        /// The main entry method — sets up all dependencies, systems,  
+        /// The main entry method — sets up all dependencies, systems,
         /// and manages the game state loop.
         /// </summary>
         /// <param name="args">Command line arguments (not used).</param>
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             // === CONSOLE SETUP ===
             Console.OutputEncoding = System.Text.Encoding.UTF8;
@@ -167,7 +166,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg
             InteractionManager interaction = new InteractionManager(new InteractionManagerDependencies(
                 diagnostics, gameBoard, gameObject, rules, inventory, ui, npcManager, symbols, level, print, random
             ));
-            // === Screen ===           
+            // === Screen ===
             ScreenManager screen = new ScreenManager(new ScreenManagerDependencies(symbols, inventory, level, diagnostics));
 
             // === GAME STATE CONTROL ===
@@ -180,7 +179,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg
                 {
                     case GameState.StartScreen:
                         Console.Clear();
-                        screen.ScreenStart();                        
+                        screen.ScreenStart();
                         currentState = GameState.Tutorial;
                         break;
 
@@ -194,7 +193,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg
                         bool gameWon = RunGameLoop(diagnostics, level, gameBoard, spawn, print, ui, inventory, interaction, npcManager, rules, symbols, gameObject);
                         if (gameWon)
                             currentState = GameState.Win;
-                        else if (PlayerInstance == null || gameWon==false )
+                        else if (PlayerInstance == null || gameWon == false)
                             currentState = GameState.GameOver;
                         break;
 
@@ -219,8 +218,8 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         // === LEVEL INITIALIZATION ===
 
         /// <summary>
-        /// Initializes and builds the first game level.  
-        /// Handles dependency wiring, board setup, NPC loading, object spawning,  
+        /// Initializes and builds the first game level.
+        /// Handles dependency wiring, board setup, NPC loading, object spawning,
         /// and the creation of the player controller for active gameplay.
         /// </summary>
         /// <param name="diagnostics">Provides diagnostic logging for setup progress and potential errors.</param>
@@ -235,7 +234,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         /// <param name="symbols">Provides ASCII symbols for visual representation of in-game entities.</param>
         /// <param name="gameObject">Stores and organizes runtime references to all spawned objects on the board.</param>
         /// <returns>Returns a fully initialized <see cref="PlayerController"/> ready for use in the main loop.</returns>
-        static PlayerController InitializeLevel(
+        private static PlayerController InitializeLevel(
             DiagnosticsManager diagnostics,
             LevelManager level,
             GameBoardManager gameBoard,
@@ -272,8 +271,8 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         // === LEVEL INITIALIZATION ===
 
         /// <summary>
-        ///  Initializes the next level after a successful completion or transition.  
-        /// Resets board data, respawns entities, and refreshes HUD visuals without  
+        ///  Initializes the next level after a successful completion or transition.
+        /// Resets board data, respawns entities, and refreshes HUD visuals without
         /// reinitializing the entire game session.
         /// </summary>
         /// <param name="diagnostics">Provides logging and validation output for the next-level setup.</param>
@@ -287,7 +286,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         /// <param name="interaction">Maintains interaction logic and reconnects it with new instances.</param>
         /// <param name="symbols">Provides consistent visual symbols across levels for entity display.</param>
         /// <param name="gameObject">Holds updated object references for all entities in the new level.</param>
-        static void InitializeNextLevel(
+        private static void InitializeNextLevel(
             DiagnosticsManager diagnostics,
             LevelManager level,
             GameBoardManager gameBoard,
@@ -308,21 +307,20 @@ namespace Semester1_D001_Escape_Room_Rosenberg
             gameBoard.InitializeBoard();
             npcManager.LoadAllNpcData();
             spawn.SpawnAllNewLvl(NpcAmount, KeyAmount);
-            
+
             PlayerInstance = spawn.GetPlayer;
 
             print.PrintBoard();
             ui.BuildTopHud();
             ui.BuildEmptyBottomHud();
             ui.PrintBottomHud();
-
         }
 
         // === MAIN GAME LOOP ===
 
         /// <summary>
-        /// Runs the core game loop for the Escape Room.  
-        /// Continuously processes user input, updates player movement, manages  
+        /// Runs the core game loop for the Escape Room.
+        /// Continuously processes user input, updates player movement, manages
         /// interactions, and checks win/loss conditions or level transitions.
         /// </summary>
         /// <param name="diagnostics">Logs checks, warnings, and errors occurring during the loop.</param>
@@ -338,10 +336,10 @@ namespace Semester1_D001_Escape_Room_Rosenberg
         /// <param name="symbols">Provides the character symbols for consistent visual output.</param>
         /// <param name="gameObject">Stores active in-game objects and updates their state on interaction.</param>
         /// <returns>
-        /// Returns <c>true</c> if the player successfully completes all levels or wins the game;  
+        /// Returns <c>true</c> if the player successfully completes all levels or wins the game;
         /// returns <c>false</c> if the player dies, quits, or the game ends in failure.
         /// </returns>
-        static bool RunGameLoop(
+        private static bool RunGameLoop(
             DiagnosticsManager diagnostics,
             LevelManager level,
             GameBoardManager gameBoard,
@@ -359,11 +357,9 @@ namespace Semester1_D001_Escape_Room_Rosenberg
 
             while (true)
             {
-
                 // === NEXT LEVEL HANDLING ===
                 if (level.IsNextLvl)
                 {
-
                     diagnostics.AddCheck("=== Starting world setup NEW LEVEL ===");
                     InitializeNextLevel(diagnostics, level, gameBoard, spawn, print, ui, npcManager, rules, interaction, symbols, gameObject);
                     level.IsNextLvl = false;
@@ -373,7 +369,6 @@ namespace Semester1_D001_Escape_Room_Rosenberg
                 // === INPUT ===
                 ConsoleKey key = Console.ReadKey(true).Key;
                 playerController.MovePlayer(key);
-
 
                 if (key == ConsoleKey.I)
                 {
@@ -385,7 +380,6 @@ namespace Semester1_D001_Escape_Room_Rosenberg
                 if (key == ConsoleKey.K)
                 {
                     inventory.AddKeyFragment(100);
-                    
                 }
                 if (key == ConsoleKey.E && PlayerInstance != null)
                     interaction.InteractionHandler(PlayerInstance.Position);
@@ -396,33 +390,32 @@ namespace Semester1_D001_Escape_Room_Rosenberg
                 }
                 if (PlayerInstance != null && PlayerInstance.Lives <= minLive)
                     return false;
-
             }
         }
 
         // === ASK FOR SIZE ===
 
         /// <summary>
-        /// Asks the player to define the board size interactively via the console.  
+        /// Asks the player to define the board size interactively via the console.
         /// Ensures the entered dimensions fall within the allowed range.
         /// </summary>
         /// <param name="print">Provides the console input/output methods used for requesting values.</param>
-        static void DecideArraySize(PrintManager print)
+        private static void DecideArraySize(PrintManager print)
         {
             _arraySizeX = print.AskForIntInRange("How wide should the game board be?", 45, 120);
             _arraySizeY = print.AskForIntInRange("How high should the game board be?", 15, 17);
         }
 
         /// <summary>
-        /// Sets the board size directly with given Y and X dimensions  
+        /// Sets the board size directly with given Y and X dimensions
         /// (used for automated level transitions without user input).
         /// </summary>
         /// <param name="arraySizeY">Defines the height (rows) of the board grid.</param>
         /// <param name="arraySizeX">Defines the width (columns) of the board grid.</param>
-        static void DecideArraySize(int arraySizeY, int arraySizeX)
+        private static void DecideArraySize(int arraySizeY, int arraySizeX)
         {
             _arraySizeX = arraySizeX;
             _arraySizeY = arraySizeY;
-        }        
+        }
     }
 }

@@ -24,7 +24,7 @@ using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Door;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Key;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Npc;
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.GameBoardObjects.Player;
-
+using System.Threading.Tasks.Sources;
 
 namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 {
@@ -46,11 +46,13 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 
         // === Handle Key ===
         private string _keyMessage = " You collected a Key Fragment";
+
         private string _keyInfobox = "Key Fragment ";
         private string _system = "System";
 
         // === Handle Door ===
         private string _doorNotOpenMessage = "You need more Key Fragments";
+
         private string _doorNotOpenInfobox = "Required Key Fragments ";
         private string _doorOpenMessage = " Door is open now. You won the Level";
         private string _doorOpenInfobox = "Door is open";
@@ -79,13 +81,11 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
             {
                 _deps.Diagnostic.AddError($"{nameof(InteractionManager)}.{nameof(InteractionHandler)}: GameBoardArray reference missing!");
                 return;
-
             }
             else if (_deps.GameBoard.GameBoardArray == null)
             {
                 _deps.Diagnostic.AddError($"{nameof(InteractionManager)}.{nameof(InteractionHandler)}: GameBoard reference missing!");
                 return;
-
             }
 
             TileType tile = _deps.GameBoard.GameBoardArray[targetPosition.y, targetPosition.x];
@@ -133,21 +133,22 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
                     case '1':
                         chosen = answer_1;
                         break;
+
                     case '2':
                         chosen = answer_2;
                         break;
+
                     case '3':
                         chosen = answer_3;
                         break;
+
                     default:
                         continue;
-
                 }
                 break;
             }
             bool correct = chosen == correctAnswer;
             return correct;
-
         }
 
         /// <summary>
@@ -204,7 +205,6 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 
                 bool correct = PlayerChooseAnswer(answers[0], answers[1], answers[2], npc.Dialog.CorrectAnswer);
 
-
                 if (correct)
                 {
                     _deps.Inventory.AddScorePoints(npc.Reward.Points);
@@ -216,6 +216,8 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
                     _deps.UI.FillUpBottomHud(_system, "You received ", "Your last answer was correct!", _deps.Symbol.KeyFragmentSymbol, npc.Reward.KeyFragment, "", "", "");
 
                     _deps.UI.PrintBottomHud();
+
+                    _deps.Print.PrintNpc(npc.Meta.Position,correct);
 
                     _deps.Diagnostic.AddCheck($"{nameof(InteractionManager)}.{nameof(HandleNpc)}: Correct answer by player at ({targetPosition.y},{targetPosition.x}).");
                 }
@@ -231,17 +233,21 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
 
                     _deps.UI.PrintBottomHud();
 
+                    _deps.Print.PrintNpc(npc.Meta.Position,correct);
+
                     _deps.Diagnostic.AddWarning($"{nameof(InteractionManager)}.{nameof(HandleNpc)}: Wrong answer by player at ({targetPosition.y},{targetPosition.x}).");
                 }
+                
             }
             else
-            {
+            {              
                 _deps.UI.FillUpBottomHud(_system, "", "This NPC doesn't want to talk to you", ' ', "", "", "");
 
                 _deps.UI.PrintBottomHud();
             }
+            
+            
             npc.Deactivate();
-
         }
 
         /// <summary>
@@ -267,7 +273,6 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
             if (_deps.UI == null || _deps.Symbol == null)
             {
                 _deps.Diagnostic.AddWarning($"{nameof(InteractionManager)}.{nameof(HandleKey)}: UI or SymbolsManager missing.");
-
             }
 
             // === RETRIEVE KEY OBJECT FROM POSITION ===
@@ -355,12 +360,11 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
             Console.Beep(880, 150);
             Console.Beep(1174, 400);
 
-
             _deps.Level.NewLevel(_deps.Inventory.Score);
             // TODO: Replace with non-blocking delay system in future engine version
             Thread.Sleep(2000);
-
         }
 
+       
     }
 }

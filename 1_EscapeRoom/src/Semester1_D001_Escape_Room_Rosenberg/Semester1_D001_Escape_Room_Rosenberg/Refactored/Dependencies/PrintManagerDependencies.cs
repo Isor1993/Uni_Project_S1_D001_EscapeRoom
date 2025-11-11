@@ -20,8 +20,6 @@
 ******************************************************************************/
 
 using Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers;
-using System;
-
 
 namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Dependencies
 {
