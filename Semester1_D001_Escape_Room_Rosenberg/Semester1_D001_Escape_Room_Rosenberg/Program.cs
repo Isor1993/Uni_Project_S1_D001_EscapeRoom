@@ -198,13 +198,13 @@ namespace Semester1_D001_Escape_Room_Rosenberg
                 {
                     case GameState.StartScreen:
                         Console.Clear();
-                        screen.ScreenStart();
+                        //screen.ScreenStart();
                         currentState = GameState.Tutorial;
                         break;
 
                     case GameState.Tutorial:
                         Console.Clear();
-                        screen.ScreenTutorial();
+                        //screen.ScreenTutorial();
                         currentState = GameState.Playing;
                         break;
 
@@ -249,6 +249,7 @@ namespace Semester1_D001_Escape_Room_Rosenberg
             DecideArraySize(_print);
 
             _gameBoard.InitializeBoard();
+            _newArraySizeX = _arraySizeX;
             _npcManager.LoadAllNpcData();
             _spawn.SpawnAll(NpcAmount, KeyAmount);
             // Needs to be Initializede here

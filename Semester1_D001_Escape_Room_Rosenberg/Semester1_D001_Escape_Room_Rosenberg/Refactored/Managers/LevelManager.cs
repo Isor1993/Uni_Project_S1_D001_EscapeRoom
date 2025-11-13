@@ -99,8 +99,10 @@ namespace Semester1_D001_Escape_Room_Rosenberg.Refactored.Managers
             _requiredKeys += 3;
 
             AddLvl();
-
-            Program.NewArraySizeX += 3;
+            if (Program.NewArraySizeX >= 117)
+            {
+                Program.NewArraySizeX += 3;
+            }
             Program.NpcAmount += 3;
             Program.KeyAmount += 3;
 
